@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Black Buck 1 — One Bomber, Eleven Tankers</title>
+<style>
+:root{--bg:#070b14;--panel:#0d1526;--line:#22314c;--ink:#eef3fb;--dim:#aab9cf;--mute:#7c8ca6;--amber:#ffbf5c;--tank:#9ec5ff;--green:#5be08f;--violet:#c9a0ff;--red:#ff6b70;--hose:#ffd166}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif}
+a{color:#8fc3ff}
+.wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+button{font:inherit;color:inherit;background:none;border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer}
+button:hover{background:#142036;border-color:#3d527a}
+button.primary{background:var(--amber);color:#1a1200;border-color:var(--amber);font-weight:700}
+button.primary:hover{background:#ffd08a}
+/* hero */
+#hero{padding:64px 0 36px;border-bottom:1px solid var(--line);background:radial-gradient(1200px 500px at 20% -10%,#12233f 0%,rgba(7,11,20,0) 60%)}
+#hero .kicker{font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--amber);font-weight:700}
+#hero h1{font-size:clamp(34px,5.2vw,64px);line-height:1.04;margin:10px 0 18px;letter-spacing:-.01em;max-width:16ch}
+#hero h1 span{color:var(--amber)}
+#hero .lede{font-size:clamp(18px,2vw,22px);color:#d5deec;max-width:64ch;margin:0 0 22px}
+#hero .facts{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 26px}
+#hero .facts span{background:#111c31;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;color:var(--dim)}
+#hero .facts b{color:var(--ink)}
+#hero .cta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#hero .cta small{color:var(--mute);font-size:13px}
+/* story layout */
+#story{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:36px;align-items:start;padding-top:32px}
+#stage{position:sticky;top:16px}
+#mapbox{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#07101c;aspect-ratio:4/3;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+#map{position:absolute;inset:0;width:100%;height:100%;display:block}
+#cap{position:absolute;left:0;right:0;top:0;padding:14px 18px;background:linear-gradient(180deg,rgba(7,11,20,.92),rgba(7,11,20,0));pointer-events:none}
+#cap .t{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);font-weight:700}
+#cap h3{margin:2px 0 0;font-size:clamp(16px,1.6vw,21px);line-height:1.2}
+#cap .act{margin-top:6px;font-size:14px;color:#d5deec}
+#cap .act b{color:var(--hose)}
+#clockchip{position:absolute;right:14px;top:14px;background:rgba(7,11,20,.85);border:1px solid var(--line);border-radius:10px;padding:6px 10px;text-align:right;pointer-events:none}
+#clockchip .z{font-size:20px;font-weight:700;letter-spacing:.04em}
+#clockchip .z small{font-size:11px;color:var(--dim);margin-left:3px}
+#clockchip .d{font-size:11px;color:var(--dim)}
+#strip{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+#strip .l{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:10px}
+#strip .l b{color:var(--ink);letter-spacing:0;text-transform:none;font-size:15px}
+#chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:30px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#111c31;border:1px solid var(--line);border-radius:999px;padding:3px 10px 3px 6px;font-size:13px;color:#d5deec;transition:opacity .3s}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--tank)}
+.chip.bomber i{background:var(--amber)}.chip.bomber{border-color:#5a4520;color:#ffe6b8}
+.chip.green i{background:var(--green)}.chip.violet i{background:var(--violet)}
+.chip.out{opacity:.35;text-decoration:line-through}
+#stripnote{font-size:13px;color:var(--mute);margin-top:6px}
+#tlbar{margin-top:10px;height:34px;display:block;width:100%;cursor:pointer}
+/* steps */
+#steps{padding:8px 0 20vh}
+.step{padding:22px 22px 20px;border:1px solid transparent;border-radius:16px;margin-bottom:22vh;opacity:.45;transition:opacity .35s,border-color .35s,background .35s}
+.step:first-child{margin-top:0}
+.step.active{opacity:1;border-color:#2c4066;background:#0d1526}
+.step .n{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--amber);color:#1a1200;font-weight:800;font-size:16px;margin-right:10px;vertical-align:middle}
+.step .when{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);font-weight:700;vertical-align:middle}
+.step h2{font-size:clamp(22px,2.2vw,28px);line-height:1.15;margin:12px 0 10px}
+.step p{margin:0 0 10px;color:#d5deec;font-size:17px}
+.step .fact{display:inline-block;margin-top:6px;background:#111c31;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px;color:var(--dim)}
+.step .fact b{color:var(--ink)}
+.step .replay{margin-top:12px;font-size:13px;padding:6px 10px;color:var(--dim)}
+/* sections */
+section.band{border-top:1px solid var(--line);padding:56px 0}
+section.band h2{font-size:clamp(26px,3vw,36px);margin:0 0 8px;letter-spacing:-.01em}
+section.band .sub{color:var(--dim);margin:0 0 26px;max-width:70ch}
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.num{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 14px}
+.num .v{font-size:clamp(30px,3.4vw,42px);font-weight:800;letter-spacing:-.02em;line-height:1}
+.num .v small{font-size:16px;color:var(--dim);font-weight:500;margin-left:4px}
+.num .k{color:var(--dim);font-size:14px;margin-top:8px}
+.relay{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.rel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px;position:relative}
+.rel .c{font-size:44px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.rel .c small{font-size:13px;color:var(--dim);font-weight:600;margin-left:6px;letter-spacing:0}
+.rel h4{margin:8px 0 4px;font-size:15px}
+.rel p{margin:0;font-size:13.5px;color:var(--dim)}
+.rel.hit{border-color:#5a4520;background:#16130c}
+.rel.hit .c{color:var(--amber)}
+.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.person{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.person h4{margin:0 0 4px;font-size:17px}
+.person .r{font-size:13px;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+.person p{margin:6px 0 0;font-size:14.5px;color:var(--dim)}
+.srcs{font-size:14px;color:var(--dim);max-width:80ch}
+.srcs li{margin:6px 0}
+footer{padding:30px 0 60px;color:var(--mute);font-size:13px;border-top:1px solid var(--line)}
+#tourbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:none;gap:10px;align-items:center;background:rgba(13,21,38,.95);border:1px solid #3d527a;border-radius:999px;padding:8px 10px 8px 16px;z-index:10;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+#tourbar.show{display:flex}
+#tourbar span{font-size:14px;color:var(--dim)}
+@media (max-width:900px){
+  #story{grid-template-columns:1fr;gap:16px}
+  #stage{position:sticky;top:0;z-index:5;background:var(--bg);padding-bottom:8px}
+  #mapbox{aspect-ratio:16/11;border-radius:12px}
+  #strip{display:none}
+  .step{margin-bottom:12vh}
+  #hero{padding:40px 0 28px}
+}
+</style>
+</head>
+<body>
+
+<header id="hero">
+  <div class="wrap">
+    <div class="kicker">Falklands War · 30 April – 1 May 1982 · Operation Black Buck 1</div>
+    <h1>One bomber. <span>Eleven tankers.</span> 8,000 miles.</h1>
+    <p class="lede">The RAF needed to bomb the runway at Port Stanley, but the nearest British airfield — Ascension Island — was 3,380 nautical miles away. A single Vulcan couldn't get there and back on its own fuel. So eleven Victor tankers flew with it in a relay, passing fuel down the line and turning for home one by one, until only the bomber was left.</p>
+    <div class="facts">
+      <span><b>≈15 h</b> in the air</span><span><b>7</b> in-flight refuellings for the bomber</span><span><b>1</b> broken refuelling probe</span><span><b>2</b> rescues on the way home</span><span><b>21</b> bombs · <b>1</b> runway hit</span>
+    </div>
+    <div class="cta">
+      <button class="primary" id="btnTour">▶ Watch the mission (2 min)</button>
+      <button id="btnScroll">Or scroll through it step by step ↓</button>
+      <small>Map is simplified: formation spacing is exaggerated so you can see what's happening.</small>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="story">
+    <div id="stage">
+      <div id="mapbox">
+        <canvas id="map"></canvas>
+        <div id="cap"><div class="t" id="capT">The problem</div><h3 id="capH">3,380 nautical miles each way</h3><div class="act" id="capA"></div></div>
+        <div id="clockchip"><div class="z mono"><span id="zt">2350</span><small>Z</small></div><div class="d" id="zd">30 April · T+00:00</div></div>
+      </div>
+      <div id="strip">
+        <div class="l">With the bomber right now <b id="stripCount">On the ground</b></div>
+        <div id="chips"></div>
+        <div id="stripnote">Blue dots are Victor tankers. Named ones matter to the story; the rest are the relay.</div>
+      </div>
+      <canvas id="tlbar"></canvas>
+    </div>
+
+    <div id="steps">
+      <article class="step" data-ch="0">
+        <span class="n">1</span><span class="when">The problem</span>
+        <h2>Stanley is 3,380 nautical miles from the nearest British runway</h2>
+        <p>That's London to New York and then some — each way. A loaded Vulcan can't reach the Falklands and return on its own tanks, so the plan was a chain of Victor tankers: tankers refuelling the bomber, and tankers refuelling <em>other tankers</em> so they could stay with it longer.</p>
+        <div class="fact"><b>Planned:</b> 15 tanker sorties and 18 refuellings to put one bomber over the target.</div>
+      </article>
+      <article class="step" data-ch="1">
+        <span class="n">2</span><span class="when">2350Z · take-off</span>
+        <h2>Thirteen aircraft leave Ascension in the dark</h2>
+        <p>Two Vulcans and eleven Victors stream off the runway a minute apart. Almost at once the lead Vulcan's cabin won't pressurise and it turns back. The reserve — <b>XM607</b>, flown by Flt Lt Martin Withers — is now the attack aircraft. A tanker with a hose fault also aborts and a spare slots in.</p>
+        <div class="fact"><b>Fuel on board the bomber:</b> 74,000 lb — burning 16,000 lb an hour at this weight.</div>
+        <button class="replay">↻ Replay</button>
+      </article>
+      <article class="step" data-ch="2">
+        <span class="n">3</span><span class="when">T+1h45 · first hand-over</span>
+        <h2>Four tankers fill four others, then go home</h2>
+        <p>This is the relay. The first four Victors pump their spare fuel into the next four and turn back. A fifth, flown by Wg Cdr <b>Colin Seymour</b>, tops up the bomber twice and heads home too. Thirteen aircraft have become five: four tankers and the Vulcan.</p>
+        <div class="fact"><b>Why tankers refuel tankers:</b> a Victor can't carry enough to go all the way south and back, so the ones that go furthest are topped up by the ones that don't.</div>
+        <button class="replay">↻ Replay</button>
+      </article>
+      <article class="step" data-ch="3">
+        <span class="n">4</span><span class="when">T+4h · second hand-over</span>
+        <h2>Two more tankers empty themselves into the last two</h2>
+        <p>Halfway down the Atlantic, two Victors give almost everything they have to the pair that will go furthest — <b>Bob Tuxford</b> and <b>Steve Biglands</b> — and turn for Ascension. They'll land nearly dry. Three aircraft remain: Tuxford, Biglands and the bomber.</p>
+        <div class="fact"><b>Headwinds</b> were worse than forecast: every aircraft was burning more fuel than the plan allowed.</div>
+        <button class="replay">↻ Replay</button>
+      </article>
+      <article class="step" data-ch="4">
+        <span class="n">5</span><span class="when">T+5h · the storm</span>
+        <h2>The refuelling probe breaks</h2>
+        <p>In violent thunderstorms near 40°S, Tuxford refuels the bomber, then trails his hose for Biglands — who was meant to be the final tanker. The basket is whipping around. Biglands connects, and his probe snaps off. He can't take fuel now, so the roles swap: Biglands hands back what he can spare and turns home, and Tuxford carries on south instead.</p>
+        <div class="fact"><b>Tuxford's problem:</b> he was supposed to turn back here with 64,000 lb. Going further means he may not have the fuel to get home.</div>
+        <button class="replay">↻ Replay</button>
+      </article>
+      <article class="step" data-ch="5">
+        <span class="n">6</span><span class="when">T+6h25 · last fuel</span>
+        <h2>Tuxford gives what he can and turns north — short of fuel</h2>
+        <p>About 400 miles from Stanley, Tuxford's Victor makes the final transfer. It is 7,000 lb less than the bomber expected. He turns for Ascension nearly 3,000 miles away, knowing his aircraft will run dry hundreds of miles short unless someone comes to meet him — and he keeps radio silence so as not to give the raid away.</p>
+        <div class="fact"><b>The bomber is now alone</b>, with enough fuel for the attack and a rendezvous it has to find on the way home.</div>
+        <button class="replay">↻ Replay</button>
+      </article>
+      <article class="step" data-ch="6">
+        <span class="n">7</span><span class="when">0738Z · the attack</span>
+        <h2>Down to 300 ft, up to 10,000 ft, 21 bombs across the runway</h2>
+        <p>Withers runs in low under Argentine radar, then climbs for the bomb run. Twenty-one 1,000 lb bombs are dropped in a line at an angle across the runway so that at least one must hit. One does, cratering the runway. The Vulcan banks hard left and heads north, signalling the code-word <b>"Superfuse"</b>: success.</p>
+        <div class="fact"><b>At the time</b> this was the longest bombing raid ever flown.</div>
+        <button class="replay">↻ Replay</button>
+      </article>
+      <article class="step" data-ch="7">
+        <span class="n">8</span><span class="when">Morning · two rescues</span>
+        <h2>Getting everyone home</h2>
+        <p>Hearing "Superfuse", Tuxford finally breaks radio silence and asks for a tanker. Seymour — already back at Ascension from his first sortie — takes off again and finds him over a thousand miles out. Meanwhile the bomber, running late and low, is guided by a Nimrod to <b>Barry Neal's</b> Victor off the coast of Brazil, with under 8,000 lb of fuel left in its tanks.</p>
+        <div class="fact"><b>Landings:</b> Tuxford 1355Z after 14 h 05 min · Withers 1452Z after about 15 hours. Nobody was lost.</div>
+        <button class="replay">↻ Replay</button>
+      </article>
+    </div>
+  </div>
+</main>
+
+<section class="band"><div class="wrap">
+  <h2>The relay in one picture</h2>
+  <p class="sub">How thirteen aircraft became one. Each stage, the tankers that have done their job turn for home.</p>
+  <div class="relay">
+    <div class="rel"><div class="c">13<small>a/c</small></div><h4>Take-off</h4><p>2 Vulcans + 11 Victors. Two abort in the first 20 minutes; a spare tanker steps in.</p></div>
+    <div class="rel"><div class="c">10<small>a/c</small></div><h4>First 100 nm</h4><p>1 Vulcan + 9 working tankers heading south in formation.</p></div>
+    <div class="rel"><div class="c">5<small>a/c</small></div><h4>After hand-over 1</h4><p>Four tankers fill four others and go home; Seymour feeds the bomber and follows.</p></div>
+    <div class="rel"><div class="c">3<small>a/c</small></div><h4>After hand-over 2</h4><p>Two more fill Tuxford and Biglands and turn back.</p></div>
+    <div class="rel"><div class="c">2<small>a/c</small></div><h4>After the storm</h4><p>Biglands' probe breaks; he goes home. Tuxford stays.</p></div>
+    <div class="rel hit"><div class="c">1<small>a/c</small></div><h4>Last fuel → attack</h4><p>Tuxford turns back short of fuel. The bomber goes on alone.</p></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>By the numbers</h2>
+  <div class="nums">
+    <div class="num"><div class="v">3,380<small>nm</small></div><div class="k">Ascension to Port Stanley, each way (6,260 km)</div></div>
+    <div class="num"><div class="v">≈15<small>hours</small></div><div class="k">XM607 airborne, 2350Z to 1452Z</div></div>
+    <div class="num"><div class="v">11</div><div class="k">Victor tankers launched with the bomber, plus six more later to bring everyone home</div></div>
+    <div class="num"><div class="v">7</div><div class="k">Times the bomber took on fuel — six in darkness, one in daylight on the way back</div></div>
+    <div class="num"><div class="v">74,000<small>lb</small></div><div class="k">Fuel in the Vulcan at take-off — under 8,000 lb left when it met the last tanker</div></div>
+    <div class="num"><div class="v">21</div><div class="k">1,000 lb bombs dropped; one cratered the runway</div></div>
+    <div class="num"><div class="v">7,000<small>lb</small></div><div class="k">How much less fuel the bomber got at the last hand-over than planned</div></div>
+    <div class="num"><div class="v">0</div><div class="k">Aircraft lost</div></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Who's who</h2>
+  <div class="people">
+    <div class="person"><div class="r">The bomber</div><h4>Flt Lt Martin Withers · Vulcan XM607</h4><p>Took over when the lead Vulcan aborted, flew the attack and the 15-hour round trip. Distinguished Flying Cross.</p></div>
+    <div class="person"><div class="r">The last tanker</div><h4>Sqn Ldr Bob Tuxford · Victor XL189</h4><p>Should have turned home before the storm; instead went on to give the bomber its last fuel, knowing he couldn't reach Ascension unaided. Air Force Cross.</p></div>
+    <div class="person"><div class="r">The broken probe</div><h4>Flt Lt Steve Biglands · Victor XH669</h4><p>Started as a spare, became the planned final tanker, lost his probe in the storm and got home on what he had left.</p></div>
+    <div class="person"><div class="r">Two sorties in one night</div><h4>Wg Cdr Colin Seymour · Victor XL511</h4><p>Refuelled the bomber twice early on, landed, then took off again to find and refuel Tuxford.</p></div>
+    <div class="person"><div class="r">The way home</div><h4>Sqn Ldr Barry Neal · Victor XH672</h4><p>Waited off Brazil, was sent further south when the bomber ran late, and met it with a perfectly timed turn.</p></div>
+    <div class="person"><div class="r">The abort</div><h4>Sqn Ldr John Reeve · Vulcan XM598</h4><p>Lead crew whose cabin seal failed on take-off. Flew the second raid, Black Buck 2, three nights later.</p></div>
+  </div>
+</div></section>
+
+<section class="band"><div class="wrap">
+  <h2>Sources & what's approximate</h2>
+  <ul class="srcs">
+    <li>Sequence, times, callsigns and quoted fuel figures: <a href="https://en.wikipedia.org/wiki/Operation_Black_Buck" target="_blank">Wikipedia — Operation Black Buck</a> (citing Rowland White's <i>Vulcan 607</i>); <a href="https://www.collectair.co.uk/pdf/bb-signatures.pdf" target="_blank">crew accounts collected by Collectair</a>; <a href="https://www.aviationclassics.co.uk/black-buck/" target="_blank">Aviation Classics</a>; <a href="https://www.flightlineweekly.com/post/the-vulcans-mission-impossible-operation-black-buck" target="_blank">Flightline Weekly</a>.</li>
+    <li>Positions along the route, speeds and minute-by-minute fuel are modelled to fit those facts — indicative, not archival. The bomb time is shown as 0738Z; some sources give 0746Z (the "Superfuse" signal).</li>
+    <li>Coastlines: Natural Earth. Formation spacing on the map is exaggerated hundreds of times so the aircraft can be seen.</li>
+    <li>A more detailed version of this simulation (every callsign, fuel gauges, a who-fed-whom chart) is in <a href="black-buck.html">black-buck.html</a>.</li>
+  </ul>
+</div></section>
+<footer><div class="wrap">Operation Black Buck 1 · interactive summary · built from published accounts.</div></footer>
+
+<div id="tourbar"><span id="tourTxt">Playing the mission…</span><button id="btnTourStop">Stop</button></div>
+
+<script>
+'use strict';
+// ============================================================ DATA
+const COAST = [[[-58.85,-51.27],[-58.43,-51.32],[-58.38,-51.37],[-58.52,-51.42],[-58.51,-51.48],[-58.27,-51.57],[-58.26,-51.42],[-57.92,-51.4],[-57.81,-51.52],[-57.96,-51.58],[-57.79,-51.64],[-57.84,-51.71],[-58.68,-51.94],[-58.65,-52.1],[-59.2,-52.02],[-59.07,-52.17],[-59.34,-52.2],[-59.4,-52.31],[-59.53,-52.24],[-59.65,-52.13],[-59.57,-51.93],[-59.06,-51.69],[-59.1,-51.49],[-58.85,-51.27]],[[-37.1,-54.07],[-36.7,-54.11],[-36.61,-54.19],[-36.65,-54.26],[-36.45,-54.31],[-36.33,-54.25],[-36.07,-54.55],[-35.9,-54.55],[-35.91,-54.71],[-35.8,-54.76],[-36.09,-54.87],[-36.51,-54.51],[-36.73,-54.47],[-36.89,-54.34],[-37.63,-54.17],[-37.69,-54.08],[-37.62,-54.04],[-38.02,-54.01],[-37.38,-53.98],[-37.1,-54.07]],[[-73.77,-43.35],[-74.11,-43.36],[-74.39,-43.23],[-74.21,-42.88],[-74.17,-42.27],[-74.07,-42.11],[-74.04,-41.8],[-73.53,-41.9],[-73.42,-42.19],[-73.53,-42.31],[-73.47,-42.47],[-73.79,-42.59],[-73.44,-42.94],[-73.54,-43.07],[-73.75,-43.16],[-73.77,-43.35]],[[-60.29,-51.46],[-59.39,-51.36],[-59.27,-51.43],[-59.92,-51.97],[-60.25,-51.99],[-60.35,-52.14],[-60.51,-52.19],[-60.96,-52.06],[-60.24,-51.77],[-60.58,-51.71],[-60.25,-51.64],[-60.51,-51.49],[-60.57,-51.36],[-60.29,-51.46]],[[-74.48,-49.15],[-74.52,-49.62],[-74.46,-49.69],[-74.59,-50.01],[-74.76,-50.01],[-74.88,-49.73],[-74.72,-49.42],[-74.96,-49.53],[-75.07,-49.85],[-75.55,-49.79],[-75.52,-49.62],[-75.34,-49.63],[-75.31,-49.49],[-75.47,-49.36],[-75.33,-49.27],[-75.09,-49.27],[-75.09,-49.19],[-75.21,-49.15],[-74.95,-48.96],[-74.98,-48.82],[-74.9,-48.73],[-74.55,-48.77],[-74.48,-49.15]],[[-72.99,-44.78],[-73.23,-44.86],[-73.4,-44.77],[-73.45,-44.64],[-73.28,-44.49],[-73.26,-44.35],[-72.78,-44.51],[-72.99,-44.78]],[[-69.17,-52.67],[-68.79,-52.58],[-68.57,-52.69],[-68.24,-53.08],[-68.43,-53.06],[-68.52,-53.18],[-68.49,-53.26],[-68.16,-53.31],[-68.01,-53.56],[-67.29,-54.05],[-66.24,-54.53],[-65.75,-54.65],[-65.18,-54.68],[-65.35,-54.88],[-65.47,-54.91],[-66.51,-55.03],[-66.93,-54.92],[-68.22,-54.82],[-69.08,-54.91],[-69.49,-54.86],[-69.72,-54.71],[-70.03,-54.82],[-70.28,-54.75],[-70.5,-54.81],[-71.9,-54.6],[-71.93,-54.53],[-71.8,-54.43],[-71.61,-54.5],[-71.36,-54.4],[-71.08,-54.44],[-70.8,-54.33],[-70.7,-54.35],[-70.7,-54.49],[-70.31,-54.53],[-70.86,-54.11],[-70.87,-53.88],[-70.64,-53.82],[-70.7,-53.73],[-70.53,-53.63],[-70.38,-53.99],[-70.63,-54.01],[-70.54,-54.14],[-70.25,-54.28],[-70.24,-54.35],[-69.99,-54.38],[-69.74,-54.31],[-69.36,-54.44],[-69.31,-54.57],[-69.05,-54.43],[-69.99,-54.11],[-70.15,-53.89],[-70.09,-53.72],[-69.35,-53.48],[-69.39,-53.37],[-69.76,-53.34],[-70.21,-53.41],[-70.46,-53.21],[-70.39,-53.03],[-70.13,-52.94],[-70.38,-52.75],[-70.19,-52.72],[-69.94,-52.82],[-69.5,-52.49],[-69.17,-52.67]],[[-49.63,-0.23],[-49.12,-0.16],[-48.39,-0.3],[-48.5,-0.66],[-48.57,-0.68],[-48.57,-0.89],[-48.84,-1.23],[-48.83,-1.39],[-49.04,-1.51],[-49.17,-1.41],[-49.23,-1.6],[-49.51,-1.51],[-49.59,-1.71],[-49.81,-1.79],[-50.07,-1.7],[-50.51,-1.79],[-50.76,-1.24],[-50.73,-1.13],[-50.58,-1.1],[-50.71,-1.08],[-50.8,-0.91],[-50.65,-0.27],[-50.25,-0.12],[-49.63,-0.23]],[[-67.58,-55.89],[-67.85,-55.84],[-67.54,-55.83],[-67.58,-55.89]],[[-65.21,10.91],[-65.41,10.94],[-65.3,10.97],[-65.21,10.91]],[[-58.44,-52.01],[-58.43,-52.1],[-58.54,-52.03],[-58.44,-52.01]],[[-45.72,-60.52],[-45.23,-60.64],[-45.17,-60.73],[-45.78,-60.59],[-45.94,-60.62],[-45.93,-60.53],[-45.72,-60.52]],[[-54.07,-61.3],[-54.19,-61.25],[-54.02,-61.14],[-54.07,-61.3]],[[-55.17,-61.22],[-55.3,-61.25],[-55.44,-61.11],[-55.39,-61.07],[-54.67,-61.12],[-55.17,-61.22]],[[-58.84,-62.3],[-59.06,-62.35],[-59.2,-62.28],[-59.06,-62.24],[-58.84,-62.3]],[[-57.98,-61.91],[-57.74,-61.92],[-57.64,-62.02],[-58.15,-62.06],[-58.18,-62.17],[-58.47,-62.14],[-58.56,-62.24],[-58.82,-62.17],[-59,-62.21],[-58.68,-62.01],[-57.98,-61.91]],[[-59.39,-62.44],[-59.66,-62.35],[-59.4,-62.37],[-59.39,-62.44]],[[-60.63,-62.56],[-59.85,-62.61],[-60.22,-62.75],[-60.38,-62.62],[-61.06,-62.68],[-61.15,-62.59],[-60.97,-62.59],[-60.8,-62.48],[-60.63,-62.56]],[[-60.5,-62.97],[-60.74,-62.95],[-60.64,-62.9],[-60.5,-62.97]],[[-66.47,-55.23],[-66.64,-55.23],[-66.52,-55.17],[-66.44,-55.19],[-66.47,-55.23]],[[-75.04,-44.89],[-75.14,-44.82],[-75.08,-44.8],[-75.04,-44.89]],[[-75.51,-48.76],[-75.62,-48.76],[-75.65,-48.59],[-75.52,-48.33],[-75.56,-48.07],[-75.39,-48.02],[-75.16,-48.43],[-75.16,-48.62],[-75.51,-48.76]],[[-75.3,-50.68],[-75.33,-50.77],[-75.44,-50.74],[-75.43,-50.48],[-75.12,-50.51],[-75.29,-50.6],[-75.3,-50.68]],[[-74.39,-52.92],[-73.65,-53.07],[-73.14,-53.35],[-73.57,-53.31],[-73.87,-53.1],[-74.27,-53.08],[-74.71,-52.77],[-74.57,-52.77],[-74.39,-52.92]],[[-69.7,-54.92],[-68.9,-55.02],[-68.46,-54.96],[-68.4,-55.04],[-68.61,-55.16],[-68.28,-55.26],[-68.33,-55.33],[-68.09,-55.48],[-68.05,-55.64],[-68.34,-55.51],[-68.87,-55.45],[-68.93,-55.37],[-68.89,-55.24],[-69.19,-55.17],[-69.3,-55.17],[-69.36,-55.3],[-69.18,-55.47],[-69.41,-55.44],[-69.65,-55.32],[-69.66,-55.23],[-69.98,-55.15],[-69.88,-54.88],[-69.7,-54.92]],[[-75.11,-48.84],[-75.39,-49.16],[-75.51,-49.23],[-75.64,-49.2],[-75.49,-49.08],[-75.64,-48.94],[-75.58,-48.86],[-75.12,-48.77],[-75.11,-48.84]],[[-60.11,-51.4],[-60.25,-51.4],[-60.28,-51.28],[-60.07,-51.31],[-60.11,-51.4]],[[-26.26,-58.44],[-26.26,-58.49],[-26.45,-58.42],[-26.26,-58.44]],[[-75.11,-47.84],[-75.26,-47.76],[-75.2,-47.73],[-74.93,-47.72],[-75.11,-47.84]],[[-74.67,-43.61],[-74.84,-43.57],[-74.75,-43.54],[-74.67,-43.61]],[[-73.63,-44.82],[-73.82,-44.65],[-73.78,-44.56],[-73.64,-44.61],[-73.63,-44.82]],[[-74.57,-48.59],[-74.92,-48.63],[-75.25,-48.03],[-74.83,-47.85],[-74.85,-48.02],[-74.62,-48.34],[-74.57,-48.59]],[[-64.55,-54.72],[-63.82,-54.73],[-63.97,-54.81],[-64.32,-54.8],[-64.64,-54.9],[-64.76,-54.83],[-64.55,-54.72]],[[-61.88,-39.17],[-61.92,-39.23],[-62.09,-39.09],[-61.88,-39.17]],[[-59.68,-52.23],[-59.76,-52.24],[-59.79,-52.13],[-59.68,-52.23]],[[-61.02,-51.79],[-60.88,-51.79],[-60.95,-51.95],[-61.15,-51.84],[-61.02,-51.79]],[[-72.92,-53.48],[-72.88,-53.58],[-72.48,-53.59],[-72.21,-53.81],[-72.41,-54],[-72.84,-54.13],[-72.96,-54.07],[-72.76,-53.86],[-73.04,-53.83],[-73.08,-54],[-73.21,-53.99],[-73.3,-53.94],[-73.31,-53.73],[-73.47,-53.74],[-73.64,-53.57],[-73.85,-53.55],[-73.69,-53.43],[-73.45,-53.41],[-73.1,-53.51],[-73.05,-53.39],[-72.92,-53.48]],[[-67.08,-55.15],[-67.34,-55.29],[-67.49,-55.18],[-67.77,-55.26],[-68.07,-55.22],[-68.3,-54.98],[-68.11,-54.93],[-67.25,-54.98],[-67.08,-55.15]],[[-70.99,-54.87],[-70.8,-54.97],[-70.42,-54.91],[-70.3,-55.11],[-70.48,-55.18],[-70.6,-55.08],[-70.94,-55.06],[-71.2,-54.89],[-71.41,-54.93],[-71.41,-54.84],[-70.99,-54.87]],[[-67.29,-55.78],[-67.56,-55.71],[-67.37,-55.59],[-67.29,-55.78]],[[-74.56,-51.28],[-74.62,-51.4],[-75.05,-51.4],[-75.29,-51.63],[-75.15,-51.28],[-75.04,-51.32],[-74.61,-51.21],[-74.56,-51.28]],[[-75.05,-50.3],[-75.25,-50.38],[-75.45,-50.34],[-75.33,-50.01],[-74.88,-50.11],[-74.84,-50.2],[-75.05,-50.3]],[[-74.82,-51.63],[-74.78,-51.82],[-74.54,-51.97],[-74.69,-52.28],[-74.85,-52.27],[-75.11,-51.79],[-74.82,-51.63]],[[-73.81,-43.83],[-73.79,-43.88],[-73.96,-43.92],[-74.14,-43.87],[-74.14,-43.82],[-73.81,-43.83]],[[-71.39,-54.03],[-71.02,-54.11],[-71,-54.25],[-71.14,-54.37],[-71.47,-54.23],[-71.95,-54.3],[-71.97,-54.21],[-72.21,-54.05],[-72,-53.88],[-71.39,-54.03]],[[-74.14,-51.93],[-74.34,-51.9],[-74.48,-51.73],[-74.13,-51.87],[-74.14,-51.93]],[[-73.74,-44.39],[-73.98,-44.49],[-74,-44.59],[-73.83,-44.84],[-73.73,-45.12],[-73.75,-45.27],[-73.85,-45.34],[-74.1,-45.33],[-74.09,-45.2],[-74.62,-44.65],[-74.48,-44.58],[-74.5,-44.47],[-74.1,-44.39],[-74.08,-44.19],[-73.99,-44.14],[-73.7,-44.27],[-73.74,-44.39]],[[-74.31,-45.69],[-74.47,-45.76],[-74.68,-45.74],[-74.69,-45.66],[-74.49,-45.43],[-74.5,-45.29],[-74.31,-45.17],[-74.32,-45.46],[-74.23,-45.61],[-74.31,-45.69]],[[-12.53,7.44],[-12.95,7.57],[-12.62,7.64],[-12.51,7.58],[-12.53,7.44]],[[-5.69,-16],[-5.78,-16],[-5.71,-15.91],[-5.69,-16]],[[8.74,3.76],[8.91,3.76],[8.95,3.63],[8.7,3.22],[8.47,3.26],[8.46,3.45],[8.58,3.48],[8.74,3.76]],[[6.66,0.12],[6.52,0.07],[6.47,0.23],[6.52,0.34],[6.69,0.4],[6.75,0.24],[6.66,0.12]],[[7.42,1.57],[7.33,1.6],[7.41,1.7],[7.42,1.57]],[[7.3,4.42],[7.14,4.4],[7.23,4.53],[7.33,4.49],[7.3,4.42]],[[-44.13,-23.14],[-44.36,-23.17],[-44.24,-23.07],[-44.13,-23.14]],[[-48.58,-26.4],[-48.67,-26.29],[-48.54,-26.17],[-48.5,-26.22],[-48.58,-26.4]],[[-48.49,-27.77],[-48.55,-27.81],[-48.54,-27.57],[-48.41,-27.4],[-48.49,-27.77]],[[-45.26,-23.89],[-45.26,-23.94],[-45.45,-23.9],[-45.3,-23.73],[-45.26,-23.89]],[[-61.01,10.13],[-61.91,10.07],[-61.5,10.27],[-61.48,10.6],[-61.65,10.72],[-61.08,10.83],[-60.92,10.84],[-61.03,10.67],[-60.97,10.32],[-61.01,10.13]],[[-61,8.87],[-61.06,8.85],[-61.07,8.95],[-60.92,9.07],[-60.86,8.95],[-61,8.87]],[[-51.83,-1.43],[-51.94,-1.45],[-51.68,-1.09],[-51.68,-0.86],[-51.55,-0.65],[-51.25,-0.54],[-51.16,-0.67],[-51.28,-1.02],[-51.83,-1.43]],[[-60.82,9.14],[-60.94,9.11],[-60.82,9.21],[-60.74,9.2],[-60.82,9.14]],[[-44.5,-2.94],[-44.6,-3.04],[-44.57,-2.78],[-44.48,-2.72],[-44.5,-2.94]],[[-38.74,-13.1],[-38.79,-13.06],[-38.67,-12.88],[-38.6,-12.99],[-38.74,-13.1]],[[-38.9,-13.47],[-38.98,-13.52],[-39.02,-13.45],[-38.91,-13.4],[-38.9,-13.47]],[[-44.88,-1.32],[-45.02,-1.37],[-44.98,-1.27],[-44.88,-1.32]],[[-49.74,0.27],[-49.7,0.22],[-49.92,-0.02],[-50.34,0.04],[-50.27,0.23],[-49.74,0.27]],[[-50.3,1.94],[-50.46,1.91],[-50.49,2.13],[-50.34,2.14],[-50.3,1.94]],[[-50.65,-0.13],[-50.93,-0.33],[-51.04,-0.23],[-51,-0.11],[-50.84,-0.05],[-50.67,-0.06],[-50.65,-0.13]],[[-49.44,-0.11],[-49.83,-0.09],[-49.5,0.08],[-49.37,0],[-49.44,-0.11]],[[-50.43,0.14],[-50.44,-0.01],[-50.62,0.05],[-50.61,0.2],[-50.45,0.33],[-50.37,0.59],[-50.33,0.26],[-50.43,0.14]],[[-50.15,0.39],[-50.26,0.36],[-50.28,0.52],[-50.06,0.64],[-50.04,0.52],[-50.15,0.39]],[[-76,11],[-76,9.38],[-75.64,9.45],[-75.68,9.73],[-75.54,10.21],[-75.71,10.14],[-75.45,10.61],[-74.98,11],[-74.33,11],[-74.52,10.86],[-74.4,10.77],[-74.27,11],[-71.67,11],[-71.73,10.99],[-71.59,10.66],[-71.66,10.44],[-72.11,9.82],[-71.76,9.34],[-71.74,9.13],[-71.62,9.05],[-71.24,9.16],[-71.09,9.35],[-71.05,9.71],[-71.49,10.53],[-71.54,10.78],[-71.46,10.84],[-71.47,10.96],[-68.33,11],[-68.3,10.69],[-68.14,10.49],[-66.25,10.63],[-66.11,10.57],[-66.09,10.47],[-65.85,10.26],[-65.13,10.07],[-64.85,10.1],[-64.19,10.46],[-63.73,10.5],[-64.25,10.54],[-64.3,10.64],[-61.88,10.74],[-62.38,10.55],[-62.91,10.53],[-62.69,10.29],[-62.74,10.06],[-62.55,10.2],[-62.32,9.78],[-62.22,9.88],[-62.15,9.82],[-62.16,9.98],[-62.08,9.98],[-61.74,9.63],[-61.77,9.81],[-61.63,9.82],[-61.59,9.89],[-61.31,9.63],[-61.01,9.56],[-60.79,9.36],[-61.02,9.15],[-61.25,8.6],[-61.62,8.6],[-61.3,8.41],[-60.8,8.59],[-60.48,8.55],[-60.17,8.62],[-59.84,8.37],[-59.67,8.36],[-59.2,8.07],[-58.81,7.74],[-58.48,7.33],[-58.48,7.04],[-58.67,6.39],[-58.41,6.85],[-57.98,6.79],[-57.54,6.33],[-57.23,6.18],[-57.18,5.53],[-57.06,5.94],[-56.97,5.99],[-56.24,5.89],[-55.94,5.8],[-55.9,5.7],[-55.91,5.89],[-55.83,5.96],[-54.83,5.99],[-54.36,5.91],[-54.05,5.81],[-54.05,5.61],[-54.16,5.36],[-53.99,5.68],[-53.85,5.78],[-53.45,5.56],[-52.9,5.43],[-52.29,4.94],[-52.32,4.77],[-52.22,4.86],[-52.06,4.72],[-51.96,4.51],[-52,4.35],[-51.83,4.64],[-51.65,4.06],[-51.55,4.31],[-51.22,4.09],[-50.99,3.08],[-50.68,2.21],[-50.71,2.13],[-50.61,2.1],[-50.46,1.83],[-49.96,1.66],[-49.9,1.16],[-50.29,0.84],[-50.76,0.22],[-51.28,-0.09],[-51.4,-0.39],[-51.7,-0.76],[-51.72,-1.02],[-51.92,-1.18],[-51.98,-1.37],[-52.23,-1.36],[-52.66,-1.55],[-52.31,-1.56],[-52.2,-1.64],[-51.95,-1.59],[-50.89,-0.94],[-50.84,-1.04],[-50.92,-1.12],[-50.69,-1.76],[-50.4,-2.02],[-50,-1.83],[-49.72,-1.93],[-49.31,-1.73],[-49.64,-2.66],[-49.46,-2.5],[-49.21,-1.92],[-48.99,-1.83],[-48.71,-1.49],[-48.46,-1.61],[-48.35,-1.48],[-48.47,-1.39],[-48.45,-1.15],[-48.12,-0.74],[-47.96,-0.77],[-47.81,-0.66],[-47.69,-0.72],[-47.56,-0.67],[-47.42,-0.77],[-47.46,-0.68],[-47.4,-0.63],[-46.81,-0.78],[-46.62,-0.97],[-46.22,-1.03],[-46.21,-1.1],[-46.04,-1.1],[-45.64,-1.35],[-45.46,-1.36],[-45.33,-1.72],[-45.08,-1.47],[-44.72,-1.73],[-44.78,-1.8],[-44.65,-1.75],[-44.54,-2.05],[-44.76,-2.27],[-44.66,-2.37],[-44.44,-2.17],[-44.38,-2.37],[-44.52,-2.41],[-44.59,-2.57],[-44.72,-3.2],[-44.44,-2.94],[-44.23,-2.47],[-44.11,-2.49],[-44.19,-2.81],[-43.93,-2.58],[-43.46,-2.5],[-43.38,-2.38],[-42.94,-2.47],[-42.25,-2.79],[-41.88,-2.75],[-41.48,-2.92],[-40.47,-2.8],[-39.96,-2.86],[-38.48,-3.72],[-38.05,-4.22],[-37.63,-4.59],[-37.3,-4.71],[-37.17,-4.91],[-36.59,-5.1],[-35.98,-5.05],[-35.48,-5.17],[-35.24,-5.57],[-34.81,-7.29],[-34.88,-7.75],[-34.83,-7.97],[-35.16,-8.93],[-35.34,-9.23],[-35.76,-9.7],[-35.89,-9.69],[-35.89,-9.85],[-36.4,-10.48],[-36.94,-10.82],[-37.09,-11.05],[-37.18,-11.07],[-37.32,-11.38],[-37.36,-11.25],[-37.69,-12.1],[-38.24,-12.84],[-38.5,-12.96],[-38.52,-12.76],[-38.69,-12.62],[-38.85,-12.79],[-38.76,-12.91],[-39.09,-13.59],[-38.99,-13.62],[-39.05,-14.04],[-39.01,-14.1],[-38.94,-14.03],[-39.06,-14.65],[-38.88,-15.86],[-39.2,-17.18],[-39.15,-17.7],[-39.49,-17.99],[-39.65,-18.25],[-39.74,-18.64],[-39.7,-19.28],[-39.78,-19.57],[-40,-19.74],[-40.4,-20.57],[-40.79,-20.91],[-40.95,-21.24],[-41.05,-21.51],[-41,-22],[-41.71,-22.31],[-41.98,-22.58],[-41.94,-22.79],[-42.04,-22.95],[-42.96,-22.97],[-43.08,-22.9],[-43.07,-22.77],[-43.15,-22.73],[-43.24,-22.8],[-43.22,-22.99],[-43.9,-23.1],[-43.97,-23.06],[-43.68,-23.01],[-43.87,-22.91],[-44.64,-23.06],[-44.67,-23.21],[-44.57,-23.27],[-44.95,-23.38],[-45.33,-23.6],[-45.46,-23.8],[-45.97,-23.8],[-46.87,-24.24],[-47.14,-24.49],[-47.99,-25.04],[-47.91,-25.07],[-47.93,-25.17],[-48.2,-25.42],[-48.19,-25.31],[-48.4,-25.27],[-48.48,-25.44],[-48.73,-25.37],[-48.69,-25.49],[-48.4,-25.6],[-48.55,-25.82],[-48.67,-25.84],[-48.58,-25.94],[-48.62,-26.18],[-48.75,-26.27],[-48.65,-26.41],[-48.68,-26.7],[-48.55,-27.2],[-48.64,-27.56],[-48.62,-28.08],[-48.8,-28.58],[-49.27,-28.87],[-49.75,-29.36],[-50.03,-29.8],[-50.3,-30.43],[-50.92,-31.26],[-52.04,-32.11],[-52.06,-31.83],[-51.89,-31.87],[-51.68,-31.77],[-51.27,-31.48],[-51.17,-31.34],[-51.16,-31.12],[-50.98,-31.09],[-50.94,-30.9],[-50.69,-30.7],[-50.72,-30.43],[-50.58,-30.44],[-50.56,-30.25],[-51.02,-30.37],[-51.04,-30.26],[-51.18,-30.21],[-51.3,-30.03],[-51.28,-30.24],[-51.16,-30.36],[-51.29,-30.59],[-51.28,-30.75],[-51.36,-30.67],[-51.51,-31.1],[-51.97,-31.38],[-52.19,-31.89],[-52.13,-32.17],[-52.34,-32.44],[-52.65,-33.14],[-53.42,-33.78],[-53.79,-34.38],[-54.17,-34.67],[-54.9,-34.93],[-55.67,-34.78],[-56.19,-34.91],[-56.86,-34.68],[-57.17,-34.45],[-57.83,-34.48],[-58.4,-33.91],[-58.44,-33.72],[-58.36,-33.18],[-58.09,-32.97],[-58.2,-32.47],[-58.17,-32.96],[-58.25,-33.08],[-58.42,-33.11],[-58.55,-33.66],[-58.39,-34.19],[-58.53,-34.3],[-58.28,-34.68],[-57.55,-35.02],[-57.17,-35.36],[-57.16,-35.51],[-57.35,-35.72],[-57.38,-35.9],[-57.26,-36.14],[-57.08,-36.3],[-56.72,-36.39],[-56.67,-36.74],[-56.73,-36.96],[-57.4,-37.74],[-57.55,-38.09],[-58.18,-38.44],[-59.83,-38.84],[-61.11,-38.99],[-61.85,-38.96],[-62.33,-38.8],[-62.3,-39.24],[-62.05,-39.37],[-62.18,-39.38],[-62.08,-39.46],[-62.13,-39.83],[-62.29,-39.9],[-62.4,-40.2],[-62.39,-40.46],[-62.25,-40.67],[-62.4,-40.89],[-62.96,-41.11],[-63.62,-41.16],[-64.85,-40.81],[-64.8,-40.76],[-64.87,-40.74],[-65.07,-40.81],[-65.15,-41.11],[-65.02,-41.57],[-65.06,-41.97],[-64.99,-42.1],[-64.54,-42.25],[-64.57,-42.42],[-64.42,-42.43],[-64.1,-42.4],[-64.06,-42.27],[-64.23,-42.22],[-63.8,-42.11],[-63.63,-42.28],[-63.62,-42.7],[-63.69,-42.81],[-64.03,-42.88],[-64.13,-42.86],[-64.32,-42.57],[-64.49,-42.51],[-64.97,-42.67],[-65.03,-42.76],[-64.32,-42.97],[-64.84,-43.19],[-65.25,-43.57],[-65.27,-44.28],[-65.36,-44.48],[-65.65,-44.66],[-65.7,-44.8],[-65.6,-44.88],[-65.64,-45.01],[-66.19,-44.96],[-66.59,-45.18],[-66.94,-45.26],[-67.6,-46.05],[-67.51,-46.44],[-66.78,-47.01],[-65.85,-47.16],[-65.74,-47.34],[-65.78,-47.57],[-65.89,-47.7],[-66.23,-47.83],[-65.93,-47.83],[-65.81,-47.94],[-66.39,-48.34],[-67.03,-48.63],[-67.47,-48.95],[-67.68,-49.25],[-67.78,-49.86],[-67.91,-49.98],[-68.26,-50.1],[-68.49,-49.98],[-68.67,-49.75],[-68.66,-49.94],[-68.98,-50],[-68.6,-50.01],[-68.42,-50.16],[-68.94,-50.38],[-69.09,-50.58],[-69.15,-50.86],[-69.36,-51.03],[-69.2,-50.99],[-69.07,-51.3],[-69.06,-51.55],[-69.47,-51.58],[-68.97,-51.68],[-68.39,-52.31],[-68.44,-52.36],[-69.24,-52.21],[-69.45,-52.27],[-69.62,-52.46],[-70.8,-52.77],[-70.98,-53.37],[-71,-53.78],[-71.3,-53.88],[-72.17,-53.63],[-72.38,-53.47],[-72.41,-53.35],[-72.31,-53.25],[-71.94,-53.23],[-71.83,-53.4],[-71.89,-53.52],[-71.79,-53.48],[-71.74,-53.23],[-71.29,-53.03],[-71.16,-52.89],[-71.23,-52.81],[-71.39,-52.76],[-72.28,-53.13],[-72.49,-53.29],[-72.55,-53.46],[-73.05,-53.24],[-72.92,-53.12],[-72.89,-52.87],[-72.73,-52.76],[-72.45,-52.81],[-72.12,-52.65],[-71.8,-52.68],[-71.51,-52.61],[-72.23,-52.52],[-72.44,-52.63],[-72.71,-52.54],[-73.12,-53.07],[-73.34,-53.05],[-73.65,-52.84],[-73.24,-52.71],[-73.07,-52.54],[-73.12,-52.49],[-73.24,-52.62],[-73.38,-52.6],[-73.59,-52.69],[-74.01,-52.64],[-74.04,-52.4],[-74.15,-52.38],[-74.26,-52.1],[-73.83,-52.23],[-73.7,-52.2],[-73.68,-52.08],[-73.26,-52.16],[-72.8,-51.95],[-72.7,-51.99],[-72.57,-52.2],[-72.71,-52.36],[-72.63,-52.37],[-72.52,-52.26],[-72.62,-52.01],[-72.49,-51.85],[-72.54,-51.71],[-73.17,-51.45],[-72.65,-51.7],[-72.6,-51.8],[-73.38,-52.07],[-73.52,-52.04],[-73.75,-51.8],[-74.2,-51.68],[-74.07,-51.58],[-73.93,-51.62],[-73.94,-51.27],[-74.81,-51.06],[-75.09,-50.68],[-74.69,-50.66],[-74.65,-50.62],[-74.78,-50.47],[-74.64,-50.36],[-74.37,-50.49],[-74.14,-50.82],[-73.81,-50.94],[-73.74,-50.7],[-73.62,-50.65],[-73.69,-50.57],[-73.65,-50.49],[-73.98,-50.83],[-74.2,-50.61],[-74.19,-50.49],[-73.95,-50.51],[-74.43,-50.35],[-74.63,-50.19],[-74.33,-49.97],[-73.96,-49.99],[-74.32,-49.78],[-74.29,-49.6],[-74.1,-49.56],[-73.84,-49.61],[-74.09,-49.43],[-73.93,-49.02],[-74.03,-49.03],[-74.22,-49.5],[-74.37,-49.4],[-74.34,-48.6],[-74.01,-48.48],[-74.47,-48.46],[-74.58,-48.27],[-74.58,-48],[-73.85,-48.04],[-73.53,-48.2],[-73.39,-48.15],[-73.61,-47.99],[-73.72,-47.66],[-73.94,-47.93],[-74.23,-47.97],[-74.65,-47.7],[-74.53,-47.57],[-74.24,-47.68],[-74.13,-47.59],[-74.48,-47.43],[-74.16,-47.18],[-74.21,-47.08],[-74.15,-46.97],[-74.31,-46.79],[-74.45,-46.77],[-74.51,-46.89],[-75.01,-46.74],[-75.05,-46.63],[-74.98,-46.51],[-75.54,-46.7],[-75.39,-46.86],[-75.43,-46.93],[-75.64,-46.86],[-75.71,-46.71],[-74.92,-46.16],[-75.07,-46],[-75.07,-45.87],[-74.16,-45.77],[-74.08,-45.68],[-74.12,-45.5],[-73.96,-45.4],[-73.83,-45.45],[-74.06,-45.95],[-74.02,-46.06],[-74.39,-46.22],[-73.97,-46.15],[-73.88,-45.85],[-73.74,-45.81],[-73.71,-46.07],[-73.81,-46.38],[-73.95,-46.53],[-73.85,-46.57],[-73.66,-46.3],[-73.59,-45.9],[-73.59,-45.78],[-73.76,-45.7],[-73.73,-45.48],[-73.55,-45.48],[-73.27,-45.35],[-72.93,-45.45],[-73.23,-45.26],[-73.44,-45.24],[-73.4,-45.1],[-73.36,-44.98],[-72.74,-44.73],[-72.68,-44.59],[-72.66,-44.44],[-73.27,-44.17],[-73.22,-43.9],[-73.07,-43.86],[-73,-43.63],[-73.1,-43.46],[-73.08,-43.32],[-72.88,-43.05],[-72.76,-43.04],[-72.85,-42.67],[-72.77,-42.51],[-72.63,-42.51],[-72.77,-42.26],[-72.63,-42.2],[-72.41,-42.39],[-72.5,-41.98],[-72.74,-41.99],[-72.82,-41.91],[-72.66,-41.74],[-72.36,-41.65],[-72.32,-41.5],[-72.54,-41.69],[-72.95,-41.51],[-73.24,-41.78],[-73.62,-41.77],[-73.74,-41.74],[-73.62,-41.58],[-73.81,-41.52],[-73.97,-41.12],[-73.98,-40.97],[-73.67,-39.96],[-73.41,-39.79],[-73.23,-39.22],[-73.52,-38.51],[-73.46,-38.04],[-73.66,-37.7],[-73.6,-37.48],[-73.66,-37.34],[-73.6,-37.19],[-73.22,-37.17],[-73.12,-36.69],[-73.01,-36.64],[-72.78,-35.98],[-72.59,-35.76],[-72.62,-35.59],[-72.22,-35.1],[-72.06,-34.62],[-72,-34.17],[-71.66,-33.65],[-71.74,-33.1],[-71.59,-32.97],[-71.45,-32.66],[-71.42,-32.39],[-71.51,-32.21],[-71.71,-30.63],[-71.67,-30.33],[-71.4,-30.14],[-71.32,-29.65],[-71.52,-28.93],[-71.31,-28.67],[-71.09,-27.81],[-70.93,-27.59],[-70.9,-27.19],[-70.65,-26.33],[-70.64,-25.99],[-70.71,-25.78],[-70.45,-25.25],[-70.57,-24.64],[-70.51,-23.89],[-70.39,-23.57],[-70.59,-23.37],[-70.59,-23.26],[-70.56,-23.06],[-70.45,-23.03],[-70.33,-22.85],[-70.09,-21.49],[-70.2,-20.73],[-70.16,-19.71],[-70.36,-18.4],[-71.34,-17.68],[-71.44,-17.37],[-72.11,-17],[-72.47,-16.71],[-73.73,-16.2],[-75.1,-15.41],[-75.53,-14.9],[-75.93,-14.63],[-76,-14.51]],[[22,11],[22,-34.23],[21.79,-34.37],[20.99,-34.37],[20.53,-34.46],[20.02,-34.79],[19.63,-34.75],[19.3,-34.62],[19.33,-34.49],[19.1,-34.35],[18.83,-34.36],[18.75,-34.08],[18.5,-34.11],[18.46,-34.35],[18.35,-34.19],[18.35,-33.94],[18.47,-33.89],[18.43,-33.72],[17.99,-33.15],[17.85,-32.83],[17.97,-32.71],[18.13,-32.75],[18.33,-32.5],[18.21,-31.74],[17.35,-30.44],[16.74,-29.01],[16.48,-28.64],[15.72,-27.97],[15.34,-27.39],[15.13,-26.79],[15.14,-26.51],[14.97,-26.32],[14.85,-25.73],[14.84,-25.03],[14.5,-24.2],[14.4,-22.97],[14.52,-22.81],[14.46,-22.45],[13.45,-20.92],[13.17,-20.18],[12.46,-18.93],[12.04,-18.47],[11.78,-18],[11.72,-17.47],[11.82,-16.5],[11.75,-15.83],[12.02,-15.51],[12.55,-13.44],[12.9,-13.03],[12.98,-12.78],[13.42,-12.52],[13.69,-12.12],[13.79,-11.81],[13.85,-11.05],[13.72,-10.63],[13.33,-10],[13,-9.05],[13.05,-8.92],[13.05,-9.01],[13.36,-8.69],[13.38,-8.37],[12.86,-7.23],[12.82,-6.95],[12.52,-6.59],[12.28,-6.12],[13.07,-5.86],[12.86,-5.85],[12.45,-6],[12.24,-5.81],[12.16,-5.63],[12.18,-5.32],[11.82,-4.76],[11.78,-4.57],[10.35,-3.01],[9.76,-2.52],[10.06,-2.55],[9.62,-2.37],[9.3,-1.9],[9.48,-1.96],[9.48,-1.89],[9.27,-1.83],[9.04,-1.31],[9.32,-1.63],[9.5,-1.56],[9.3,-1.52],[9.35,-1.32],[9.2,-1.38],[9.06,-1.3],[8.7,-0.59],[8.82,-0.71],[8.95,-0.69],[9.3,-0.35],[9.35,0.34],[9.47,0.16],[9.8,0.04],[9.81,0.13],[10,0.19],[9.78,0.19],[9.55,0.3],[9.32,0.55],[9.5,0.66],[9.62,0.58],[9.6,1.05],[9.39,1.14],[9.81,1.93],[9.82,2.54],[9.95,3.08],[9.88,3.31],[9.67,3.54],[9.77,3.62],[9.64,3.61],[9.56,3.8],[9.74,3.85],[9.64,3.97],[9.69,4.06],[9.48,4.07],[9.43,3.92],[9,4.09],[8.92,4.55],[8.66,4.67],[8.69,4.55],[8.57,4.53],[8.57,4.75],[8.43,4.75],[8.25,4.92],[8.29,4.56],[7.64,4.53],[7.53,4.66],[7.46,4.56],[7.28,4.55],[7.08,4.72],[7.15,4.51],[6.92,4.39],[6.77,4.72],[6.86,4.37],[6.63,4.34],[6.58,4.48],[6.55,4.34],[6.26,4.31],[6.27,4.43],[6.21,4.29],[6.08,4.29],[5.59,4.65],[5.49,4.84],[5.38,5.13],[5.48,5.15],[5.37,5.2],[5.37,5.34],[5.55,5.47],[5.39,5.4],[5.2,5.53],[5.46,5.61],[5.35,5.62],[5.33,5.71],[5.17,5.6],[5.11,5.64],[5.09,5.77],[4.86,6.03],[4.43,6.35],[3.45,6.43],[3.72,6.6],[3.43,6.53],[3.34,6.4],[2.29,6.33],[1.31,6.15],[1.11,6.05],[0.95,5.81],[0.26,5.76],[-0.8,5.23],[-1.5,5.04],[-2,4.76],[-2.4,4.93],[-3.25,5.11],[-3.02,5.13],[-3.17,5.2],[-3.15,5.35],[-3.24,5.34],[-3.35,5.13],[-3.98,5.29],[-4.36,5.3],[-4.61,5.24],[-4.04,5.23],[-4.9,5.14],[-5.28,5.21],[-5.37,5.15],[-5.06,5.13],[-5.91,5.01],[-7.43,4.38],[-7.66,4.37],[-8.26,4.59],[-9.13,5.05],[-10.28,6.08],[-10.79,6.31],[-10.85,6.47],[-11.29,6.69],[-11.73,7.09],[-12.49,7.39],[-12.43,7.55],[-12.48,7.75],[-12.7,7.72],[-12.85,7.82],[-12.96,8.15],[-13.15,8.21],[-13.27,8.43],[-13.26,8.49],[-13.09,8.42],[-12.89,8.63],[-13.18,8.58],[-13.21,8.84],[-13.06,8.88],[-13.27,8.99],[-13.27,9.17],[-13.44,9.42],[-13.57,9.54],[-13.69,9.54],[-13.69,9.93],[-13.82,9.89],[-14.05,10.14],[-14.43,10.25],[-14.61,10.55],[-14.59,10.77],[-14.68,10.69],[-14.78,10.93],[-14.89,10.97],[-15.01,10.8],[-15.09,11]],[[-14.36,-7.97],[-14.38,-7.88],[-14.3,-7.94],[-14.36,-7.97]]];
+
+const d2r=Math.PI/180, r2d=180/Math.PI, RNM=3440.065;
+const ASC=[-7.9696,-14.3937], STN=[-51.6857,-57.7772];
+function gcDist(a,b){const la1=a[0]*d2r,lo1=a[1]*d2r,la2=b[0]*d2r,lo2=b[1]*d2r;const h=Math.sin((la2-la1)/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin((lo2-lo1)/2)**2;return 2*RNM*Math.asin(Math.min(1,Math.sqrt(h)));}
+function gcInterp(a,b,f){if(f<=0)return a.slice();if(f>=1)return b.slice();const la1=a[0]*d2r,lo1=a[1]*d2r,la2=b[0]*d2r,lo2=b[1]*d2r;const d=gcDist(a,b)/RNM;if(d<1e-9)return a.slice();
+  const A=Math.sin((1-f)*d)/Math.sin(d),B=Math.sin(f*d)/Math.sin(d);
+  const x=A*Math.cos(la1)*Math.cos(lo1)+B*Math.cos(la2)*Math.cos(lo2),y=A*Math.cos(la1)*Math.sin(lo1)+B*Math.cos(la2)*Math.sin(lo2),z=A*Math.sin(la1)+B*Math.sin(la2);
+  return [Math.atan2(z,Math.hypot(x,y))*r2d,Math.atan2(y,x)*r2d];}
+function bearing(a,b){const la1=a[0]*d2r,la2=b[0]*d2r,dl=(b[1]-a[1])*d2r;const y=Math.sin(dl)*Math.cos(la2),x=Math.cos(la1)*Math.sin(la2)-Math.sin(la1)*Math.cos(la2)*Math.cos(dl);return (Math.atan2(y,x)*r2d+360)%360;}
+const D_OUT=gcDist(ASC,STN);           // 3380 nm
+const V_FORM=445;                       // kt, outbound formation ground speed (modelled)
+const O=d=>gcInterp(ASC,STN,d/D_OUT);   // point on outbound track at distance d nm
+const Rt=d=>{const p=O(d);return [p[0]-0.5,p[1]+0.7];}; // return track (offset SE for legibility)
+const TF=[-50.35,-56.2];                // Task Force, approx
+const RV=[-27.5,-38.5];                 // recovery RV, "off Rio", approx
+const RV_PLAN=[-25.0,-36.5];            // planned RV area
+const TUX_RV=Rt(1250);                  // Seymour finds Tuxford ~1,250 nm south of Ascension
+const T_END=915;                        // sim minutes after 2350Z
+const formCentre=t=>O(V_FORM*Math.max(0,t-6)/60);
+const RET=det=>{const d=V_FORM*Math.max(0,det-6)/60;return [{t:det,p:formCentre(det)},{t:det+12,p:Rt(Math.max(0,d-90))}];};
+
+// Return route of the Vulcan (STN -> TF -> ... -> RV -> ASC) with times solved to land 1452Z (t=902)
+const RET_WPS=[STN,TF,[-40.5,-48.6],RV];
+function buildVulcanReturn(){
+  const kf=[{t:468,p:STN},{t:476,p:TF}];
+  const legs=[];for(let i=1;i<RET_WPS.length-1;i++)legs.push(gcDist(RET_WPS[i],RET_WPS[i+1]));
+  const dHome=gcDist(RV,ASC);const total=legs.reduce((a,b)=>a+b,0)+dHome;
+  const avail=902-476-15; const v=total/(avail/60);
+  let t=476;for(let i=0;i<legs.length;i++){t+=legs[i]/v*60;kf.push({t:t,p:RET_WPS[i+2]});}
+  const rvStart=t; kf.push({t:rvStart+15,p:[RV[0]+0.9,RV[1]+1.1]}); kf.push({t:902,p:ASC,land:true});
+  return {kf,rvStart,v};
+}
+const VR=buildVulcanReturn(); const RV_T0=Math.round(VR.rvStart), RV_T1=RV_T0+15;
+
+// ---- aircraft
+// slots: [t,x,y] in formation frame (px; x = starboard, y = astern). form=[tko, detach]
+const AC=[
+ {id:'R1',cs:'RED 1',type:'victor',tail:'—',capt:'Victor K2 (tail n/k)',sec:'red',tko:0,form:[0,121],slots:[[0,-30,-22]],
+  kf:[...RET(121),{t:246,p:ASC,land:true}],fuel:[[0,110000],[105,85500],[118,48000],[246,24000]],
+  status:[[0,'Outbound · tanker for White 1'],[105,'Refuelling White 1'],[121,'Returning to Ascension'],[246,'Landed 0356Z']]},
+ {id:'R2',cs:'RED 2',type:'victor',tail:'—',capt:'Victor K2 (tail n/k)',sec:'red',tko:1,form:[0,121],slots:[[0,-10,-22]],
+  kf:[...RET(121),{t:248,p:ASC,land:true}],fuel:[[0,110000],[105,85500],[118,48000],[248,24000]],
+  status:[[0,'Outbound · tanker for White 2'],[105,'Refuelling White 2 (Tuxford)'],[121,'Returning to Ascension'],[248,'Landed 0358Z']]},
+ {id:'R3',cs:'RED 3',type:'victor',tail:'—',capt:'Sqn Ldr Barry Neal (flies again as XH672)',sec:'red',tko:2,form:[0,121],slots:[[0,10,-22]],
+  kf:[...RET(121),{t:250,p:ASC,land:true}],fuel:[[0,110000],[105,85500],[118,48000],[250,24000]],
+  status:[[0,'Outbound · tanker for White 3'],[105,'Refuelling White 3 (Brooks)'],[121,'Returning to Ascension'],[250,'Landed 0400Z · re-tasked to Wave 3']]},
+ {id:'R4',cs:'RED 4',type:'victor',tail:'—',capt:'Victor K2 (tail n/k)',sec:'red',tko:3,form:[0,121],slots:[[0,30,-22]],
+  kf:[...RET(121),{t:252,p:ASC,land:true}],fuel:[[0,110000],[105,85500],[118,48000],[252,24000]],
+  status:[[0,'Outbound · tanker for White 4'],[105,'Refuelling White 4 (Biglands)'],[121,'Returning to Ascension'],[252,'Landed 0402Z']]},
+ {id:'W1',cs:'WHITE 1',type:'victor',tail:'—',capt:'Victor K2 (tail n/k)',sec:'white',tko:4,form:[0,269],slots:[[0,-30,0]],
+  kf:[...RET(269),{t:547,p:ASC,land:true}],fuel:[[0,110000],[105,85500],[118,123000],[250,94800],[258,72800],[259,72800],[267,56800],[547,5800]],
+  status:[[0,'Outbound'],[105,'Taking fuel from Red 1'],[118,'Outbound · full'],[250,'Refuelling the Vulcan'],[259,'Refuelling White 2 (Tuxford)'],[269,'Returning · fuel tight'],[547,'Landed 0857Z · near-dry']]},
+ {id:'W2',cs:'WHITE 2',type:'victor',tail:'XL189',capt:'Sqn Ldr Bob Tuxford',sec:'white',tko:5,form:[0,402],slots:[[0,-10,0],[259,-30,22],[269,-10,0],[345,-10,0]],
+  kf:[...RET(402),{t:625,p:TUX_RV},{t:638,p:Rt(1160)},{t:845,p:ASC,land:true}],
+  fuel:[[0,110000],[105,85500],[118,123000],[259,94800],[267,110800],[314,101400],[322,83800],[326,83000],[331,80100],[335,79300],[343,76100],[348,75100],[362,82300],[385,77700],[400,69100],[402,68700],[625,27800],[638,55800],[845,17800]],
+  status:[[0,'Outbound'],[105,'Taking fuel from Red 2'],[118,'Outbound · full'],[259,'Taking fuel from White 1'],[267,'Outbound'],[314,'Refuelling the Vulcan (40°S, storms)'],[335,'Trailing hose for Biglands'],[343,'PROBE FAILURE on receiver'],[348,'Taking fuel back from Biglands'],[364,'Pressing south · below fuel minima'],[385,'FINAL BRACKET · refuelling the Vulcan'],[402,'Returning · will run dry ~500 nm short'],[625,'Taking fuel from XL511 (Seymour)'],[638,'Returning · saved'],[845,'Landed 1355Z · 14 h 05 min · AFC']]},
+ {id:'W3',cs:'WHITE 3',type:'victor',tail:'XL192',capt:'Flt Lt Neil Brooks',sec:'white',tko:6,form:[0,269],slots:[[0,10,0]],
+  kf:[...RET(269),{t:549,p:ASC,land:true}],fuel:[[0,110000],[105,85500],[118,123000],[251,94800],[262,69800],[549,18800]],
+  status:[[0,'Outbound'],[105,'Taking fuel from Red 3'],[118,'Outbound · full'],[251,'Refuelling White 4 (Biglands)'],[269,'Returning to Ascension'],[549,'Landed 0859Z']]},
+ {id:'X163',cs:'WHITE 4',type:'victor',tail:'XL163',capt:'hose-drum unit fault',sec:'white',tko:7,form:[0,20],slots:[[0,30,0]],
+  kf:[{t:20,p:formCentre(20)},{t:32,p:[ASC[0]-0.6,ASC[1]+0.3]},{t:60,p:ASC,land:true}],fuel:[[0,110000],[20,105000],[60,60000]],
+  status:[[0,'Outbound'],[20,'HDU fault · returning, jettisoning fuel'],[60,'Landed 0050Z']]},
+ {id:'B1',cs:'BLUE 1',type:'victor',tail:'—',capt:'Wg Cdr Colin Seymour (OC 55 Sqn)',sec:'blue',tko:8,form:[0,144],slots:[[0,-40,22]],
+  kf:[...RET(144),{t:280,p:ASC,land:true}],fuel:[[0,110000],[105,85500],[118,57000],[136,52800],[143,43600],[280,18000]],
+  status:[[0,'Outbound · Vulcan’s first tanker'],[105,'Refuelling the Vulcan (1st prod)'],[118,'Outbound'],[136,'Refuelling the Vulcan (2nd prod)'],[144,'Returning to Ascension'],[280,'Landed 0430Z · 4 h 40 min']]},
+ {id:'B3',cs:'BLUE 3 → WHITE 4',type:'victor',tail:'XH669',capt:'Flt Lt Steve Biglands',sec:'blue',tko:9,form:[0,364],slots:[[0,35,22],[22,30,0],[248,10,22],[269,10,0],[334,-10,22],[345,-10,-22]],
+  kf:[...RET(364),{t:741,p:ASC,land:true}],fuel:[[0,110000],[22,105000],[105,85500],[118,123000],[251,94800],[262,119800],[335,105200],[343,105200],[348,104200],[362,91400],[741,20000]],
+  status:[[0,'Airborne reserve'],[22,'Replaces XL163 as White 4'],[105,'Taking fuel from Red 4'],[118,'Outbound · full'],[251,'Taking fuel from White 3'],[269,'Outbound · planned final tanker'],[335,'Taking fuel from Tuxford'],[343,'PROBE BROKEN · cannot receive'],[348,'Giving fuel back to Tuxford'],[364,'Returning · cannot be refuelled'],[741,'Landed 1211Z']]},
+ {id:'B5',cs:'BLUE 5 (reserve)',type:'victor',tail:'—',capt:'Victor K2 reserve (callsign inferred)',sec:'blue',tko:10,form:[0,122],slots:[[0,55,22]],
+  kf:[...RET(122),{t:254,p:ASC,land:true}],fuel:[[0,110000],[122,83000],[254,60000]],
+  status:[[0,'Airborne reserve'],[122,'Not required · returning'],[254,'Landed 0404Z']]},
+ {id:'V598',cs:'XM598',type:'vulcan',tail:'XM598',capt:'Sqn Ldr John Reeve · primary',sec:'vulcan',tko:11,form:[0,12],slots:[[0,-15,22]],
+  kf:[{t:12,p:formCentre(12)},{t:40,p:[-8.9,-15.3],orbit:true},{t:190,p:[-8.9,-15.3],orbit:true},{t:200,p:ASC,land:true}],fuel:[[0,74000],[12,70500],[200,26000]],
+  status:[[0,'Primary attack aircraft'],[12,'DV window seal failed · cabin won’t pressurise'],[40,'Holding to burn off fuel (no dump)'],[200,'Landed ≈0310Z (time n/k)']]},
+ {id:'V607',cs:'XM607',type:'vulcan',tail:'XM607',capt:'Flt Lt Martin Withers · reserve → primary',sec:'vulcan',tko:12,form:[0,402],
+  slots:[[0,10,22],[103,-40,44],[146,0,26],[248,-30,22],[258,-10,44],[269,0,26],[313,-10,22],[331,18,36],[384,-10,22],[402,0,0]],
+  kf:[{t:402,p:formCentre(402)},{t:422,p:O(3130)},{t:460,p:O(3340)}].concat(VR.kf),
+  fuel:[[0,74000],[105,45600],[118,74000],[136,64800],[143,74000],[250,49000],[258,71000],[314,58000],[322,74000],[326,73100],[331,74000],[385,61400],[400,67000],[422,62000],[468,52000],[476,50500],[RV_T0,7500],[RV_T1,42000],[902,11000]],
+  alt:[[12,0],[30,27000],[95,27000],[110,31000],[260,31000],[300,33000],[422,33000],[432,300],[460,300],[463,10000],[472,10000],[500,40000],[RV_T0-10,40000],[RV_T0,30000],[RV_T1,30000],[RV_T1+15,43000],[880,43000],[902,0]],
+  status:[[0,'Airborne reserve'],[12,'Now the attack aircraft'],[105,'Refuelling from Blue 1'],[118,'Outbound'],[136,'Refuelling from Blue 1'],[143,'Outbound'],[250,'Refuelling from White 1'],[258,'Outbound'],[314,'Refuelling from Tuxford (40°S)'],[331,'Outbound'],[385,'FINAL top-up from Tuxford'],[402,'Alone · 400 nm to run'],[422,'Low level · 300 ft'],[460,'Pop-up · bomb run 10,000 ft'],[468,'BOMBS AWAY'],[476,'“Superfuse” · climbing north'],[RV_T0,'RV · refuelling from XH672'],[RV_T1,'Homebound'],[902,'Landed 1452Z · DFC']]},
+ // ---- Wave 3 (recovery)
+ {id:'NEAL',cs:'XH672 (Wave 3)',type:'victor',tail:'XH672',capt:'Sqn Ldr Barry Neal · Nav Chris Morffew',sec:'green',tko:330,form:null,slots:[],
+  kf:[{t:330,p:ASC},{t:600,p:RV_PLAN,orbit:true},{t:640,p:RV_PLAN,orbit:true},{t:RV_T0-2,p:RV},{t:RV_T1,p:[RV[0]+0.9,RV[1]+1.1]},{t:895,p:[ASC[0]+0.25,ASC[1]+0.25],land:true}],
+  fuel:[[330,118000],[RV_T0,70000],[RV_T1,35500],[895,10000]],
+  status:[[330,'Wave 3 · to the recovery RV'],[600,'Holding at planned RV'],[640,'Sent further south'],[RV_T0,'Refuelling the Vulcan'],[RV_T1,'Escorting XM607 home'],[895,'Landed ≈1445Z']]},
+ {id:'W3B',cs:'Victor (Neal’s pair)',type:'victor',tail:'—',capt:'unserviceable in transit',sec:'green',tko:331,form:null,slots:[],
+  kf:[{t:331,p:ASC},{t:420,p:gcInterp(ASC,RV_PLAN,0.36)},{t:510,p:ASC,land:true}],fuel:[[331,118000],[510,80000]],
+  status:[[331,'Wave 3 · tanker for XH672'],[420,'Unserviceable · returning'],[510,'Landed ≈0820Z']]},
+ {id:'ELL',cs:'Victor (Elliot)',type:'victor',tail:'—',capt:'reserve launched 0530Z',sec:'green',tko:340,form:null,slots:[],
+  kf:[{t:340,p:ASC},{t:520,p:Rt(760)},{t:560,p:Rt(760),orbit:true},{t:700,p:ASC,land:true}],fuel:[[340,118000],[700,40000]],
+  status:[[340,'Wave 3 · support for returning tankers'],[520,'On station (approx.)'],[560,'Returning'],[700,'Landed ≈1130Z']]},
+ {id:'SEY',cs:'XL511 (Seymour)',type:'victor',tail:'XL511',capt:'Wg Cdr Colin Seymour · 2nd sortie',sec:'green',tko:460,form:null,slots:[],
+  kf:[{t:460,p:[ASC[0]-0.05,ASC[1]+0.15]},{t:625,p:TUX_RV},{t:638,p:Rt(1160)},{t:800,p:[ASC[0]+0.2,ASC[1]+0.2],land:true}],fuel:[[460,110000],[625,80000],[638,52000],[800,20000]],
+  status:[[460,'Launched to find Tuxford'],[625,'Refuelling XL189'],[638,'Returning'],[800,'Landed 1310Z · 5 h 40 min']]},
+ {id:'BAR',cs:'Victor (Barrett)',type:'victor',tail:'—',capt:'to assist Skelton (fuel leak)',sec:'green',tko:461,form:null,slots:[],
+  kf:[{t:461,p:[ASC[0]+0.05,ASC[1]+0.05]},{t:520,p:Rt(430)},{t:545,p:Rt(430),orbit:true},{t:610,p:ASC,land:true}],fuel:[[461,110000],[610,60000]],
+  status:[[461,'Launched to support a leaking Victor'],[520,'Refuelling Skelton (approx.)'],[545,'Returning'],[610,'Landed ≈1000Z']]},
+ {id:'NIM',cs:'Nimrod MR2',type:'nimrod',tail:'—',capt:'201/206 Sqn det · RV shepherd',sec:'violet',tko:430,form:null,slots:[],
+  kf:[{t:430,p:[ASC[0]+0.1,ASC[1]-0.1]},{t:672,p:[RV[0]+1.2,RV[1]+0.3]},{t:RV_T1+4,p:[RV[0]+1.2,RV[1]+0.3],orbit:true},{t:960,p:ASC,land:true}],fuel:[[430,90000],[960,20000]],
+  status:[[430,'To the RV area'],[672,'On station · homing XM607 and XH672'],[RV_T1+4,'Returning · cannot loiter'],[960,'Landed']]},
+];
+const byId=Object.fromEntries(AC.map(a=>[a.id,a]));
+
+// ---- transfers  [t0,t1,from,to,lb,label]
+const XF=[
+ [105,118,'R1','W1',37500,'Bracket 1'],[105,118,'R2','W2',37500,'Bracket 1'],[105,118,'R3','W3',37500,'Bracket 1'],[105,118,'R4','B3',37500,'Bracket 1'],
+ [105,118,'B1','V607',28400,'Bracket 1 · 1st prod'],
+ [136,143,'B1','V607',9200,'2nd prod'],
+ [250,258,'W1','V607',22000,'Bracket 2'],[259,267,'W1','W2',16000,'Bracket 2'],[251,262,'W3','B3',25000,'Bracket 2'],
+ [314,322,'W2','V607',16000,'Bracket 3 · 40°S'],[326,331,'W2','V607',2900,'Bracket 3 · top-up'],
+ [335,343,'W2','B3',1600,'Bracket 3 · PROBE FAILS'],[348,362,'B3','W2',10000,'Role reversal'],
+ [385,400,'W2','V607',5600,'Final bracket · 7,000 lb short'],
+ [625,638,'SEY','W2',28000,'Rescue · Seymour → Tuxford'],
+ [RV_T0,RV_T1,'NEAL','V607',34500,'Recovery RV'],
+];
+// ---- brackets (for timeline & phase card)
+const PHASES=[
+ {t0:0,t1:105,k:'Outbound · Wave 1/2',title:'Stream take-off and climb',p:'13 aircraft at one-minute intervals, lights out, radio silence. Climb to 27,000 ft then 33,000 ft — a compromise altitude for both types.'},
+ {t0:105,t1:121,k:'Bracket 1 · ≈19°S · T+1:45',title:'Red tops up White; Blue 1 feeds the Vulcan',p:'The chain works pair-by-pair: each Red Victor fills its opposite number in White, then turns for home. Seymour (Blue 1) gives XM607 its first fuel.',b:true},
+ {t0:121,t1:136,k:'Outbound',title:'Red section peels off',p:'Four Reds and the unused reserve head north. The formation is now five Whites-and-Blue plus the bomber.'},
+ {t0:136,t1:146,k:'2nd prod · ≈22°S',title:'Seymour tops the Vulcan again',p:'34 minutes after the first contact the Vulcan has burned 9,200 lb (16,250 lb/hr). It is still at its theoretical maximum weight.',b:true},
+ {t0:146,t1:250,k:'Outbound · five-ship',title:'White 1–4 escort XM607 south',p:'Seymour heads home to land after 4h40m. The next bracket is more than 800 nm ahead.'},
+ {t0:250,t1:269,k:'Bracket 2 · ≈34°S · T+4:10',title:'White 1 and White 3 hand over',p:'White 1 fills the Vulcan and then Tuxford; Brooks (XL192) fills Biglands (XH669). Both givers will land at Ascension nearly dry.',b:true},
+ {t0:269,t1:314,k:'Outbound · three-ship',title:'Tuxford, Biglands, Withers',p:'The winds are worse than forecast and every aircraft is burning more than the plan assumed.'},
+ {t0:314,t1:364,k:'Bracket 3 · ≈40–44°S · thunderstorms',title:'The probe breaks',p:'In violent cumulonimbus Tuxford fills the Vulcan, then trails for Biglands. The basket weaves; Biglands connects — and XH669’s probe snaps. Roles reverse.',b:true},
+ {t0:364,t1:385,k:'Outbound · two-ship',title:'Tuxford presses on',p:'XL189 is now the final tanker, flying further south than any plan allowed, its crew knowing they may not have the fuel to get home.'},
+ {t0:385,t1:402,k:'Final bracket · ≈47°S · T+6:25',title:'The last prod',p:'Tuxford gives what he can — 7,000 lb less than Withers expected. XM607 will reach its recovery RV with 7,000 lb instead of 14,000.',b:true},
+ {t0:402,t1:468,k:'Attack',title:'XM607 alone — run-in to Stanley',p:'Descend to 300 ft to stay under Argentine radar; 40 nm out, pop up to 10,000 ft at 330 kt. H2S locks on Mount Usborne. ALQ-101 jams the Skyguard radar.'},
+ {t0:468,t1:476,k:'0738Z · Bombs away',title:'21 × 1,000 lb across the runway',p:'Released sequentially at 35° to the runway; one bomb craters it. 60° bank left, 2 g, and away to the north.',b:true},
+ {t0:476,t1:RV_T0,k:'Recovery',title:'“Superfuse” — now find the tanker',p:'Tuxford hears the code-word and breaks radio silence. Seymour launches to save him. Neal’s XH672 waits off Brazil; the Vulcan is running an hour late with a Nimrod sent to shepherd it in.'},
+ {t0:RV_T0,t1:RV_T1,k:'Recovery RV · off Brazil',title:'Deliverance',p:'Under 8,000 lb spread across 14 tanks. Morffew talks Neal through a 210° turn, rolling out three miles ahead with the hose trailing.',b:true},
+ {t0:RV_T1,t1:T_END,k:'Homebound',title:'The long way back',p:'Seymour lands at 1310Z, Tuxford at 1355Z after 14h05m, Withers at 1452Z. The longest bombing raid yet flown.'},
+];
+const EVENTS=[
+ [0,'Take-off','11 Victors and 2 Vulcans stream off Wideawake at one-minute intervals. XM598 (Reeve) is 11th, XM607 (Withers) last — over max weight, engines at 103%.'],
+ [12,'XM598 aborts','The captain’s DV-window seal has perished; the cabin will not pressurise. Reeve turns back but cannot dump fuel — XM598 must hold to burn it off. Withers is now the attack aircraft.',1],
+ [20,'XL163 aborts','Hose-drum unit fault. The reserve, XH669 (Biglands, Blue 3), slides into the White 4 slot.'],
+ [105,'Bracket 1','≈19°S. Red 1–4 refuel White 1–4 pair-by-pair; Blue 1 (Seymour) gives XM607 its first fuel.',1],
+ [121,'Reds turn home','Red section and the unused Blue reserve head back to Ascension.'],
+ [136,'2nd prod','Seymour again. In the 34 minutes since contact one the Vulcan has burned 9,200 lb — 16,250 lb/hr — and never dropped below its theoretical max weight.'],
+ [144,'Seymour turns home','He will land at 0430Z, 4h40m after take-off, behind four returning Victors. Five-ship: White 1–4 and XM607.'],
+ [250,'Bracket 2','≈34°S. White 1 refuels the Vulcan then Tuxford; Brooks (White 3, XL192) fills Biglands (White 4, XH669).',1],
+ [269,'Three-ship','White 1 and White 3 turn back — both will land desperately short of fuel. Tuxford, Biglands and Withers press on.'],
+ [314,'Bracket 3 · storms','Near 40°S the formation flies into violent thunderstorms. Tuxford (XL189) refuels XM607.',1],
+ [330,'Wave 3 launches','Four recovery Victors leave Wideawake at 0520Z. One (Milligan) is unserviceable at once; the reserve (Elliot) launches at 0530Z.'],
+ [335,'Hose out for Biglands','Tuxford trails for XH669. The basket is “weaving all over the sky”.'],
+ [343,'PROBE FAILURE','Biglands makes contact — and his probe snaps. The transfer is incomplete. With a broken probe XH669 can never be refuelled.',2],
+ [348,'Roles reversed','Biglands pumps what he can spare back into Tuxford, keeping just enough to reach Wideawake.'],
+ [364,'Biglands turns home','≈44°S. Tuxford continues south with the Vulcan, below his safe fuel minimum — a joint crew decision.',1],
+ [385,'Final bracket','≈47°S, ≈420 nm from Stanley. Tuxford gives XM607 7,000 lb less than Withers expected: the Vulcan will reach its RV with ~7,000 lb, not 14,000.',1],
+ [402,'Tuxford turns north','≈3,000 nm from Ascension, XL189 does not have the fuel to get home. He keeps radio silence so as not to compromise the mission.',2],
+ [420,'Wave 3 attrition','Neal’s partner Victor goes unserviceable in transit — only XH672 will be at the recovery RV.'],
+ [422,'Low level','≈250 nm out, XM607 descends to 300 ft to stay beneath Argentine radar cover.'],
+ [430,'Nimrod airborne','A Nimrod MR2 leaves Wideawake to help bring bomber and tanker together (approx. time).'],
+ [460,'Pop-up','40 nm out: climb to 10,000 ft, 330 kt. H2S locked on Mount Usborne (2,313 ft) as the offset; ALQ-101 jams the Skyguard fire-control radar.'],
+ [461,'Two more Victors','≈0730Z: Barrett launches to help Skelton’s returning Victor (fuel leak); Seymour (XL511) launches again to find Tuxford.'],
+ [468,'BOMBS AWAY','0738Z. 21 × 1,000 lb across the runway at 35°; one bomb cuts the runway. 60° bank left, 2 g.',2],
+ [476,'“SUPERFUSE”','0746Z, passing the Task Force: success. Tuxford hears it and breaks radio silence — he needs a tanker.',1],
+ [625,'Tuxford saved','Seymour finds XL189 “over a thousand miles” out, critically short of fuel. Contact, and the transfer works.',1],
+ [640,'RV moved south','The Vulcan is running an hour late; Neal is sent further south. The Nimrod is on the radio.'],
+ [RV_T0,'Recovery RV','With under 8,000 lb across 14 tanks, XM607 meets XH672: Morffew talks Neal through a 210° turn, rolling out 3 miles dead ahead, hose trailing. “Deliverance.”',2],
+ [800,'Seymour lands','5h40m sortie — his second of the night.'],
+ [845,'Tuxford lands','XL189 down after 14h05m. Air Force Cross; Queen’s Commendation for his crew.',1],
+ [902,'XM607 lands','1452Z. About fifteen hours airborne, seven refuellings, one crater. Withers — DFC.',2],
+];
+
+// ============================================================ HELPERS
+function lerpKF(arr,t){ // arr of [t,v]
+  if(t<=arr[0][0])return arr[0][1]; const n=arr.length; if(t>=arr[n-1][0])return arr[n-1][1];
+  let i=1;while(arr[i][0]<t)i++; const [t0,v0]=arr[i-1],[t1,v1]=arr[i]; return v0+(v1-v0)*(t-t0)/(t1-t0);}
+function statusAt(a,t){let s=a.status[0][1];for(const [tt,v] of a.status){if(t>=tt)s=v;}return s;}
+const smooth=x=>x<=0?0:x>=1?1:x*x*(3-2*x);
+function fmt(n){return Math.round(n).toLocaleString('en-GB');}
+function zTime(t){const m=(23*60+50+Math.floor(t));const mm=m%1440;const h=Math.floor(mm/60),mi=mm%60;return (h<10?'0':'')+h+(mi<10?'0':'')+mi;}
+function zDay(t){return (23*60+50+Math.floor(t))>=1440?'1 MAY':'30 APR';}
+function tPlus(t){const h=Math.floor(t/60),m=Math.floor(t%60);return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;}
+
+// position & heading of an aircraft at time t. returns {p:[lat,lon], hdg, slot:[x,y], state}
+function acState(a,t){
+  if(t<a.tko)return {state:'ground',p:ASC,hdg:200,slot:[0,0]};
+  if(a.form&&t<a.form[1]){
+    const c=formCentre(t),c2=formCentre(t+3);
+    return {state:'form',p:c,hdg:gcDist(c,c2)<0.5?205:bearing(c,c2),slot:slotAt(a,t)};
+  }
+  const kf=a.kf; if(!kf||!kf.length)return {state:'ground',p:ASC,hdg:0,slot:[0,0]};
+  const last=kf[kf.length-1];
+  if(t>=last.t){return {state:last.land?'landed':'kf',p:last.p,hdg:0,slot:[0,0]};}
+  let i=0;while(i<kf.length-1&&kf[i+1].t<=t)i++;
+  const A=kf[i],B=kf[i+1];
+  let slot=[0,0];
+  if(a.form&&i===0){const s=slotAt(a,a.form[1]-0.01);const k=1-smooth((t-a.form[1])/14);slot=[s[0]*k,s[1]*k];}
+  const same=gcDist(A.p,B.p)<0.5;
+  if((A.orbit&&B.orbit)||same){ // holding: static, heading = inbound track
+    const prev=i>0?kf[i-1].p:(a.form?O(Math.max(0,V_FORM*(a.form[1]-6)/60-20)):ASC);
+    const hdg=gcDist(prev,A.p)<0.5?205:bearing(prev,A.p);
+    return {state:'hold',p:A.p,hdg,slot:[0,0]};
+  }
+  const f=(t-A.t)/(B.t-A.t);
+  return {state:'kf',p:gcInterp(A.p,B.p,f),hdg:bearing(A.p,B.p),slot};
+}
+function slotAt(a,t){
+  const s=a.slots; if(!s||!s.length)return [0,0];
+  let i=0;while(i<s.length-1&&s[i+1][0]<=t)i++;
+  const cur=s[i]; if(i===0)return [cur[1],cur[2]];
+  const prev=s[i-1];const k=smooth((t-cur[0])/4);
+  return [prev[1]+(cur[1]-prev[1])*k,prev[2]+(cur[2]-prev[2])*k];
+}
+function vulcanDist(t){ // nm flown by XM607
+  if(t<=402)return V_FORM*Math.max(0,t-6)/60;
+  const kf=byId.V607.kf;let d=V_FORM*396/60;let prev={t:402,p:formCentre(402)};
+  for(const k of kf){if(k.t<=402)continue;if(t>=k.t){d+=gcDist(prev.p,k.p);prev=k;}else{d+=gcDist(prev.p,k.p)*(t-prev.t)/(k.t-prev.t);return d;}}
+  return d;
+}
+function fuelPassed(t){let s=0;for(const x of XF){if(t>=x[1])s+=x[4];else if(t>x[0])s+=x[4]*(t-x[0])/(x[1]-x[0]);}return s;}
+
+// sun: 1 May 1982 — declination ~ +15.0°, equation of time ~ +2.9 min
+function subsolar(t){const utc=((23*60+50+t)%1440)/60;const lon=-(utc-12+2.9/60)*15;return {lat:15.0,lon:lon};}
+function sunElev(lat,lon,ss){const la=lat*d2r,de=ss.lat*d2r,dl=(lon-ss.lon)*d2r;return Math.asin(Math.sin(la)*Math.sin(de)+Math.cos(la)*Math.cos(de)*Math.cos(dl))*r2d;}
+
+
+// ============================================================ STORY MAP
+const mapC=document.getElementById('map'),ctx=mapC.getContext('2d');
+const tlC=document.getElementById('tlbar'),tctx=tlC.getContext('2d');
+const BOUNDS={lon0:-72,lon1:18,lat0:-60,lat1:8};
+const merc=lat=>Math.log(Math.tan(Math.PI/4+lat*d2r/2));
+let W=0,H=0,DPR=1,base={k:1,ox:0,oy:0};
+const cam={z:1,cx:0,cy:0,tz:1,tcx:0,tcy:0};
+const FONT='-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif';
+const MONO='ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
+function resize(){
+  DPR=Math.min(2,window.devicePixelRatio||1);
+  const r=mapC.parentElement.getBoundingClientRect();W=r.width;H=r.height;
+  mapC.width=W*DPR;mapC.height=H*DPR;
+  const spanX=(BOUNDS.lon1-BOUNDS.lon0)*d2r,spanY=merc(BOUNDS.lat1)-merc(BOUNDS.lat0);
+  base.k=Math.min(W/spanX,H/spanY)*0.98;base.ox=(W-spanX*base.k)/2;base.oy=(H-spanY*base.k)/2;
+  const tr=tlC.getBoundingClientRect();tlC.width=tr.width*DPR;tlC.height=tr.height*DPR;
+}
+function proj(lat,lon){const x0=base.ox+(lon-BOUNDS.lon0)*d2r*base.k,y0=base.oy+(merc(BOUNDS.lat1)-merc(lat))*base.k;return [(x0-cam.cx)*cam.z+W/2,(y0-cam.cy)*cam.z+H/2];}
+function baseXY(lat,lon){return [base.ox+(lon-BOUNDS.lon0)*d2r*base.k,base.oy+(merc(BOUNDS.lat1)-merc(lat))*base.k];}
+// route-fitting camera: frame the whole route
+function frameRoute(){const a=baseXY(ASC[0],ASC[1]),b=baseXY(STN[0],STN[1]),r=baseXY(RV[0],RV[1]);
+  const minx=Math.min(a[0],b[0],r[0])-40,maxx=Math.max(a[0],b[0],r[0])+120,miny=Math.min(a[1],b[1],r[1])-70,maxy=Math.max(a[1],b[1],r[1])+50;
+  cam.tz=Math.min(W/(maxx-minx),H/(maxy-miny),2.2);cam.tcx=(minx+maxx)/2;cam.tcy=(miny+maxy)/2;}
+
+function iconPath(c,type){
+  c.beginPath();
+  if(type==='vulcan'){c.moveTo(0,-11);c.lineTo(10,7);c.lineTo(4,7.5);c.lineTo(0,5.5);c.lineTo(-4,7.5);c.lineTo(-10,7);c.closePath();}
+  else if(type==='victor'){
+    c.moveTo(0,-11.5);c.lineTo(1.1,-9);c.lineTo(1.1,-3);c.lineTo(9.5,3);c.lineTo(9.5,5);c.lineTo(1.2,2.5);c.lineTo(1.2,7);c.lineTo(4.5,8.8);c.lineTo(4.5,10);c.lineTo(1,9.5);c.lineTo(0,11);
+    c.lineTo(-1,9.5);c.lineTo(-4.5,10);c.lineTo(-4.5,8.8);c.lineTo(-1.2,7);c.lineTo(-1.2,2.5);c.lineTo(-9.5,5);c.lineTo(-9.5,3);c.lineTo(-1.1,-3);c.lineTo(-1.1,-9);c.closePath();}
+  else {c.moveTo(0,-11);c.lineTo(1.2,-8);c.lineTo(1.2,-1.5);c.lineTo(10,2.5);c.lineTo(10,4);c.lineTo(1.2,2.5);c.lineTo(1.2,7);c.lineTo(5,9);c.lineTo(5,10.2);c.lineTo(0,9);c.lineTo(-5,10.2);c.lineTo(-5,9);c.lineTo(-1.2,7);c.lineTo(-1.2,2.5);c.lineTo(-10,4);c.lineTo(-10,2.5);c.lineTo(-1.2,-1.5);c.lineTo(-1.2,-8);c.closePath();}
+}
+function drawIcon(c,x,y,hdg,type,col,scale,dim){
+  c.save();c.translate(x,y);c.rotate(hdg*d2r);c.scale(scale,scale);iconPath(c,type);
+  c.fillStyle=col;c.globalAlpha=dim?0.45:1;c.shadowColor=col;c.shadowBlur=dim?0:12;c.fill();c.shadowBlur=0;
+  c.lineWidth=0.9/scale;c.strokeStyle='rgba(0,0,0,.6)';c.stroke();c.restore();
+}
+function rot(sx,sy,hdg){const th=hdg*d2r;return [sx*Math.cos(th)-sy*Math.sin(th),sx*Math.sin(th)+sy*Math.cos(th)];}
+function pill(c,x,y,text,font,fg,bg,align){
+  c.font=font;const w=c.measureText(text).width+12,h=parseFloat(font.match(/(\d+(\.\d+)?)px/)[1])+9;
+  const x0=align==='center'?x-w/2:align==='right'?x-w:x;
+  c.fillStyle=bg;c.beginPath();c.roundRect(x0,y-h/2,w,h,5);c.fill();
+  c.fillStyle=fg;c.textAlign='left';c.textBaseline='middle';c.fillText(text,x0+6,y+0.5);return [x0,y-h/2,w,h];
+}
+function colorOf(a){return a.type==='vulcan'?'#ffbf5c':a.type==='nimrod'?'#c9a0ff':a.sec==='green'?'#5be08f':'#9ec5ff';}
+const NAME={V607:'XM607 — the bomber',V598:'XM598 (aborted)',W2:'Tuxford',B3:'Biglands',B1:'Seymour',NEAL:'Neal',SEY:'Seymour (2nd sortie)',NIM:'Nimrod',W1:'',W3:'',R1:'',R2:'',R3:'',R4:'',X163:'',B5:'',W3B:'',ELL:'',BAR:''};
+const CHIPNAME={V607:'XM607 · the bomber',V598:'XM598 · aborting',W2:'Tuxford',B3:'Biglands',B1:'Seymour',W1:'Tanker',W3:'Tanker',R1:'Tanker',R2:'Tanker',R3:'Tanker',R4:'Tanker',X163:'Tanker (hose fault)',B5:'Spare tanker'};
+
+let stormSeed=[];for(let i=0;i<22;i++)stormSeed.push([Math.random()*2-1,Math.random()*2-1,Math.random()]);
+function drawMap(t,focus){
+  const c=ctx;c.setTransform(DPR,0,0,DPR,0,0);
+  const g=c.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0d1e34');g.addColorStop(1,'#071122');c.fillStyle=g;c.fillRect(0,0,W,H);
+  c.lineWidth=1;c.strokeStyle='rgba(120,150,200,.10)';c.beginPath();
+  for(let lon=-70;lon<=20;lon+=10){const [x1,y1]=proj(BOUNDS.lat1,lon),[x2,y2]=proj(BOUNDS.lat0,lon);c.moveTo(x1,y1);c.lineTo(x2,y2);}
+  for(let lat=-60;lat<=0;lat+=10){c.moveTo(...proj(lat,BOUNDS.lon0));for(let lon=BOUNDS.lon0;lon<=BOUNDS.lon1;lon+=5)c.lineTo(...proj(lat,lon));}
+  c.stroke();
+  c.fillStyle='#1a2a44';c.strokeStyle='#5f83b0';c.lineWidth=1.2;
+  c.beginPath();for(const ring of COAST){ring.forEach((p,i)=>{const [x,y]=proj(p[1],p[0]);if(i)c.lineTo(x,y);else c.moveTo(x,y);});c.closePath();}
+  c.fill();c.stroke();
+  // lat labels
+  c.fillStyle='rgba(160,185,220,.55)';c.font='11px '+MONO;c.textAlign='left';c.textBaseline='top';
+  for(let lat=-50;lat<=0;lat+=10){const [x,y]=proj(lat,BOUNDS.lon0-5);if(y>20&&y<H-10)c.fillText((lat===0?'Equator':(-lat)+'°S'),10,y+3);}
+  c.font='600 12px '+FONT;c.fillStyle='rgba(150,175,210,.4)';c.textAlign='center';c.textBaseline='middle';
+  for(const r of [{n:'BRAZIL',p:[-13,-50]},{n:'ARGENTINA',p:[-38,-66]},{n:'SOUTH ATLANTIC',p:[-32,-22]}]){const [x,y]=proj(r.p[0],r.p[1]);c.save();c.translate(x,y);c.letterSpacing='.25em';c.fillText(r.n,0,0);c.restore();}
+  // routes
+  c.setLineDash([3,7]);c.lineWidth=1.2;c.strokeStyle='rgba(255,191,92,.4)';c.beginPath();
+  for(let d=0;d<=D_OUT;d+=40){const p=O(d);const [x,y]=proj(p[0],p[1]);if(d)c.lineTo(x,y);else c.moveTo(x,y);}c.stroke();
+  c.strokeStyle='rgba(255,191,92,.25)';c.beginPath();const rw=RET_WPS.concat([ASC]);
+  for(let i=0;i<rw.length-1;i++){const dd=gcDist(rw[i],rw[i+1]);for(let d=0;d<=dd;d+=40){const p=gcInterp(rw[i],rw[i+1],d/dd);const [x,y]=proj(p[0],p[1]);if(i===0&&d===0)c.moveTo(x,y);else c.lineTo(x,y);}}
+  c.stroke();c.setLineDash([]);
+  // numbered hand-over points
+  const HO=[[840,'1','Hand-over 1',105],[1930,'2','Hand-over 2',250],[2500,'3','Storm · probe breaks',314],[2920,'4','Last fuel',385]];
+  const vst=acState(byId.V607,t);const [vx,vy]=proj(vst.p[0],vst.p[1]);
+  for(const [d,n,name,tt] of HO){const p=O(d),p2=O(d+5);const [x,y]=proj(p[0],p[1]);const b=bearing(p,p2);const on=t>=tt;const a=on?1:0.55;
+    c.fillStyle=on?'#ffd166':'rgba(255,209,102,.35)';c.beginPath();c.arc(x,y,9,0,7);c.fill();c.fillStyle='#1a1200';c.font='800 11px '+FONT;c.textAlign='center';c.textBaseline='middle';c.fillText(n,x,y+0.5);
+    if(Math.hypot(vx-x,vy-y)>90*Math.sqrt(cam.z)){const [tx,ty]=rot(-18,0,b);pill(c,x+tx,y+ty,name,'700 11px '+FONT,'rgba(255,230,168,'+a+')','rgba(6,11,22,'+(0.7*a)+')','left');}}
+  // RV markers
+  for(const [p,name,tt,side] of [[TUX_RV,'Tuxford rescued',625,-1],[RV,'Bomber refuelled',RV_T0,1]]){const [x,y]=proj(p[0],p[1]);const a=t>=tt-40?1:0.4;
+    c.strokeStyle='rgba(91,224,143,'+a+')';c.lineWidth=1.5;c.beginPath();c.arc(x,y,9,0,7);c.stroke();
+    if(side>0)pill(c,x,y+22,name,'700 11px '+FONT,'rgba(150,240,180,'+a+')','rgba(6,11,22,'+(0.7*a)+')','center');else pill(c,x-16,y,name,'700 11px '+FONT,'rgba(150,240,180,'+a+')','rgba(6,11,22,'+(0.7*a)+')','right');}
+  // storm
+  if(t>=280&&t<=400){const a=Math.min(1,(t-280)/30)*Math.min(1,(400-t)/25);const centre=O(2520);const [cx,cy]=proj(centre[0]+0.4,centre[1]-0.6);const p2=O(2560);const b=bearing(centre,p2);const now=performance.now()/1000;
+    for(const [sx,sy,ph] of stormSeed){const [dx,dy]=rot(sx*60*cam.z,sy*20*cam.z,b);const r=(16+10*Math.sin(now*0.8+ph*6.28))*Math.sqrt(cam.z);
+      const gg=c.createRadialGradient(cx+dx,cy+dy,0,cx+dx,cy+dy,r);gg.addColorStop(0,'rgba(180,150,255,'+(0.2*a)+')');gg.addColorStop(1,'rgba(180,150,255,0)');c.fillStyle=gg;c.beginPath();c.arc(cx+dx,cy+dy,r,0,7);c.fill();
+      if(((now*3+ph*10)|0)%17===0){c.fillStyle='rgba(255,255,255,'+(0.7*a)+')';c.beginPath();c.arc(cx+dx,cy+dy,2,0,7);c.fill();}}
+    pill(c,cx,cy-60*Math.sqrt(cam.z),'Thunderstorms','700 12px '+FONT,'rgba(220,200,255,'+a+')','rgba(6,11,22,'+(0.7*a)+')','center');}
+  // places
+  for(const pl of [{n:'ASCENSION ISLAND',s:'British base · take-off & landing',p:ASC,dx:14,dy:-16},{n:'PORT STANLEY',s:'the target',p:STN,dx:16,dy:16},{n:'Rio de Janeiro',p:[-22.9,-43.2],dx:-10,dy:-6,r:true},{n:'Buenos Aires',p:[-34.6,-58.4],dx:-8,dy:-6,r:true}]){
+    const [x,y]=proj(pl.p[0],pl.p[1]);const big=!!pl.s;
+    c.fillStyle=big?'#ffd166':'rgba(205,220,240,.75)';c.beginPath();c.arc(x,y,big?4.5:2.5,0,7);c.fill();
+    if(big){c.strokeStyle='rgba(255,209,102,.55)';c.lineWidth=1.3;c.beginPath();c.arc(x,y,10,0,7);c.stroke();}
+    c.textAlign=pl.r?'right':'left';c.textBaseline='alphabetic';c.shadowColor='rgba(0,0,0,.9)';c.shadowBlur=6;
+    c.font=(big?'800 14px':'12px')+' '+FONT;c.fillStyle=big?'#ffe6a8':'rgba(210,222,240,.85)';c.fillText(pl.n,x+pl.dx,y+pl.dy);
+    if(pl.s){c.font='12px '+FONT;c.fillStyle='rgba(205,218,238,.75)';c.fillText(pl.s,x+pl.dx,y+pl.dy+15);}c.shadowBlur=0;}
+  drawTrails(t);drawAircraft(t,focus);
+}
+function drawTrails(t){
+  const c=ctx;
+  for(const a of AC){if(t<a.tko)continue;
+    c.beginPath();let started=false;const step=a.id==='V607'?3:6;
+    for(let tt=a.tko;tt<=t;tt+=step){const st=acState(a,tt);if(st.state==='ground'||st.state==='landed')continue;const [x,y]=proj(st.p[0],st.p[1]);if(started)c.lineTo(x,y);else{c.moveTo(x,y);started=true;}}
+    const st=acState(a,t);if(st.state!=='ground'&&st.state!=='landed'){const [x,y]=proj(st.p[0],st.p[1]);c.lineTo(x,y);}
+    if(a.id==='V607'){c.strokeStyle='rgba(255,191,92,.95)';c.lineWidth=2.6;c.shadowColor='#ffbf5c';c.shadowBlur=8;c.stroke();c.shadowBlur=0;}
+    else{c.strokeStyle=colorOf(a);c.globalAlpha=st.state==='landed'?0.15:0.4;c.lineWidth=1.1;c.stroke();c.globalAlpha=1;}}
+}
+function activeXF(t){return XF.filter(x=>t>=x[0]&&t<x[1]);}
+let lastStates={};
+function drawAircraft(t,focus){
+  const c=ctx;const pos={},states={};const slotScale=Math.min(2.6,0.9+0.55*cam.z);
+  for(const a of AC){const st=acState(a,t);states[a.id]=st;if(st.state==='ground'||st.state==='landed')continue;
+    let [x,y]=proj(st.p[0],st.p[1]);const [dx,dy]=rot(st.slot[0]*slotScale,st.slot[1]*slotScale,st.hdg);pos[a.id]=[x+dx,y+dy];}
+  lastStates=states;
+  const axf=activeXF(t);const now=performance.now()/1000;
+  for(const x of axf){const A=pos[x[2]],B=pos[x[3]];if(!A||!B)continue;const sb=states[x[3]],sa=states[x[2]];if(sb.state==='form')continue;
+    const k=smooth(Math.min(1,(t-x[0])/3,(x[1]-t)/3));const [dx,dy]=rot(0,26*slotScale*k,sa.hdg);const [ex,ey]=rot(0,-8*slotScale*k,sa.hdg);pos[x[3]]=[A[0]+dx,A[1]+dy];pos[x[2]]=[A[0]+ex,A[1]+ey];sb.hdg=sa.hdg;}
+  // hoses
+  for(const x of axf){const A=pos[x[2]],B=pos[x[3]];if(!A||!B)continue;const sa=states[x[2]],sb=states[x[3]];
+    const [ax,ay]=rot(0,10,sa.hdg),[bx,by]=rot(0,-10,sb.hdg);const x0=A[0]+ax,y0=A[1]+ay,x1=B[0]+bx,y1=B[1]+by;
+    const [ox,oy]=rot(6,0,sa.hdg);const mx=(x0+x1)/2+ox,my=(y0+y1)/2+oy;const fail=x[5].includes('PROBE');const col=fail?'#ff6b70':'#ffd166';
+    c.lineWidth=2.6;c.strokeStyle=col;c.shadowColor=col;c.shadowBlur=12;c.beginPath();c.moveTo(x0,y0);c.quadraticCurveTo(mx,my,x1,y1);c.stroke();c.shadowBlur=0;
+    c.setLineDash([3,6]);c.lineDashOffset=-now*40;c.lineWidth=1.3;c.strokeStyle='#fff';c.beginPath();c.moveTo(x0,y0);c.quadraticCurveTo(mx,my,x1,y1);c.stroke();c.setLineDash([]);
+    c.fillStyle=col;c.beginPath();c.arc(x1,y1,3,0,7);c.fill();
+    if(fail&&t>x[1]-2.5){pill(c,x1+14,y1-14,'PROBE BREAKS','800 12px '+FONT,'#ffb4b6','rgba(60,10,14,.9)','left');}}
+  // icons
+  const order=AC.filter(a=>a.id!=='V607').concat([byId.V607]);
+  for(const a of order){const p=pos[a.id];if(!p)continue;const st=states[a.id];const col=colorOf(a);const returning=a.form&&t>=a.form[1]&&a.id!=='V607';
+    const isFocus=focus&&focus.includes(a.id);
+    if(st.state==='hold'){c.strokeStyle=col;c.globalAlpha=.7;c.setLineDash([3,4]);c.lineDashOffset=-now*8;c.lineWidth=1.2;c.beginPath();c.arc(p[0],p[1],18,0,7);c.stroke();c.setLineDash([]);c.globalAlpha=1;}
+    if(a.id==='V607'){const pulse=0.5+0.5*Math.sin(now*3);c.fillStyle='rgba(255,191,92,'+(0.12+0.14*pulse)+')';c.beginPath();c.arc(p[0],p[1],18+7*pulse,0,7);c.fill();}
+    if(isFocus){c.strokeStyle='#fff';c.lineWidth=1.5;c.globalAlpha=.85;c.beginPath();c.arc(p[0],p[1],16,0,7);c.stroke();c.globalAlpha=1;}
+    drawIcon(c,p[0],p[1],st.hdg,a.type,col,a.type==='vulcan'?1.15:1,returning&&!isFocus);
+    let name=NAME[a.id];if(name===undefined)name='';
+    if(st.state==='hold'&&name)name+=' · holding';
+    const [axp,ayp]=proj(ASC[0],ASC[1]);const nearAsc=Math.hypot(p[0]-axp,p[1]-ayp)<34&&a.id!=='V607'&&st.state!=='hold';
+    if(name&&!nearAsc&&(cam.z>=1.6||a.id==='V607'||!returning||isFocus)){
+      pill(c,p[0],p[1]+22,name,(a.id==='V607'?'800 13px ':'700 12px ')+FONT,a.id==='V607'?'#ffe6a8':'#eef3fb','rgba(6,11,22,.82)','center');}
+  }
+  return states;
+}
+function drawTL(t){
+  const c=tctx;const Wt=tlC.width/DPR,Ht=tlC.height/DPR;c.setTransform(DPR,0,0,DPR,0,0);c.clearRect(0,0,Wt,Ht);
+  const x0=6,x1=Wt-6,y=13;const X=tt=>x0+(x1-x0)*tt/T_END;
+  c.fillStyle='rgba(255,255,255,.10)';c.fillRect(x0,y-2,x1-x0,4);c.fillStyle='#ffbf5c';c.fillRect(x0,y-2,X(t)-x0,4);
+  for(const ch of CH){if(ch.t1<=ch.t0)continue;c.fillStyle=ch===curCh?'rgba(255,209,102,.5)':'rgba(255,209,102,.18)';c.fillRect(X(ch.t0),y-6,Math.max(3,X(ch.t1)-X(ch.t0)),12);}
+  c.font='10px '+MONO;c.fillStyle='rgba(160,185,220,.7)';c.textAlign='center';c.textBaseline='top';
+  for(let tt=10;tt<T_END;tt+=120){c.fillText(zTime(tt)+'Z',X(tt),y+9);}
+  c.fillStyle='#fff';c.beginPath();c.arc(X(t),y,5,0,7);c.fill();c.strokeStyle='#ffbf5c';c.lineWidth=2;c.stroke();
+}
+
+// ============================================================ CHAPTERS
+const CH=[
+ {t0:0,t1:0,dur:0,view:'route',capT:'The problem',capH:'3,380 nautical miles each way — the whole route',focus:[]},
+ {t0:0,t1:26,dur:9,view:'follow',z:2.6,capT:'2350Z · Take-off',capH:'Thirteen aircraft leave Ascension; the lead Vulcan aborts',focus:['V607','V598']},
+ {t0:100,t1:150,dur:12,view:'follow',z:2.6,capT:'T+1h45 · Hand-over 1',capH:'Four tankers fill four others; Seymour feeds the bomber',focus:['B1']},
+ {t0:245,t1:276,dur:9,view:'follow',z:2.6,capT:'T+4h · Hand-over 2',capH:'Two tankers empty themselves into Tuxford and Biglands',focus:['W2','B3']},
+ {t0:310,t1:368,dur:14,view:'follow',z:2.6,capT:'T+5h · The storm',capH:'Biglands’ probe breaks; Tuxford carries on instead',focus:['W2','B3']},
+ {t0:382,t1:412,dur:9,view:'follow',z:2.6,capT:'T+6h25 · Last fuel',capH:'Tuxford gives what he can and turns north, short of fuel',focus:['W2']},
+ {t0:415,t1:482,dur:11,view:'follow',z:2.2,capT:'0738Z · The attack',capH:'Alone: low over the sea, then 21 bombs across the runway',focus:['V607']},
+ {t0:600,t1:712,dur:16,view:'home',z:1.25,capT:'Morning · Two rescues',capH:'Seymour finds Tuxford; Neal meets the bomber off Brazil',focus:['W2','SEY','NEAL','NIM']},
+];
+let simT=0,curCh=CH[0],playT0=0,playStart=0,playing=false,tour=false,tourState=null;
+function setCamFor(ch,t){
+  if(ch.view==='route'){frameRoute();return;}
+  if(ch.view==='home'){const a=baseXY(TUX_RV[0],TUX_RV[1]),b=baseXY(RV[0],RV[1]);cam.tz=ch.z;cam.tcx=(a[0]+b[0])/2;cam.tcy=(a[1]+b[1])/2+20/ch.z;return;}
+  const st=acState(byId.V607,t);const [bx,by]=baseXY(st.p[0],st.p[1]);cam.tz=ch.z;cam.tcx=bx;cam.tcy=by-(H*0.06)/ch.z;
+}
+function enterChapter(ch){curCh=ch;document.querySelectorAll('.step').forEach(s=>s.classList.toggle('active',CH[+s.dataset.ch]===ch));document.getElementById('capT').textContent=ch.capT;document.getElementById('capH').textContent=ch.capH;
+  const el=document.querySelector('.step[data-ch="'+CH.indexOf(ch)+'"]');if(el)el.scrollIntoView({block:'center',behavior:'smooth'});}
+function activate(ch,replay){
+  if(ch===curCh&&!replay)return;curCh=ch;
+  document.querySelectorAll('.step').forEach(s=>s.classList.toggle('active',CH[+s.dataset.ch]===ch));
+  document.getElementById('capT').textContent=ch.capT;document.getElementById('capH').textContent=ch.capH;
+  simT=ch.t0;playT0=ch.t0;playStart=performance.now();playing=ch.t1>ch.t0;
+}
+function describe(t){
+  const axf=activeXF(t);if(!axf.length){const st=acState(byId.V607,t);
+    if(t<6)return 'Engines running at Wideawake. 13 aircraft about to roll.';
+    if(st.state==='landed')return 'Home. XM607 on the ground at Ascension, 1452Z.';
+    if(t>=422&&t<460)return 'Running in at 300 ft to stay under Argentine radar.';
+    if(t>=460&&t<468)return 'Climbing to 10,000 ft for the bomb run.';
+    if(t>=468&&t<478)return 'Bombs away — 21 × 1,000 lb across the runway. “Superfuse.”';
+    if(t>=402&&t<422)return 'The bomber is on its own now. Tuxford has turned north, short of fuel.';
+    if(t>=478&&t<625)return 'Bomber heading north to find a tanker off Brazil · Tuxford flying home short of fuel'+(t>=460?' · Seymour airborne to find him':'')+'.';
+    if(t>=638&&t<RV_T0)return 'Tuxford refuelled and safe · the bomber, low on fuel, still has to find Neal’s tanker.';
+    if(t>=RV_T1&&t<902)return 'Everyone heading home: the bomber with Neal’s tanker, Tuxford with Seymour.';
+    const n=AC.filter(a=>lastStates[a.id]&&lastStates[a.id].state==='form'&&a.id!=='V607').length;
+    return n?n+' tanker'+(n===1?'':'s')+' flying south with the bomber.':'';}
+  const parts=axf.map(x=>{const nm=id=>id==='V607'?'the bomber':(NAME[id]||'a tanker').replace(' (2nd sortie)','');
+    const pr=(t-x[0])/(x[1]-x[0]);const fail=x[5].includes('PROBE');
+    return '<b>'+nm(x[2])+' → '+nm(x[3])+'</b> '+(fail?'— probe breaks':(fmt(x[4]*pr)+' lb'));});
+  const generic=parts.filter(p=>p.includes('a tanker → a tanker')).length;const named=parts.filter(p=>!p.includes('a tanker → a tanker'));
+  return (generic?'<b>'+generic+' tanker-to-tanker transfer'+(generic>1?'s':'')+'</b>'+(named.length?' · ':''):'')+named.join(' · ');
+}
+function updateStrip(t){
+  const el=document.getElementById('chips');const cnt=document.getElementById('stripCount');
+  const st=lastStates;let html='';let n=0;
+  const v=st.V607;if(!v)return;
+  if(v.state==='ground'){cnt.textContent='On the ground';el.innerHTML='';return;}
+  if(v.state==='landed'){cnt.textContent='Mission complete';el.innerHTML='<span class="chip bomber"><i></i>XM607 landed 1452Z</span>';return;}
+  const inForm=AC.filter(a=>st[a.id]&&st[a.id].state==='form'&&a.id!=='V607');
+  const withV=activeXF(t).filter(x=>x[3]==='V607'||x[2]==='V607').map(x=>x[2]==='V607'?x[3]:x[2]).filter(id=>!inForm.find(a=>a.id===id));
+  html+='<span class="chip bomber"><i></i>XM607 · the bomber</span>';
+  for(const a of inForm){n++;html+='<span class="chip"><i></i>'+(CHIPNAME[a.id]||'Tanker')+'</span>';}
+  for(const id of withV){n++;const a=byId[id];html+='<span class="chip '+(a.sec==='green'?'green':'')+'"><i></i>'+(NAME[id]||'Tanker').replace(' (2nd sortie)','')+'</span>';}
+  if(t>=RV_T1&&t<895&&!withV.includes('NEAL')){n++;html+='<span class="chip green"><i></i>Neal · escorting home</span>';}
+  cnt.textContent=n?(n+' tanker'+(n===1?'':'s')+' with the bomber'):'Bomber alone';
+  if(el.innerHTML!==html)el.innerHTML=html;
+}
+function zDay2(t){return zDay(t)==='30 APR'?'30 April':'1 May';}
+let lastFrame=performance.now(),lastUI=0;
+function frame(now){
+  const dt=Math.min(0.1,(now-lastFrame)/1000);lastFrame=now;
+  if(tour&&tourState){const ts=tourState;const ch=CH[ts.i];const el=(now-ts.start)/1000;
+    if(ts.phase==='gap'){const f=Math.min(1,el/1.6);simT=ts.from+(ch.t0-ts.from)*smooth(f);if(f>=1){ts.phase='play';ts.start=now;}}
+    else if(ts.phase==='play'){const f=Math.min(1,el/ch.dur);simT=ch.t0+(ch.t1-ch.t0)*f;
+      if(f>=1){if(ts.i>=CH.length-1){ts.phase='end';ts.start=now;ts.from=ch.t1;}else{ts.i++;ts.phase='gap';ts.start=now;ts.from=ch.t1;enterChapter(CH[ts.i]);}}}
+    else{const f=Math.min(1,el/5);simT=ts.from+(905-ts.from)*smooth(f);if(f>=1){stopTour();}}
+    setCamFor(curCh,simT);
+  }else{
+    if(playing){const el=(now-playStart)/1000;const f=Math.min(1,el/curCh.dur);simT=playT0+(curCh.t1-playT0)*f;if(f>=1)playing=false;}
+    setCamFor(curCh,simT);
+  }
+  cam.z+=(cam.tz-cam.z)*Math.min(1,dt*3);cam.cx+=(cam.tcx-cam.cx)*Math.min(1,dt*3);cam.cy+=(cam.tcy-cam.cy)*Math.min(1,dt*3);
+  drawMap(simT,curCh.focus);drawTL(simT);
+  if(now-lastUI>120){lastUI=now;document.getElementById('capA').innerHTML=describe(simT);document.getElementById('zt').textContent=zTime(simT);document.getElementById('zd').textContent=zDay2(simT)+' · T+'+tPlus(simT);updateStrip(simT);}
+  requestAnimationFrame(frame);
+}
+// scroll activation
+const steps=[...document.querySelectorAll('.step')];
+const io=new IntersectionObserver(entries=>{if(tour)return;let best=null;for(const e of entries){if(e.isIntersecting){best=e.target;}}
+  if(best)activate(CH[+best.dataset.ch]);},{rootMargin:'-40% 0px -45% 0px',threshold:0});
+steps.forEach(s=>io.observe(s));
+steps.forEach(s=>{const b=s.querySelector('.replay');if(b)b.onclick=()=>{stopTour();activate(CH[+s.dataset.ch],true);};});
+// tour
+function startTour(){tour=true;playing=false;simT=0;tourState={i:1,phase:'gap',start:performance.now(),from:0};document.getElementById('tourbar').classList.add('show');enterChapter(CH[1]);}
+function stopTour(){if(!tour)return;tour=false;tourState=null;document.getElementById('tourbar').classList.remove('show');playing=false;}
+document.getElementById('btnTour').onclick=startTour;
+document.getElementById('btnTourStop').onclick=()=>{stopTour();};
+document.getElementById('btnScroll').onclick=()=>{steps[1].scrollIntoView({behavior:'smooth',block:'center'});};
+tlC.addEventListener('pointerdown',e=>{stopTour();const r=tlC.getBoundingClientRect();const f=Math.max(0,Math.min(1,(e.clientX-r.left-6)/(r.width-12)));const t=f*T_END;
+  const ch=[...CH].reverse().find(c=>t>=c.t0&&c.t1>c.t0)||CH[1];curCh=ch;playing=false;simT=t;document.getElementById('capT').textContent=ch.capT;document.getElementById('capH').textContent=ch.capH;
+  document.querySelectorAll('.step').forEach(s=>s.classList.toggle('active',CH[+s.dataset.ch]===ch));});
+window.addEventListener('keydown',e=>{if(e.key==='Escape')stopTour();});
+window.addEventListener('resize',()=>{resize();setCamFor(curCh,simT);cam.z=cam.tz;cam.cx=cam.tcx;cam.cy=cam.tcy;});
+resize();frameRoute();cam.z=cam.tz;cam.cx=cam.tcx;cam.cy=cam.tcy;
+document.querySelector('.step[data-ch="0"]').classList.add('active');
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

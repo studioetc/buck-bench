@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation Black Buck 1 - Refuelling Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <span class="tactical-badge">SIM LAB</span>
+            <h1>Operation Black Buck 1</h1>
+        </div>
+        <div class="mission-metadata">
+            <div class="meta-item">
+                <span class="meta-label">Operation Date</span>
+                <span class="meta-value">30 APR - 01 MAY 1982</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Force Size</span>
+                <span class="meta-value">2 Vulcans / 11 Victors</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Primary Bomber</span>
+                <span class="meta-value" style="color: var(--color-vulcan)">XM607 (Withers)</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Left Sidebar: Tactical Event Log -->
+        <section class="sidebar">
+            <div class="panel-header">
+                <h2 class="panel-title">Mission Timeline</h2>
+            </div>
+            <div class="logs-container" id="logsContainer">
+                <!-- Log entries will be populated dynamically -->
+            </div>
+        </section>
+
+        <!-- Center Section: Interactive Map Visualization -->
+        <section class="content-area">
+            <div class="view-selector">
+                <button class="view-btn active" id="viewGeographic" onclick="setViewMode('geographic')">Geographic Map</button>
+                <button class="view-btn" id="viewSchematic" onclick="setViewMode('schematic')">Refuelling Diagram</button>
+            </div>
+
+            <!-- Tactical Status Overlay -->
+            <div class="tactical-overlay" id="tacticalOverlay">
+                <div class="overlay-title">Tactical Status</div>
+                <div class="overlay-row">
+                    <span>Flight Phase:</span>
+                    <span class="overlay-val" id="valPhase">Outbound</span>
+                </div>
+                <div class="overlay-row">
+                    <span>Time Elapsed:</span>
+                    <span class="overlay-val" id="valTime">00:00:00</span>
+                </div>
+                <div class="overlay-row">
+                    <span>Distance Flown:</span>
+                    <span class="overlay-val" id="valDistance">0 NM</span>
+                </div>
+                <div class="overlay-row">
+                    <span>Active Transfers:</span>
+                    <span class="overlay-val" id="valTransfers" style="color: var(--accent)">0</span>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <canvas id="mapCanvas"></canvas>
+            </div>
+
+            <!-- Controls Panel (HUD) -->
+            <div class="playback-hud">
+                <div class="playback-controls">
+                    <button class="hud-btn" id="restartBtn" title="Restart Simulation">
+                        <!-- Restart SVG Icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                    </button>
+                    <button class="hud-btn" id="prevBtn" title="Previous Event">
+                        <!-- Prev SVG Icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg>
+                    </button>
+                    <button class="hud-btn play-pause" id="playPauseBtn" title="Play / Pause">
+                        <!-- Play SVG Icon -->
+                        <svg id="playIcon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <!-- Pause SVG Icon (hidden initially) -->
+                        <svg id="pauseIcon" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                    </button>
+                    <button class="hud-btn" id="nextBtn" title="Next Event">
+                        <!-- Next SVG Icon -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+                    </button>
+
+                    <div class="speed-control">
+                        <span>TIME COMPRESSION:</span>
+                        <select class="speed-select" id="speedSelect">
+                            <option value="1">1x (Real-time)</option>
+                            <option value="60">60x (1 min/sec)</option>
+                            <option value="600" selected>600x (10 min/sec)</option>
+                            <option value="1200">1200x (20 min/sec)</option>
+                            <option value="3600">3600x (1 hr/sec)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="timeline-slider-container">
+                    <span class="slider-time" id="sliderTimeStart">23:00Z</span>
+                    <input type="range" class="timeline-slider" id="timelineSlider" min="0" max="100" value="0">
+                    <span class="slider-time" id="sliderTimeEnd">15:00Z</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Sidebar: Aircraft Fuel Dashboard -->
+        <section class="dashboard-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">Air Group Status</h2>
+            </div>
+            <div class="aircraft-list" id="aircraftList">
+                <!-- Aircraft cards will be populated dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <script src="simulation.js"></script>
+</body>
+</html>

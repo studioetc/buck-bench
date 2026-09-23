@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Seventeen Operation Black Buck simulations made by thirteen AI models.">
+  <title>Black Buck · Model Gallery</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top">Black Buck</a>
+    <nav aria-label="Primary navigation">
+      <a href="#gallery">Gallery</a>
+      <a href="#compare">Compare</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">AI model benchmark · 17 outputs</p>
+      <h1 id="page-title">Operation Black Buck</h1>
+      <p class="lede">A visual comparison of how thirteen AI models simulated the extraordinary aerial refuelling chain behind the 1982 Vulcan bombing mission.</p>
+
+      <div class="prompt">
+        <div class="prompt-heading">
+          <span>Benchmark prompt</span>
+          <button id="copy-prompt" type="button">Copy</button>
+        </div>
+        <blockquote id="benchmark-prompt">Research and create a simulation of the refuelling used in Operation Black Buck in the Falklands Vulcan bombing. Something on a map - rich, animated, scaled to be more readable. The output is to be html. Don't use skills or subagents. I want something really impressive.</blockquote>
+      </div>
+    </section>
+
+    <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
+      <div class="section-heading">
+        <h2 id="gallery-title">The models</h2>
+        <p><span id="model-count">13</span> models · <span id="artifact-count">17</span> outputs<span class="gallery-order">Newest releases first · unverified dates last</span></p>
+      </div>
+      <div id="gallery-grid" class="gallery-grid"></div>
+    </section>
+
+    <section class="compare-section" id="compare" aria-labelledby="compare-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Side by side</p>
+          <h2 id="compare-title">Compare outputs</h2>
+        </div>
+        <p>Choose any two versions to inspect together.</p>
+      </div>
+
+      <div class="compare-toolbar">
+        <label for="compare-left">Left output</label>
+        <select id="compare-left"></select>
+        <button class="swap" id="swap" type="button" aria-label="Swap comparison sides">⇄</button>
+        <label for="compare-right">Right output</label>
+        <select id="compare-right"></select>
+        <button class="load-button" id="load-comparison" type="button">Load comparison</button>
+      </div>
+
+      <div class="compare-grid" id="compare-grid">
+        <article class="compare-panel" data-side="left">
+          <div class="frame-heading"><div><span>Left output</span><strong>Select an artifact</strong></div><a hidden target="_blank" rel="noopener">Open ↗</a></div>
+          <div class="frame-placeholder">Choose two outputs above, then load the comparison.</div>
+        </article>
+        <article class="compare-panel" data-side="right">
+          <div class="frame-heading"><div><span>Right output</span><strong>Select an artifact</strong></div><a hidden target="_blank" rel="noopener">Open ↗</a></div>
+          <div class="frame-placeholder">Each simulation remains interactive in its own frame.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="about" id="about" aria-labelledby="about-title">
+      <p class="eyebrow">About the archive</p>
+      <h2 id="about-title">Outputs, not a leaderboard.</h2>
+      <div class="about-copy">
+        <p>These artifacts were recovered from local sessions and grouped by recorded model evidence. Some are revisions from the same run; the version controls keep those outputs together.</p>
+        <p>Prompts, tooling, harnesses and working conditions differed between runs. This is a visual archive for exploration, not a controlled evaluation or a claim about model quality.</p>
+      </div>
+      <a class="inventory-link" href="research/black-buck-inventory/README.md">Inventory &amp; provenance ↗</a>
+    </section>
+  </main>
+
+  <footer>
+    <span>Black Buck model gallery</span>
+    <span>Archived September 2026</span>
+  </footer>
+  <script src="gallery.js"></script>
+</body>
+</html>

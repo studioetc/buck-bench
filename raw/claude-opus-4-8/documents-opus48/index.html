@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operation Black Buck 1 — Refuelling Simulation</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <h1><span class="bb">Black Buck 1</span> · Refuelling Simulation</h1>
+    <div class="meta" id="meta-sub">Ascension I. → Port Stanley · 30 Apr–1 May 1982</div>
+    <div class="spacer"></div>
+    <div class="clock"><span id="clock">+00:00</span><small id="clock-label">MISSION TIME</small></div>
+  </header>
+
+  <section id="stage">
+    <canvas id="map"></canvas>
+    <div class="phase-banner"><span class="ph-label" id="ph-label">STANDBY</span> <span id="ph-text">Press LAUNCH to begin the wave.</span></div>
+    <div class="stage-legend">
+      <span><span class="dot vulcan"></span>Vulcan (bomber)</span>
+      <span><span class="dot tanker"></span>Victor K2 (tanker)</span>
+      <span><span class="dot returning"></span>Returning / landed</span>
+    </div>
+    <div id="log-wrap">
+      <div class="lh">Mission Log</div>
+      <div id="log"></div>
+    </div>
+  </section>
+
+  <aside id="side">
+    <div class="side-head">Fleet · Fuel State</div>
+    <div id="fleet"></div>
+  </aside>
+
+  <footer id="controls">
+    <button class="ctrl primary" id="play">▶ LAUNCH</button>
+    <button class="ctrl" id="reset">⟲ RESET</button>
+    <div class="speed-group">
+      <span>SPEED</span>
+      <button class="speed-btn" data-speed="60">60×</button>
+      <button class="speed-btn active" data-speed="600">600×</button>
+      <button class="speed-btn" data-speed="1800">1800×</button>
+      <button class="speed-btn" data-speed="3600">3600×</button>
+    </div>
+    <div id="timeline">
+      <input type="range" id="scrub" min="0" max="1000" value="0" step="1">
+      <div class="tl-ticks" id="tl-ticks"></div>
+    </div>
+  </footer>
+
+  <div id="about">
+    <div class="card">
+      <h2>Operation Black Buck 1</h2>
+      <p>On the night of 30 April–1 May 1982, a single Avro Vulcan bomber struck the runway at Port Stanley,
+      Falkland Islands — the longest-range bombing raid in history at the time (~6,800 nmi round trip, ~16 hours).
+      Getting one bomber to target required a <strong>cascade of Handley Page Victor tankers</strong> refuelling each other
+      and the Vulcan in a relay, dropping out one by one as their fuel was passed forward.</p>
+      <p>This simulation models that refuelling cascade: watch the fuel state of every aircraft, the refuelling
+      brackets, and the famous crisis on the final outbound transfer.</p>
+      <p class="src" id="about-src">Sources loading…</p>
+      <button class="ctrl primary" id="start-btn">Begin →</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="data.js"></script>
+<script src="sim.js"></script>
+</body>
+</html>

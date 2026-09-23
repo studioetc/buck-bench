@@ -1,0 +1,592 @@
+{
+  "schema_version": 1,
+  "inventoried_on": "2026-09-05",
+  "scope": "Local inventory of simulations created in-session with recorded model evidence. Excludes unfinished attempts, unknown or inferred-only model assignments, and conversions of externally created artifacts. Original files are unchanged.",
+  "artifacts": [
+    {
+      "id": "opus55",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-5.5/black-buck-refuelling.html",
+          "bytes": 599236,
+          "sha256": "e436ea5d71ca7e45fa61b98a6f8f4fb07c21f38e897f00f0ace21ffd8135e711",
+          "modified_utc": "2026-09-23T09:18:40.416431+00:00"
+        }
+      ],
+      "model": "claude-opus-5-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-vulcan-5-5/6e73071a-a341-46f9-90d5-2b46375404fe.jsonl",
+          "models": {
+            "claude-opus-5-5": 140
+          },
+          "model_evidence": [
+            {
+              "line": 30,
+              "model": "claude-opus-5-5"
+            }
+          ],
+          "first": "2026-09-23T04:20:19.610Z",
+          "last": "2026-09-23T09:23:09.732Z"
+        }
+      ],
+      "notes": "Added 23 September 2026. Single-prompt build using the verbatim benchmark prompt at high effort; no subagents or skills recorded (tools: Bash, Read, WebFetch, WebSearch, Write)."
+    },
+    {
+      "id": "vulcan-v1",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/Vulcan/black-buck.html",
+          "bytes": 44115,
+          "sha256": "028cd712e3e39e962565fc7d7c02f51c5b178c0fefcdc44aaf91993436bde093",
+          "modified_utc": "2026-06-10T09:10:52.759356+00:00"
+        }
+      ],
+      "model": "claude-fable-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-Vulcan/430a5b71-c24a-41ff-9fb6-722916f6b568.jsonl",
+          "models": {
+            "claude-fable-5": 346,
+            "<synthetic>": 1
+          },
+          "first": "2026-06-10T08:42:25.423Z",
+          "last": "2026-06-10T12:34:45.177Z",
+          "model_evidence": [
+            {
+              "line": 8,
+              "model": "claude-fable-5",
+              "type": "assistant"
+            },
+            {
+              "line": 561,
+              "model": "<synthetic>",
+              "type": "assistant"
+            }
+          ]
+        }
+      ],
+      "notes": "Original HTML build; same session later created v2. Earlier inline widget is a separate attempt."
+    },
+    {
+      "id": "vulcan-v2",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/Vulcan/black-buck-v2.html",
+          "bytes": 100215,
+          "sha256": "eff326d3bbb567176280bd890a75877eb3e0a47c2dd0ad16463e7b055c71c3bf",
+          "modified_utc": "2026-06-10T12:33:00.200844+00:00"
+        }
+      ],
+      "model": "claude-fable-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-Vulcan/430a5b71-c24a-41ff-9fb6-722916f6b568.jsonl",
+          "models": {
+            "claude-fable-5": 346,
+            "<synthetic>": 1
+          },
+          "first": "2026-06-10T08:42:25.423Z",
+          "last": "2026-06-10T12:34:45.177Z",
+          "model_evidence": [
+            {
+              "line": 8,
+              "model": "claude-fable-5",
+              "type": "assistant"
+            },
+            {
+              "line": 561,
+              "model": "<synthetic>",
+              "type": "assistant"
+            }
+          ]
+        }
+      ],
+      "notes": "Continuation with geography, silhouettes, sound and formation cards. d5dce303 is a shorter fork, not an independent benchmark."
+    },
+    {
+      "id": "opus5-v1",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-O5/black-buck.html",
+          "bytes": 67529,
+          "sha256": "1307cbc99f1b1fd3a9c8d72b7db7e52ad0be4389f0c9dbe039aa4ea48b081ec5",
+          "modified_utc": "2026-07-25T17:20:28.308206+00:00"
+        }
+      ],
+      "model": "claude-opus-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dropbox/Apps/rclone_claude/claude_projects_backup/-Users-onesteppplusgmai-com-Dev-vulcan-O5/1719c439-7c0b-4227-9b41-8aaa179b6abc.jsonl",
+          "models": {
+            "claude-opus-5": 184
+          },
+          "model_evidence": [
+            {
+              "line": 10,
+              "model": "claude-opus-5"
+            }
+          ],
+          "first": "2026-07-25T16:46:16.840Z",
+          "last": "2026-07-26T22:07:24.611Z"
+        }
+      ],
+      "notes": "Fresh build; folder O5 is supported by raw model ID."
+    },
+    {
+      "id": "opus5-v2",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-O5/black-buck-v2.html",
+          "bytes": 90578,
+          "sha256": "8d378f2eb88b2ed6babc844398e8a0967b375d09d6e57da24324ca726e20f3c1",
+          "modified_utc": "2026-07-26T22:03:42.793563+00:00"
+        }
+      ],
+      "model": "claude-opus-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dropbox/Apps/rclone_claude/claude_projects_backup/-Users-onesteppplusgmai-com-Dev-vulcan-O5/1719c439-7c0b-4227-9b41-8aaa179b6abc.jsonl",
+          "models": {
+            "claude-opus-5": 184
+          },
+          "model_evidence": [
+            {
+              "line": 10,
+              "model": "claude-opus-5"
+            }
+          ],
+          "first": "2026-07-25T16:46:16.840Z",
+          "last": "2026-07-26T22:07:24.611Z"
+        }
+      ],
+      "notes": "Follow-up revision of same run, with refuelling formation and fuel-model improvements."
+    },
+    {
+      "id": "fable51-simulation",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-2/black-buck.html",
+          "bytes": 102445,
+          "sha256": "c02d82544f1e1847d70ecb09db270e68345ea62542bd1e968f3eb9f0159cc1bc",
+          "modified_utc": "2026-09-02T05:43:35.392944+00:00"
+        }
+      ],
+      "model": "claude-fable-5-1",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-vulcan-2/421c5d33-0976-4c68-819d-511ecec790bf.jsonl",
+          "models": {
+            "claude-fable-5-1": 251
+          },
+          "first": "2026-09-02T03:49:02.853Z",
+          "last": "2026-09-02T06:51:09.008Z",
+          "model_evidence": [
+            {
+              "line": 24,
+              "model": "claude-fable-5-1",
+              "type": "assistant"
+            }
+          ]
+        }
+      ],
+      "notes": "Fresh detailed simulation. Codex 01a06054 only checked whether this session was active; it did not create this file."
+    },
+    {
+      "id": "fable51-story",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-2/black-buck-story.html",
+          "bytes": 90287,
+          "sha256": "400cc82e8cb48120afc7da1796c491f0d6168dab69794dbcaa2325eaceac55f4",
+          "modified_utc": "2026-09-02T06:47:10.851784+00:00"
+        }
+      ],
+      "model": "claude-fable-5-1",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-vulcan-2/421c5d33-0976-4c68-819d-511ecec790bf.jsonl",
+          "models": {
+            "claude-fable-5-1": 251
+          },
+          "first": "2026-09-02T03:49:02.853Z",
+          "last": "2026-09-02T06:51:09.008Z",
+          "model_evidence": [
+            {
+              "line": 24,
+              "model": "claude-fable-5-1",
+              "type": "assistant"
+            }
+          ]
+        }
+      ],
+      "notes": "Separate narrative/story revision requested in the same session."
+    },
+    {
+      "id": "sol-codex",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-sol/index.html",
+          "bytes": 39983,
+          "sha256": "9b3439cc542f945c4f50e875681ffeeb64a00bef249ac4f20483a41153d1da40",
+          "modified_utc": "2026-07-16T12:24:00.078428+00:00"
+        }
+      ],
+      "model": "gpt-5.6-sol",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.codex/sessions/2026/07/16/rollout-2026-07-16T22-12-04-019f6ad7-53dc-7e73-b27a-28e02cb82710.jsonl",
+          "models": {
+            "gpt-5.6-sol": 1
+          },
+          "first": "2026-07-16T12:12:45.762Z",
+          "last": "2026-07-16T12:24:30.756Z",
+          "model_evidence": [
+            {
+              "line": 8,
+              "model": "gpt-5.6-sol",
+              "type": "turn_context"
+            }
+          ]
+        }
+      ],
+      "notes": "Codex build. 019f6ad5 is an earlier planning attempt."
+    },
+    {
+      "id": "sol-claude-harness",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-sol-c/index.html",
+          "bytes": 82751,
+          "sha256": "15bd5e13804960ac00d610b79075a1a589f4b455880b792c4fe83571857ea5bc",
+          "modified_utc": "2026-07-16T13:55:56.730719+00:00"
+        }
+      ],
+      "model": "gpt-5.6-sol",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dropbox/Apps/rclone_claude/claude_projects_backup/-Users-onesteppplusgmai-com-Dev-vulcan-sol-c/1f458c3a-8720-43af-b8a0-5f648d4758a3.jsonl",
+          "models": {
+            "gpt-5.6-sol": 268
+          },
+          "model_evidence": [
+            {
+              "line": 12,
+              "model": "gpt-5.6-sol"
+            }
+          ],
+          "first": "2026-07-16T13:13:59.245Z",
+          "last": "2026-07-16T14:00:55.990Z"
+        }
+      ],
+      "notes": "Model ID is GPT despite Claude-format JSONL; includes v1-to-v2 iteration in one file."
+    },
+    {
+      "id": "sonnet5",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-s-5/black-buck-1-refuelling.html",
+          "bytes": 79101,
+          "sha256": "c2271eeea440e1991de6b4dd6201972576f9235d19b71accfc8a10f65a86c030",
+          "modified_utc": "2026-06-30T19:43:27.465292+00:00"
+        }
+      ],
+      "model": "claude-sonnet-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dropbox/Apps/rclone_claude/claude_projects_backup/-Users-onesteppplusgmai-com-Dev-vulcan-s-5/fffa6f91-af65-4ab7-86b2-7800f24d4b3a.jsonl",
+          "models": {
+            "claude-sonnet-5": 295
+          },
+          "model_evidence": [
+            {
+              "line": 18,
+              "model": "claude-sonnet-5"
+            }
+          ],
+          "first": "2026-06-30T18:43:45.515Z",
+          "last": "2026-06-30T19:53:38.615Z"
+        }
+      ],
+      "notes": "Completed build; older logs recovered from Dropbox backup."
+    },
+    {
+      "id": "astra",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-ast/index.html",
+          "bytes": 96433,
+          "sha256": "24a97eba836272711aa70050d42b7106a845bc45844ca2d1248506a18249d574",
+          "modified_utc": "2026-09-05T10:33:12.936379+00:00"
+        }
+      ],
+      "model": "gpt-6-astra",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.codex/sessions/2026/09/05/rollout-2026-09-05T20-16-20-01a07111-b3d9-7ac0-a590-16f308f90ba9.jsonl",
+          "models": {
+            "gpt-6-astra": 1
+          },
+          "first": "2026-09-05T10:17:15.374Z",
+          "last": "2026-09-05T10:33:25.210Z",
+          "model_evidence": [
+            {
+              "line": 8,
+              "model": "gpt-6-astra",
+              "type": "turn_context"
+            }
+          ]
+        }
+      ],
+      "notes": "Codex creation session. Claude 9e4d7410 in this directory is unrelated plugin/model discussion, not authorship."
+    },
+    {
+      "id": "documents-opus48",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Documents/bb-visualisation/index.html",
+          "bytes": 2876,
+          "sha256": "8ca824b96c8e969f8fe2503ac35a1a884d6dc91a813766082b4842d4f3e35369",
+          "modified_utc": "2026-06-20T14:09:38.274560+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Documents/bb-visualisation/styles.css",
+          "bytes": 9111,
+          "sha256": "8297be8ef4af2f86622244a9370171da6cbc28120c0c6561740c71cc04c14f13",
+          "modified_utc": "2026-06-20T14:08:24.438635+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Documents/bb-visualisation/sim.js",
+          "bytes": 15024,
+          "sha256": "886f7683a162fad310681b2f4ff2612792431f6cee85ae51e95846e6af89b32c",
+          "modified_utc": "2026-06-20T14:10:53.872720+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Documents/bb-visualisation/data.js",
+          "bytes": 18498,
+          "sha256": "2d377124a10f88477ef7a7b65b74796de011a455c49eee52b4c3cdf4d214927b",
+          "modified_utc": "2026-06-20T14:37:44.179654+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Documents/bb-visualisation/README.md",
+          "bytes": 2948,
+          "sha256": "c9a4307b03be6c79c5ca0f2ecc56dbca66d974f528b2215e66afb5916644312a",
+          "modified_utc": "2026-06-20T14:12:47.556535+00:00"
+        }
+      ],
+      "model": "claude-opus-4-8",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dropbox/Apps/rclone_claude/claude_projects_backup/-Users-onesteppplusgmai-com-Documents-bb-visualisation/02565888-9d61-40f6-b721-ed61e69cecf0.jsonl",
+          "models": {
+            "claude-opus-4-8": 60
+          },
+          "model_evidence": [
+            {
+              "line": 10,
+              "model": "claude-opus-4-8"
+            }
+          ],
+          "first": "2026-06-20T14:06:08.533Z",
+          "last": "2026-06-20T14:43:14.665Z"
+        }
+      ],
+      "notes": "Main build model; Sonnet 4.6 subagent also contributed (see supporting sessions). Later 5e9e081b in the same directory is unrelated tools discussion."
+    },
+    {
+      "id": "aaa-opus47",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/AAA-Misc/bb-visualisation-opus-4-7/index.html",
+          "bytes": 57241,
+          "sha256": "09a41e4c54068305fb0bfaf5462838e7f7cdabbcaef8d8736ee60fdeef0cf75e",
+          "modified_utc": "2026-06-20T15:05:32.169957+00:00"
+        }
+      ],
+      "model": "claude-opus-4-7",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dropbox/Apps/rclone_claude/claude_projects_backup/-Users-onesteppplusgmai-com-Dev-AAA-Misc/d6e9187f-fbcc-418d-a43b-6cb9c5c5a0b6.jsonl",
+          "models": {
+            "claude-opus-4-7": 13
+          },
+          "model_evidence": [
+            {
+              "line": 6,
+              "model": "claude-opus-4-7"
+            }
+          ],
+          "first": "2026-06-20T14:51:34.844Z",
+          "last": "2026-06-20T15:08:54.511Z"
+        }
+      ],
+      "notes": "Session wrote bb-visualisation/index.html; current folder is renamed. Matching content is supported by subject, size and recorded implementation, but exact rename history was not established. Build delegated to same-model subagent ab1ad4185dff24125; subsequent parent changes."
+    },
+    {
+      "id": "kimi3",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-k3/black-buck.html",
+          "bytes": 52006,
+          "sha256": "e6c94104c12e4b38b8076acb31f538477126b82d8152db164986f57d1fd3742a",
+          "modified_utc": "2026-07-18T16:01:12.591720+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/black-buck.html.bak.k3.html",
+          "bytes": 52006,
+          "sha256": "e6c94104c12e4b38b8076acb31f538477126b82d8152db164986f57d1fd3742a",
+          "modified_utc": "2026-07-18T16:01:12.591720+00:00"
+        }
+      ],
+      "model": "kimi-k3",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "database": "/Users/onesteppplusgmai.com/.local/share/opencode/opencode.db",
+          "session_id": "ses_08a9471edffeLowDw1K6mQsdgb",
+          "field": "message.data.modelID",
+          "export": "opencode-evidence.json"
+        }
+      ],
+      "notes": "OpenCode SQLite source, not original JSONL. Backup is byte-identical; gateway ping sessions do not establish authorship."
+    },
+    {
+      "id": "ox",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-ox/black-buck.html",
+          "bytes": 51240,
+          "sha256": "45beeef42599b41f22bb4e3cdb17d7b0f00c05bf2f1edab2b8645fb3d894cebc",
+          "modified_utc": "2026-08-22T14:53:35.665748+00:00"
+        }
+      ],
+      "model": "GLM-5.3",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "database": "/Users/onesteppplusgmai.com/.local/share/opencode/opencode.db",
+          "session_id": "ses_fd6358afaffeHCIwfVBW8MoGLa",
+          "field": "message.data.modelID",
+          "export": "opencode-evidence.json"
+        }
+      ],
+      "notes": "OpenCode SQLite source, not original JSONL. Recorded model ID: stealth/ox-alpha. User confirmed on 2026-09-05 that OX Alpha is GLM-5.3.",
+      "recorded_model_id": "stealth/ox-alpha",
+      "model_identity_evidence": {
+        "source": "user_confirmation",
+        "date": "2026-09-05",
+        "statement": "OX Alpha is GLM-5.3"
+      }
+    },
+    {
+      "id": "grok45",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-grok/index.html",
+          "bytes": 7238,
+          "sha256": "cffafa5d730277c4d4fd4943dfb541346f5816f09b04da6ed2c777c716b589f4",
+          "modified_utc": "2026-07-08T19:40:51.518510+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-grok/styles.css",
+          "bytes": 10365,
+          "sha256": "15f2faba488484a61edcfb45086005f219dd9aaa5db979f792787964aa07a9ea",
+          "modified_utc": "2026-07-08T19:41:16.372376+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-grok/sim.js",
+          "bytes": 43315,
+          "sha256": "88e9979ee3dd2e20c39361bb3728a52cdd7c60f2f32cbc0289c6a4392074dc5e",
+          "modified_utc": "2026-07-08T19:42:59.039950+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-grok/README.md",
+          "bytes": 1358,
+          "sha256": "581f20bdb7b14b3fc61602688752a3c6f9c3feead7a4cae5514a9ca016c69c73",
+          "modified_utc": "2026-07-08T19:43:09.953682+00:00"
+        }
+      ],
+      "model": "grok-4.5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.grok/sessions/%2FUsers%2Fonesteppplusgmai.com%2FDev%2Fvulcan-grok/019f433e-715a-7f92-b9ef-921a57320fbb/events.jsonl",
+          "field": "turn_started.model_id",
+          "chat_history": "/Users/onesteppplusgmai.com/.grok/sessions/%2FUsers%2Fonesteppplusgmai.com%2FDev%2Fvulcan-grok/019f433e-715a-7f92-b9ef-921a57320fbb/chat_history.jsonl"
+        }
+      ],
+      "notes": "Grok native JSONLs recovered."
+    },
+    {
+      "id": "antigravity-flash",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/black-buck/index.html",
+          "bytes": 6283,
+          "sha256": "a5f7a8ad43256d12a09e0302dc7b3c1947fa383f1cf61d61d45f9efb33d301fd",
+          "modified_utc": "2026-06-19T19:29:14.747741+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/black-buck/styles.css",
+          "bytes": 13440,
+          "sha256": "41699e0b0202562e200046cdc58514ea2227347b11cbcbaf6aeed74626dbcc12",
+          "modified_utc": "2026-06-19T19:29:09.180326+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/black-buck/simulation.js",
+          "bytes": 44206,
+          "sha256": "6fe95f203655eeb3fc8dee94cd328d21a5da0cc583b9a9a78cb4686ea176d031",
+          "modified_utc": "2026-06-19T19:30:01.570134+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/black-buck/resolved_elements.json",
+          "bytes": 65168,
+          "sha256": "6d306ae4846a40917e7b1cdf8e6dbf4fbafee7862562fa892b298e43b4a57fea",
+          "modified_utc": "2026-06-19T19:29:24.616362+00:00"
+        }
+      ],
+      "model": "Gemini 3.5 Flash (High)",
+      "attribution": "recorded_selection",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.gemini/antigravity/brain/6c70f2c4-0c8f-4094-9a16-fd71ae117350/.system_generated/logs/transcript_full.jsonl",
+          "line": 1,
+          "field": "content.USER_SETTINGS_CHANGE",
+          "creation_lines": [
+            142,
+            144,
+            150
+          ]
+        }
+      ],
+      "notes": "Recorded UI selection, not per-response API model ID. Current workspace already contained this benchmark before inventory work."
+    }
+  ],
+  "supporting_sessions": [
+    {
+      "path": "/Users/onesteppplusgmai.com/Dropbox/Apps/rclone_claude/claude_projects_backup/-Users-onesteppplusgmai-com-Documents-bb-visualisation/02565888-9d61-40f6-b721-ed61e69cecf0/subagents/agent-ad3d578896e4b7270.jsonl",
+      "models": {
+        "claude-sonnet-4-6": 63
+      }
+    },
+    {
+      "path": "/Users/onesteppplusgmai.com/Dropbox/Apps/rclone_claude/claude_projects_backup/-Users-onesteppplusgmai-com-Dev-AAA-Misc/d6e9187f-fbcc-418d-a43b-6cb9c5c5a0b6/subagents/agent-ab1ad4185dff24125.jsonl",
+      "models": {
+        "claude-opus-4-7": 132
+      }
+    }
+  ]
+}

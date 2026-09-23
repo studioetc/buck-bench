@@ -1,0 +1,3013 @@
+[
+  {
+    "type": "path",
+    "id": "path3592",
+    "color": "#000080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        130.07907,
+        461.10155999999995
+      ],
+      [
+        130.07907,
+        241.10155999999995
+      ]
+    ],
+    "style": "fill:none;stroke:#000080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3592-27",
+    "color": "#000080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        90.07907,
+        461.10155999999995
+      ],
+      [
+        90.07907,
+        191.10155999999995
+      ]
+    ],
+    "style": "fill:none;stroke:#000080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3592-39",
+    "color": "#000080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        50.07907,
+        461.10155999999995
+      ],
+      [
+        50.07907,
+        101.10155999999995
+      ]
+    ],
+    "style": "fill:none;stroke:#000080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3592-4",
+    "color": "#000080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        30.07907,
+        421.10155999999995
+      ],
+      [
+        30.07907,
+        461.10155999999995
+      ]
+    ],
+    "style": "fill:none;stroke:#000080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3592-9",
+    "color": "#ff0000",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        210.07907,
+        461.10155999999995
+      ],
+      [
+        210.07907,
+        71.10155999999995
+      ]
+    ],
+    "style": "fill:none;stroke:#ff0000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3592-21",
+    "color": "#ff0000",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        167.12221,
+        401.81809999999996
+      ],
+      [
+        167.12221,
+        460.8517999999999
+      ]
+    ],
+    "style": "fill:none;stroke:#ff0000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3592-24",
+    "color": "#000080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        110.07907,
+        461.10155999999995
+      ],
+      [
+        110.07907,
+        421.10155999999995
+      ]
+    ],
+    "style": "fill:none;stroke:#000080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3592-24-1",
+    "color": "#000080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        70.07907,
+        461.10155999999995
+      ],
+      [
+        70.07907,
+        421.10155999999995
+      ]
+    ],
+    "style": "fill:none;stroke:#000080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3592-4-4",
+    "color": "#808080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        10.079070000000002,
+        307.10156
+      ],
+      [
+        10.079070000000002,
+        461.10156000000006
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#808080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3592-24-1-2",
+    "color": "#ff0000",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        190.07907,
+        461.10155999999995
+      ],
+      [
+        190.07907,
+        421.10155999999995
+      ]
+    ],
+    "style": "fill:none;stroke:#ff0000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2818-5",
+    "color": "#808080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        230.07907,
+        461.10155999999995
+      ],
+      [
+        230.07907,
+        309.10155999999995
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#808080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3592-21-5",
+    "color": "#808080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        250.07907,
+        309.10156
+      ],
+      [
+        250.07907,
+        461.10156000000006
+      ]
+    ],
+    "style": "fill:none;stroke:#808080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        64.08893,
+        139.53590000000003
+      ],
+      [
+        74.08893,
+        149.53589000000005
+      ]
+    ],
+    "style": "fill:none;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        84.08893,
+        159.53588000000002
+      ],
+      [
+        69.57854000000003,
+        155.07865000000004
+      ],
+      [
+        78.59932000000003,
+        143.99313000000006
+      ]
+    ],
+    "style": "fill:#008080;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-7",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        64.08893,
+        179.53587
+      ],
+      [
+        74.08893,
+        189.53586
+      ]
+    ],
+    "style": "fill:none;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-2",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        84.08893,
+        199.53584999999998
+      ],
+      [
+        69.57854000000003,
+        195.07862
+      ],
+      [
+        78.59932000000003,
+        183.99310000000003
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:#008080;fill-opacity:1;fill-rule:nonzero;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-9",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        110.07905,
+        441.10155999999995
+      ],
+      [
+        120.07904000000002,
+        431.10155999999995
+      ]
+    ],
+    "style": "fill:#008080;fill-opacity:1;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-9",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        130.07903,
+        421.10155999999995
+      ],
+      [
+        125.62180000000001,
+        435.61195
+      ],
+      [
+        114.53628000000003,
+        426.59117000000003
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:#008080;fill-opacity:1;fill-rule:nonzero;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-1",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        190.07906000000003,
+        441.10155999999995
+      ],
+      [
+        200.07905000000005,
+        431.10155999999995
+      ]
+    ],
+    "style": "fill:#008080;fill-opacity:1;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-4",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        210.07904000000002,
+        421.10155999999995
+      ],
+      [
+        205.62181000000004,
+        435.61195
+      ],
+      [
+        194.53629000000006,
+        426.59117000000003
+      ]
+    ],
+    "style": "fill:#008080;fill-opacity:1;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-0",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        254.08891999999997,
+        239.53589
+      ],
+      [
+        254.08891999999997,
+        219.53589
+      ],
+      [
+        264.08892,
+        209.53589
+      ]
+    ],
+    "style": "fill:none;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-75",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        274.08891,
+        199.53588000000002
+      ],
+      [
+        259.57853,
+        203.99312000000003
+      ],
+      [
+        268.5993,
+        215.07863000000003
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:#008080;fill-opacity:1;fill-rule:nonzero;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-0-6",
+    "color": "#800000",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        210.07907,
+        81.10156
+      ],
+      [
+        168.07907,
+        81.10156
+      ],
+      [
+        158.07907,
+        71.10156
+      ]
+    ],
+    "style": "fill:none;stroke:#800000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-0-5",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        304.08892,
+        199.53589
+      ],
+      [
+        304.08892,
+        179.53589
+      ],
+      [
+        314.08892,
+        169.53589
+      ]
+    ],
+    "style": "fill:none;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-75-3",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        324.08891,
+        159.53588000000002
+      ],
+      [
+        309.57853,
+        163.99312000000003
+      ],
+      [
+        318.5993,
+        175.07863000000003
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:#008080;fill-opacity:1;fill-rule:nonzero;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-0-7-1",
+    "color": "#800000",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        50.07907,
+        171.10156
+      ],
+      [
+        128.07907,
+        171.10156
+      ],
+      [
+        138.07907,
+        161.10156
+      ]
+    ],
+    "style": "fill:none;stroke:#800000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-0-7-1-0",
+    "color": "#800000",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        50.07907,
+        151.10156
+      ],
+      [
+        128.07907,
+        151.10156
+      ],
+      [
+        138.07907,
+        141.10156
+      ]
+    ],
+    "style": "fill:none;stroke:#800000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-0-7-1-0-1",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        384.08892999999995,
+        159.53589
+      ],
+      [
+        384.08892999999995,
+        299.53589
+      ],
+      [
+        394.08892999999995,
+        309.53589
+      ]
+    ],
+    "style": "fill:none;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-75-9-7-2-3",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        404.08892,
+        319.53589999999997
+      ],
+      [
+        389.5785399999999,
+        315.07866
+      ],
+      [
+        398.5993099999999,
+        303.99315
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:#008080;fill-opacity:1;fill-rule:nonzero;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3702",
+    "color": "#ff00ff",
+    "stroke_width": 5.0,
+    "points": [
+      [
+        266.07908,
+        461.10158
+      ],
+      [
+        266.07908,
+        31.101580000000013
+      ],
+      [
+        148.04744999999997,
+        31.488100000000003
+      ],
+      [
+        148.12224999999995,
+        460.46528
+      ]
+    ],
+    "style": "fill:none;stroke:#ff00ff;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3707",
+    "color": "#00ff00",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        346.07908000000003,
+        461.10158
+      ],
+      [
+        346.07908000000003,
+        421.10158
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#00ff00;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3709",
+    "color": "#808080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        326.07908000000003,
+        461.10158
+      ],
+      [
+        326.07908000000003,
+        327.10158
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#808080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3711",
+    "color": "#00ff00",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        286.07908,
+        461.10158
+      ],
+      [
+        286.07908,
+        191.10158
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#00ff00;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3713",
+    "color": "#00ff00",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        306.07908,
+        461.10158
+      ],
+      [
+        306.07908,
+        421.10158
+      ]
+    ],
+    "style": "color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#00ff00;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-9-6",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        64.08891,
+        449.53589
+      ],
+      [
+        74.08891,
+        439.53589999999997
+      ]
+    ],
+    "style": "fill:none;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-9-0",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        84.08891,
+        429.53591000000006
+      ],
+      [
+        69.57852000000003,
+        433.99314000000004
+      ],
+      [
+        78.59930000000003,
+        445.07866
+      ]
+    ],
+    "style": "fill:#008080;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-9-6-7",
+    "color": "#008080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        64.08891,
+        489.53589999999997
+      ],
+      [
+        74.08891,
+        479.53590999999994
+      ]
+    ],
+    "style": "fill:none;stroke:#008080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-9-0-5",
+    "color": "#008080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        84.08891,
+        469.53592000000003
+      ],
+      [
+        69.57852000000003,
+        473.99315
+      ],
+      [
+        78.59930000000003,
+        485.07867
+      ]
+    ],
+    "style": "fill:#008080;stroke:#008080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-1-9",
+    "color": "#800000",
+    "stroke_width": 8.46282,
+    "points": [
+      [
+        286.0790704871928,
+        211.10157909812122
+      ],
+      [
+        276.07907548719277,
+        201.10157909812122
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:8.46282;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-4-7",
+    "color": "#800000",
+    "stroke_width": 1.41047,
+    "points": [
+      [
+        266.07908048719275,
+        191.10157909812122
+      ],
+      [
+        270.5363158871928,
+        205.61196569812122
+      ],
+      [
+        281.62183508719284,
+        196.59119249812122
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:1.41047px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "text",
+    "id": "text3686",
+    "position": [
+      22.314800000000105,
+      517.79343
+    ],
+    "text": "Wave 2"
+  },
+  {
+    "type": "text",
+    "id": "tspan3688",
+    "position": [
+      22.314800000000105,
+      517.79343
+    ],
+    "text": "Wave 2"
+  },
+  {
+    "type": "text",
+    "id": "text3690",
+    "position": [
+      20.194740000000024,
+      537.7933700000001
+    ],
+    "text": "(outbound)"
+  },
+  {
+    "type": "text",
+    "id": "tspan3692",
+    "position": [
+      20.194740000000024,
+      537.7933700000001
+    ],
+    "text": "(outbound)"
+  },
+  {
+    "type": "text",
+    "id": "text3694",
+    "position": [
+      160.44239000000005,
+      518.007755
+    ],
+    "text": "Wave 1"
+  },
+  {
+    "type": "text",
+    "id": "tspan3696",
+    "position": [
+      160.44239000000005,
+      518.007755
+    ],
+    "text": "Wave 1"
+  },
+  {
+    "type": "text",
+    "id": "text3698",
+    "position": [
+      158.32232999999997,
+      537.724005
+    ],
+    "text": "(outbound)"
+  },
+  {
+    "type": "text",
+    "id": "tspan3700",
+    "position": [
+      158.32232999999997,
+      537.724005
+    ],
+    "text": "(outbound)"
+  },
+  {
+    "type": "text",
+    "id": "text3694-6",
+    "position": [
+      283.59126000000003,
+      517.480001
+    ],
+    "text": "Wave 3"
+  },
+  {
+    "type": "text",
+    "id": "tspan3696-0",
+    "position": [
+      283.59126000000003,
+      517.480001
+    ],
+    "text": "Wave 3"
+  },
+  {
+    "type": "text",
+    "id": "text3882",
+    "position": [
+      281.47119999999995,
+      537.480001
+    ],
+    "text": "(recovery)"
+  },
+  {
+    "type": "text",
+    "id": "tspan3884",
+    "position": [
+      281.47119999999995,
+      537.480001
+    ],
+    "text": "(recovery)"
+  },
+  {
+    "type": "path",
+    "id": "path4379",
+    "color": "#ff00ff",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        137.08382999999998,
+        235.82308999999998
+      ],
+      [
+        147.08382999999998,
+        195.82308999999998
+      ],
+      [
+        157.08382999999998,
+        235.82308999999998
+      ]
+    ],
+    "style": "fill:#ff00ff;stroke:#ff00ff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path4379-0",
+    "color": "#ff00ff",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        196.98817000000003,
+        19.66060999999999
+      ],
+      [
+        236.53809,
+        31.314099999999996
+      ],
+      [
+        196.15711,
+        39.64331999999999
+      ]
+    ],
+    "style": "fill:#ff00ff;stroke:#ff00ff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path4379-2",
+    "color": "#ff00ff",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        256.33458,
+        261.22492
+      ],
+      [
+        266.33458,
+        301.22492
+      ],
+      [
+        276.33458,
+        261.22492
+      ]
+    ],
+    "style": "fill:#ff00ff;stroke:#ff00ff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126",
+    "color": "#00ff00",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        339.62221000000005,
+        490.2585203
+      ],
+      [
+        347.11854,
+        485.42218030000004
+      ],
+      [
+        348.16997,
+        482.75579030000006
+      ],
+      [
+        349.05307,
+        485.42218030000004
+      ],
+      [
+        356.54939999999993,
+        490.2585203
+      ],
+      [
+        349.05307,
+        487.84035029999995
+      ],
+      [
+        348.57908000000003,
+        492.7516803
+      ],
+      [
+        350.43154,
+        494.0636703
+      ],
+      [
+        348.10427999999996,
+        493.36304029999997
+      ],
+      [
+        345.67527,
+        494.13791029999993
+      ],
+      [
+        347.62741,
+        492.7516702999999
+      ],
+      [
+        347.11854,
+        487.84034029999987
+      ]
+    ],
+    "style": "fill:#00ff00;stroke:#00ff00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-2",
+    "color": "#00ff00",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        319.62221000000005,
+        490.2585203
+      ],
+      [
+        327.11854,
+        485.42218030000004
+      ],
+      [
+        328.16997,
+        482.75579030000006
+      ],
+      [
+        329.05307,
+        485.42218030000004
+      ],
+      [
+        336.54939999999993,
+        490.2585203
+      ],
+      [
+        329.05307,
+        487.84035029999995
+      ],
+      [
+        328.57908000000003,
+        492.7516803
+      ],
+      [
+        330.43154,
+        494.0636703
+      ],
+      [
+        328.10427999999996,
+        493.36304029999997
+      ],
+      [
+        325.67527,
+        494.13791029999993
+      ],
+      [
+        327.62741,
+        492.7516702999999
+      ],
+      [
+        327.11854,
+        487.84034029999987
+      ]
+    ],
+    "style": "fill:#00ff00;stroke:#00ff00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-29",
+    "color": "#00ff00",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        299.62221000000005,
+        490.2585203
+      ],
+      [
+        307.11854,
+        485.42218030000004
+      ],
+      [
+        308.16997,
+        482.75579030000006
+      ],
+      [
+        309.05307,
+        485.42218030000004
+      ],
+      [
+        316.54939999999993,
+        490.2585203
+      ],
+      [
+        309.05307,
+        487.84035029999995
+      ],
+      [
+        308.57908000000003,
+        492.7516803
+      ],
+      [
+        310.43154,
+        494.0636703
+      ],
+      [
+        308.10427999999996,
+        493.36304029999997
+      ],
+      [
+        305.67527,
+        494.13791029999993
+      ],
+      [
+        307.62741,
+        492.7516702999999
+      ],
+      [
+        307.11854,
+        487.84034029999987
+      ]
+    ],
+    "style": "fill:#00ff00;stroke:#00ff00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-9",
+    "color": "#00ff00",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        279.62221,
+        490.2585203
+      ],
+      [
+        287.11854,
+        485.42218030000004
+      ],
+      [
+        288.16997,
+        482.75579030000006
+      ],
+      [
+        289.05307,
+        485.42218030000004
+      ],
+      [
+        296.54939999999993,
+        490.2585203
+      ],
+      [
+        289.05307,
+        487.84035029999995
+      ],
+      [
+        288.57908000000003,
+        492.7516803
+      ],
+      [
+        290.43154,
+        494.0636703
+      ],
+      [
+        288.10427999999996,
+        493.36304029999997
+      ],
+      [
+        285.67527,
+        494.13791029999993
+      ],
+      [
+        287.62741,
+        492.7516702999999
+      ],
+      [
+        287.11854,
+        487.84034029999987
+      ]
+    ],
+    "style": "fill:#00ff00;stroke:#00ff00;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6",
+    "color": "#ff0000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        241.62221,
+        490.2585
+      ],
+      [
+        249.11854,
+        485.4221600000001
+      ],
+      [
+        250.16996999999998,
+        482.7557700000001
+      ],
+      [
+        251.05307,
+        485.4221600000001
+      ],
+      [
+        258.5494,
+        490.2585
+      ],
+      [
+        251.05307,
+        487.84033
+      ],
+      [
+        250.57907999999998,
+        492.75166
+      ],
+      [
+        252.43153999999998,
+        494.06365000000005
+      ],
+      [
+        250.10427999999996,
+        493.36302
+      ],
+      [
+        247.67526999999995,
+        494.13788999999997
+      ],
+      [
+        249.62740999999994,
+        492.7516499999999
+      ],
+      [
+        249.11853999999994,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#ff0000;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-7",
+    "color": "#ff0000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        203.62221,
+        490.2585
+      ],
+      [
+        211.11854,
+        485.4221600000001
+      ],
+      [
+        212.16996999999998,
+        482.7557700000001
+      ],
+      [
+        213.05307,
+        485.4221600000001
+      ],
+      [
+        220.5494,
+        490.2585
+      ],
+      [
+        213.05307,
+        487.84033
+      ],
+      [
+        212.57907999999998,
+        492.75166
+      ],
+      [
+        214.43153999999998,
+        494.06365000000005
+      ],
+      [
+        212.10427999999996,
+        493.36302
+      ],
+      [
+        209.67526999999995,
+        494.13788999999997
+      ],
+      [
+        211.62740999999994,
+        492.7516499999999
+      ],
+      [
+        211.11853999999994,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#ff0000;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-0",
+    "color": "#ff0000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        183.62221,
+        490.2585
+      ],
+      [
+        191.11854,
+        485.4221600000001
+      ],
+      [
+        192.16996999999998,
+        482.7557700000001
+      ],
+      [
+        193.05307,
+        485.4221600000001
+      ],
+      [
+        200.5494,
+        490.2585
+      ],
+      [
+        193.05307,
+        487.84033
+      ],
+      [
+        192.57907999999998,
+        492.75166
+      ],
+      [
+        194.43153999999998,
+        494.06365000000005
+      ],
+      [
+        192.10427999999996,
+        493.36302
+      ],
+      [
+        189.67526999999995,
+        494.13788999999997
+      ],
+      [
+        191.62740999999994,
+        492.7516499999999
+      ],
+      [
+        191.11853999999994,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#ff0000;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-75",
+    "color": "#ff0000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        160.50158,
+        490.30452
+      ],
+      [
+        167.99791,
+        485.4681800000001
+      ],
+      [
+        169.04933999999997,
+        482.8017900000001
+      ],
+      [
+        169.93243999999999,
+        485.4681800000001
+      ],
+      [
+        177.42877,
+        490.30452
+      ],
+      [
+        169.93243999999999,
+        487.88635
+      ],
+      [
+        169.45844999999997,
+        492.79768
+      ],
+      [
+        171.31090999999998,
+        494.10967000000005
+      ],
+      [
+        168.98364999999995,
+        493.40904
+      ],
+      [
+        166.55463999999995,
+        494.18390999999997
+      ],
+      [
+        168.50677999999994,
+        492.7976699999999
+      ],
+      [
+        167.99790999999993,
+        487.8863399999999
+      ]
+    ],
+    "style": "fill:#ff0000;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-75-6",
+    "color": "#000080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        3.6222099999999955,
+        490.2585
+      ],
+      [
+        11.118539999999996,
+        485.4221600000001
+      ],
+      [
+        12.169970000000006,
+        482.7557700000001
+      ],
+      [
+        13.05307000000002,
+        485.4221600000001
+      ],
+      [
+        20.54940000000002,
+        490.2585
+      ],
+      [
+        13.05307000000002,
+        487.84033
+      ],
+      [
+        12.579080000000033,
+        492.75166
+      ],
+      [
+        14.431540000000041,
+        494.06365000000005
+      ],
+      [
+        12.104280000000045,
+        493.36302
+      ],
+      [
+        9.67527000000004,
+        494.13788999999997
+      ],
+      [
+        11.627410000000054,
+        492.7516499999999
+      ],
+      [
+        11.118540000000053,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#000080;stroke:#000080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-75-6-8",
+    "color": "#000080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        23.622209999999995,
+        490.2585
+      ],
+      [
+        31.118539999999996,
+        485.4221600000001
+      ],
+      [
+        32.169970000000006,
+        482.7557700000001
+      ],
+      [
+        33.05307000000002,
+        485.4221600000001
+      ],
+      [
+        40.54940000000002,
+        490.2585
+      ],
+      [
+        33.05307000000002,
+        487.84033
+      ],
+      [
+        32.57908000000003,
+        492.75166
+      ],
+      [
+        34.43154000000004,
+        494.06365000000005
+      ],
+      [
+        32.104280000000045,
+        493.36302
+      ],
+      [
+        29.67527000000004,
+        494.13788999999997
+      ],
+      [
+        31.627410000000054,
+        492.7516499999999
+      ],
+      [
+        31.118540000000053,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#000080;stroke:#000080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-75-6-0",
+    "color": "#000080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        43.622209999999995,
+        490.2585
+      ],
+      [
+        51.118539999999996,
+        485.4221600000001
+      ],
+      [
+        52.169970000000006,
+        482.7557700000001
+      ],
+      [
+        53.05307000000002,
+        485.4221600000001
+      ],
+      [
+        60.54940000000005,
+        490.2585
+      ],
+      [
+        53.05307000000005,
+        487.84033
+      ],
+      [
+        52.57908000000006,
+        492.75166
+      ],
+      [
+        54.43154000000007,
+        494.06365000000005
+      ],
+      [
+        52.104280000000074,
+        493.36302
+      ],
+      [
+        49.67527000000007,
+        494.13788999999997
+      ],
+      [
+        51.627410000000054,
+        492.7516499999999
+      ],
+      [
+        51.11854000000005,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#000080;stroke:#000080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-75-6-2",
+    "color": "#000080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        63.622209999999995,
+        490.2585
+      ],
+      [
+        71.11854,
+        485.4221600000001
+      ],
+      [
+        72.16996999999998,
+        482.7557700000001
+      ],
+      [
+        73.05306999999999,
+        485.4221600000001
+      ],
+      [
+        80.54939999999999,
+        490.2585
+      ],
+      [
+        73.05306999999999,
+        487.84033
+      ],
+      [
+        72.57907999999998,
+        492.75166
+      ],
+      [
+        74.43153999999998,
+        494.06365000000005
+      ],
+      [
+        72.10427999999996,
+        493.36302
+      ],
+      [
+        69.67526999999995,
+        494.13788999999997
+      ],
+      [
+        71.62740999999994,
+        492.7516499999999
+      ],
+      [
+        71.11853999999994,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#000080;stroke:#000080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-75-6-7",
+    "color": "#000080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        83.62221,
+        490.2585
+      ],
+      [
+        91.11854,
+        485.4221600000001
+      ],
+      [
+        92.16996999999998,
+        482.7557700000001
+      ],
+      [
+        93.05306999999999,
+        485.4221600000001
+      ],
+      [
+        100.54939999999999,
+        490.2585
+      ],
+      [
+        93.05306999999999,
+        487.84033
+      ],
+      [
+        92.57907999999998,
+        492.75166
+      ],
+      [
+        94.43153999999998,
+        494.06365000000005
+      ],
+      [
+        92.10427999999996,
+        493.36302
+      ],
+      [
+        89.67526999999995,
+        494.13788999999997
+      ],
+      [
+        91.62740999999994,
+        492.7516499999999
+      ],
+      [
+        91.11853999999994,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#000080;stroke:#000080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-75-6-6",
+    "color": "#000080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        103.62221,
+        490.2585
+      ],
+      [
+        111.11854,
+        485.4221600000001
+      ],
+      [
+        112.16996999999998,
+        482.7557700000001
+      ],
+      [
+        113.05306999999999,
+        485.4221600000001
+      ],
+      [
+        120.54939999999999,
+        490.2585
+      ],
+      [
+        113.05306999999999,
+        487.84033
+      ],
+      [
+        112.57907999999998,
+        492.75166
+      ],
+      [
+        114.43153999999998,
+        494.06365000000005
+      ],
+      [
+        112.10427999999996,
+        493.36302
+      ],
+      [
+        109.67526999999995,
+        494.13788999999997
+      ],
+      [
+        111.62740999999994,
+        492.7516499999999
+      ],
+      [
+        111.11853999999994,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#000080;stroke:#000080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-6-75-6-63",
+    "color": "#000080",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        123.62221,
+        490.2585
+      ],
+      [
+        131.11854,
+        485.4221600000001
+      ],
+      [
+        132.16996999999998,
+        482.7557700000001
+      ],
+      [
+        133.05307,
+        485.4221600000001
+      ],
+      [
+        140.5494,
+        490.2585
+      ],
+      [
+        133.05307,
+        487.84033
+      ],
+      [
+        132.57907999999998,
+        492.75166
+      ],
+      [
+        134.43153999999998,
+        494.06365000000005
+      ],
+      [
+        132.10427999999996,
+        493.36302
+      ],
+      [
+        129.67526999999995,
+        494.13788999999997
+      ],
+      [
+        131.62740999999994,
+        492.7516499999999
+      ],
+      [
+        131.11853999999994,
+        487.8403199999999
+      ]
+    ],
+    "style": "fill:#000080;stroke:#000080;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3319",
+    "color": "#ff00ff",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        218.66460999999998,
+        501.01234
+      ],
+      [
+        220.42649999999998,
+        495.97909000000004
+      ],
+      [
+        230.01684999999998,
+        488.38461000000007
+      ],
+      [
+        231.00563999999997,
+        483.5256800000001
+      ],
+      [
+        231.91643999999997,
+        488.4292300000001
+      ],
+      [
+        239.80735999999996,
+        495.97910000000013
+      ],
+      [
+        241.56924999999995,
+        501.0123500000001
+      ],
+      [
+        231.41156999999993,
+        501.0123500000001
+      ],
+      [
+        230.99787999999995,
+        503.5289700000001
+      ],
+      [
+        230.57907999999998,
+        501.1015800000001
+      ],
+      [
+        218.66460999999998,
+        501.0123800000001
+      ]
+    ],
+    "style": "fill:#ff00ff;stroke:#ff00ff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3319-7",
+    "color": "#ff00ff",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        135.88317,
+        500.414
+      ],
+      [
+        137.64506,
+        495.38075000000003
+      ],
+      [
+        147.23541,
+        487.78627000000006
+      ],
+      [
+        148.2242,
+        482.9273400000001
+      ],
+      [
+        149.135,
+        487.83089000000007
+      ],
+      [
+        157.02591999999999,
+        495.3807600000001
+      ],
+      [
+        158.78780999999998,
+        500.4140100000001
+      ],
+      [
+        148.63012999999995,
+        500.4140100000001
+      ],
+      [
+        148.21643999999998,
+        502.93063000000006
+      ],
+      [
+        147.79764,
+        500.5032400000001
+      ],
+      [
+        135.88317,
+        500.4140400000001
+      ]
+    ],
+    "style": "fill:#ff00ff;stroke:#ff00ff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "text",
+    "id": "text4654",
+    "position": [
+      11.335800000000006,
+      473.96144000000004
+    ],
+    "text": "Ascension Airport"
+  },
+  {
+    "type": "text",
+    "id": "tspan4656",
+    "position": [
+      11.335800000000006,
+      473.96144000000004
+    ],
+    "text": "Ascension Airport"
+  },
+  {
+    "type": "text",
+    "id": "text4689",
+    "position": [
+      10.347669999999994,
+      36.54035999999999
+    ],
+    "text": "Stanley Airport"
+  },
+  {
+    "type": "text",
+    "id": "tspan4691",
+    "position": [
+      10.347669999999994,
+      36.54035999999999
+    ],
+    "text": "Stanley Airport"
+  },
+  {
+    "type": "text",
+    "id": "text4722",
+    "position": [
+      269.07054,
+      60.73658999999998
+    ],
+    "text": "Refuelling plan"
+  },
+  {
+    "type": "text",
+    "id": "tspan4724",
+    "position": [
+      269.07054,
+      60.73658999999998
+    ],
+    "text": "Refuelling plan"
+  },
+  {
+    "type": "text",
+    "id": "text2949",
+    "position": [
+      282.58043,
+      77.23304999999999
+    ],
+    "text": "The diagram presentsthe refuelling sequenceonly. Flight time, fuelvolumes or distancesare not represented."
+  },
+  {
+    "type": "text",
+    "id": "tspan2951",
+    "position": [
+      282.58043,
+      77.23304999999999
+    ],
+    "text": "The diagram presents"
+  },
+  {
+    "type": "text",
+    "id": "tspan2953",
+    "position": [
+      282.58043,
+      91.23304999999999
+    ],
+    "text": "the refuelling sequence"
+  },
+  {
+    "type": "text",
+    "id": "tspan2955",
+    "position": [
+      282.58043,
+      105.23304999999999
+    ],
+    "text": "only. Flight time, fuel"
+  },
+  {
+    "type": "text",
+    "id": "tspan2957",
+    "position": [
+      282.58043,
+      119.23304999999999
+    ],
+    "text": "volumes or distances"
+  },
+  {
+    "type": "text",
+    "id": "tspan2959",
+    "position": [
+      282.58043,
+      133.23305
+    ],
+    "text": "are not represented."
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-0-7",
+    "color": "#800000",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        133.12221,
+        281.8181
+      ],
+      [
+        143.12221,
+        271.8181
+      ]
+    ],
+    "style": "fill:none;stroke:#800000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-75-9",
+    "color": "#800000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        148.12221,
+        266.8181
+      ],
+      [
+        143.36577999999997,
+        281.23317000000003
+      ],
+      [
+        132.46922999999998,
+        271.98503000000005
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-0-9",
+    "color": "#800000",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        133.12220000000002,
+        311.81813
+      ],
+      [
+        143.12220000000002,
+        301.81813
+      ]
+    ],
+    "style": "fill:none;stroke:#800000;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-75-09",
+    "color": "#800000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        148.12221,
+        296.8181
+      ],
+      [
+        143.66496999999998,
+        311.32848
+      ],
+      [
+        132.57945999999998,
+        302.30771
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-21",
+    "color": "#800000",
+    "stroke_width": 8.46282,
+    "points": [
+      [
+        167.5790404871928,
+        441.10155909812124
+      ],
+      [
+        157.5790454871928,
+        431.10155909812124
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:8.46282;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-5",
+    "color": "#800000",
+    "stroke_width": 1.41047,
+    "points": [
+      [
+        147.57905048719277,
+        421.10155909812124
+      ],
+      [
+        152.03628588719278,
+        435.6119456981213
+      ],
+      [
+        163.1218050871928,
+        426.5911724981213
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:1.41047px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-2",
+    "color": "#800000",
+    "stroke_width": 8.46282,
+    "points": [
+      [
+        167.5790404871928,
+        421.10155909812124
+      ],
+      [
+        157.5790454871928,
+        411.10155909812124
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:8.46282;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-7",
+    "color": "#800000",
+    "stroke_width": 1.41047,
+    "points": [
+      [
+        147.57905048719277,
+        401.10155909812124
+      ],
+      [
+        152.03628588719278,
+        415.6119456981213
+      ],
+      [
+        163.1218050871928,
+        406.5911724981213
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:1.41047px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-75-9-7-2",
+    "color": "#800000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        148.07907999999998,
+        131.10156999999998
+      ],
+      [
+        143.62183999999996,
+        145.61194999999998
+      ],
+      [
+        132.53632999999996,
+        136.59117999999995
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-75-9-7",
+    "color": "#800000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        148.07907999999998,
+        151.10156999999998
+      ],
+      [
+        143.62183999999996,
+        165.61194999999998
+      ],
+      [
+        132.53632999999996,
+        156.59117999999995
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-75-0",
+    "color": "#800000",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        148.07906000000003,
+        61.10156999999998
+      ],
+      [
+        152.53630000000004,
+        75.61194999999998
+      ],
+      [
+        163.62181000000004,
+        66.59117999999995
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "text",
+    "id": "text3529",
+    "position": [
+      322.21878999999996,
+      204.22096
+    ],
+    "text": "Victor refuels Vulcan"
+  },
+  {
+    "type": "text",
+    "id": "tspan3531",
+    "position": [
+      322.21878999999996,
+      204.22096
+    ],
+    "text": "Victor refuels Vulcan"
+  },
+  {
+    "type": "text",
+    "id": "text3533",
+    "position": [
+      324.50260999999995,
+      217.64003000000002
+    ],
+    "text": "Victor refuels Victor"
+  },
+  {
+    "type": "text",
+    "id": "tspan3535",
+    "position": [
+      324.50260999999995,
+      217.64003000000002
+    ],
+    "text": "Victor refuels Victor"
+  },
+  {
+    "type": "path",
+    "id": "path3319-71",
+    "color": "#b3b3b3",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        305.41865,
+        141.39278000000002
+      ],
+      [
+        310.45189999999997,
+        143.15467
+      ],
+      [
+        318.04637999999994,
+        152.74502
+      ],
+      [
+        322.90530999999993,
+        153.73381
+      ],
+      [
+        318.00175999999993,
+        154.64461
+      ],
+      [
+        310.4518899999999,
+        162.53553
+      ],
+      [
+        305.4186399999999,
+        164.29742
+      ],
+      [
+        305.4186399999999,
+        154.13973999999996
+      ],
+      [
+        302.90201999999994,
+        153.72605
+      ],
+      [
+        305.3294099999999,
+        153.30725
+      ],
+      [
+        305.4186099999999,
+        141.39278000000002
+      ]
+    ],
+    "style": "fill:#b3b3b3;stroke:#b3b3b3;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3126-5",
+    "color": "#999999",
+    "stroke_width": 1.0,
+    "points": [
+      [
+        310.49307000000005,
+        163.81092
+      ],
+      [
+        315.32941,
+        171.30725
+      ],
+      [
+        317.9958,
+        172.35868
+      ],
+      [
+        315.32941,
+        173.24178
+      ],
+      [
+        310.49307000000005,
+        180.73811
+      ],
+      [
+        312.9112400000001,
+        173.24178
+      ],
+      [
+        307.99991000000006,
+        172.76779
+      ],
+      [
+        306.68792,
+        174.62025
+      ],
+      [
+        307.38855000000007,
+        172.29298999999997
+      ],
+      [
+        306.6136800000001,
+        169.86397999999997
+      ],
+      [
+        307.99992000000015,
+        171.81611999999996
+      ],
+      [
+        312.91125000000017,
+        171.30724999999995
+      ]
+    ],
+    "style": "fill:#999999;stroke:#999999;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "text",
+    "id": "text3387",
+    "position": [
+      322.44603,
+      160.57551
+    ],
+    "text": "Vulcan"
+  },
+  {
+    "type": "text",
+    "id": "tspan3389",
+    "position": [
+      322.44603,
+      160.57551
+    ],
+    "text": "Vulcan"
+  },
+  {
+    "type": "text",
+    "id": "text3391",
+    "position": [
+      323.01633999999996,
+      179.13252
+    ],
+    "text": "Victor"
+  },
+  {
+    "type": "text",
+    "id": "tspan3393",
+    "position": [
+      323.01633999999996,
+      179.13252
+    ],
+    "text": "Victor"
+  },
+  {
+    "type": "text",
+    "id": "text3395",
+    "position": [
+      323.87309,
+      192.5489
+    ],
+    "text": "Reserve flight"
+  },
+  {
+    "type": "text",
+    "id": "tspan3397",
+    "position": [
+      323.87309,
+      192.5489
+    ],
+    "text": "Reserve flight"
+  },
+  {
+    "type": "path",
+    "id": "path3592-21-5-3",
+    "color": "#808080",
+    "stroke_width": 6.0,
+    "points": [
+      [
+        317.32941,
+        187.30725
+      ],
+      [
+        305.32941,
+        187.30725
+      ]
+    ],
+    "style": "fill:none;stroke:#808080;stroke-width:6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-1-9-2",
+    "color": "#800000",
+    "stroke_width": 15.0449,
+    "points": [
+      [
+        306.15897997360184,
+        205.71581942601017
+      ],
+      [
+        311.7840189736018,
+        200.09078322601022
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:15.0449;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-4-7-8",
+    "color": "#800000",
+    "stroke_width": 2.50749,
+    "points": [
+      [
+        317.40905797360176,
+        194.4657470260102
+      ],
+      [
+        309.2469088736018,
+        196.9729593260102
+      ],
+      [
+        314.3211290736018,
+        203.20860712601018
+      ]
+    ],
+    "style": "fill:#800000;stroke:#800000;stroke-width:2.50749px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path3725-0-7-3-0-9-6-78",
+    "color": "#008080",
+    "stroke_width": 11.4491,
+    "points": [
+      [
+        305.2714676,
+        219.16563270544918
+      ],
+      [
+        310.5120752,
+        213.92503034605676
+      ]
+    ],
+    "style": "fill:none;stroke:#008080;stroke-width:11.4491;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+  },
+  {
+    "type": "path",
+    "id": "path2899-9-0-6",
+    "color": "#008080",
+    "stroke_width": 1.90818,
+    "points": [
+      [
+        315.7526828,
+        208.68442798666445
+      ],
+      [
+        308.1483567887036,
+        211.02028732795924
+      ],
+      [
+        312.87579361129644,
+        216.8297733641544
+      ]
+    ],
+    "style": "fill:#008080;stroke:#008080;stroke-width:1.90818px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+  },
+  {
+    "type": "circle",
+    "id": "path3004",
+    "center": [
+      308.33710096107114,
+      229.80735526041033
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006",
+    "position": [
+      302.8410928852611,
+      235.0959575045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008",
+    "position": [
+      302.8410928852611,
+      235.0959575045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "text3800",
+    "position": [
+      324.45146000000005,
+      234.5331
+    ],
+    "text": "Aircraft returns"
+  },
+  {
+    "type": "text",
+    "id": "tspan3802",
+    "position": [
+      324.45146000000005,
+      234.5331
+    ],
+    "text": "Aircraft returns"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-7",
+    "center": [
+      10.301280961071171,
+      298.9261252604103
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-1",
+    "position": [
+      4.805272885261157,
+      304.21472750450937
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-7",
+    "position": [
+      4.805272885261157,
+      304.21472750450937
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-0",
+    "center": [
+      50.30128096107117,
+      93.71557226041034
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-4",
+    "position": [
+      44.80527288526116,
+      99.00417450450942
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-1",
+    "position": [
+      44.80527288526116,
+      99.00417450450942
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-2",
+    "center": [
+      90.30128096107117,
+      182.86444926041034
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-9",
+    "position": [
+      84.80527288526116,
+      188.15305150450942
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-6",
+    "position": [
+      84.80527288526116,
+      188.15305150450942
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-5",
+    "center": [
+      129.8012809610712,
+      233.1179602604103
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-43",
+    "position": [
+      124.30527288526116,
+      238.4065625045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-64",
+    "position": [
+      124.30527288526116,
+      238.4065625045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-1",
+    "center": [
+      110.8083009610712,
+      412.59478526041033
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-0",
+    "position": [
+      105.31229288526117,
+      417.8833875045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-9",
+    "position": [
+      105.31229288526117,
+      417.8833875045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-6",
+    "center": [
+      70.32340096107117,
+      413.9878152604103
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-2",
+    "position": [
+      64.82739288526116,
+      419.27641750450937
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-5",
+    "position": [
+      64.82739288526116,
+      419.27641750450937
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-77",
+    "center": [
+      29.445480961071183,
+      414.18432526041033
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-41",
+    "position": [
+      23.94947288526117,
+      419.4729275045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-19",
+    "position": [
+      23.94947288526117,
+      419.4729275045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-74",
+    "center": [
+      167.24089096107122,
+      394.64710526041034
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-93",
+    "position": [
+      161.74488288526118,
+      399.9357075045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-13",
+    "position": [
+      161.74488288526118,
+      399.9357075045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-9",
+    "center": [
+      189.7781109610712,
+      413.9878152604103
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-3",
+    "position": [
+      184.28210288526117,
+      419.27641750450937
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-8",
+    "position": [
+      184.28210288526117,
+      419.27641750450937
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-8",
+    "center": [
+      229.8012809610712,
+      301.31915526041035
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-6",
+    "position": [
+      224.30527288526116,
+      306.60775750450944
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-82",
+    "position": [
+      224.30527288526116,
+      306.60775750450944
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-59",
+    "center": [
+      250.3012809610712,
+      302.51566526041034
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-26",
+    "position": [
+      244.80527288526116,
+      307.8042675045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-85",
+    "position": [
+      244.80527288526116,
+      307.8042675045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-67",
+    "center": [
+      286.3012809610712,
+      183.25747326041034
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-8",
+    "position": [
+      280.80527288526116,
+      188.54607550450942
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-72",
+    "position": [
+      280.80527288526116,
+      188.54607550450942
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-97",
+    "center": [
+      346.68284096107124,
+      412.59478526041033
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-03",
+    "position": [
+      341.1868328852612,
+      417.8833875045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-723",
+    "position": [
+      341.1868328852612,
+      417.8833875045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-89",
+    "center": [
+      326.5386409610712,
+      319.26683526041035
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-416",
+    "position": [
+      321.0426328852612,
+      324.5554375045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-4",
+    "position": [
+      321.0426328852612,
+      324.5554375045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-87",
+    "center": [
+      306.0014309610712,
+      412.59478526041033
+    ],
+    "radius": 8.351284316065302,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-33",
+    "position": [
+      300.50542288526117,
+      417.8833875045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-50",
+    "position": [
+      300.50542288526117,
+      417.8833875045094
+    ],
+    "text": "R"
+  },
+  {
+    "type": "circle",
+    "id": "path3004-5-4",
+    "center": [
+      210.30128078668162,
+      64.04639766809564
+    ],
+    "radius": 8.351284210696452,
+    "fill": "none",
+    "style": "color:#000000;font-size:72px;display:inline;overflow:visible;visibility:visible;fill:none;stroke:#000000;stroke-width:13.7542;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+  },
+  {
+    "type": "text",
+    "id": "text3006-43-5",
+    "position": [
+      204.8052727802152,
+      69.33499984546796
+    ],
+    "text": "R"
+  },
+  {
+    "type": "text",
+    "id": "tspan3008-64-1",
+    "position": [
+      204.8052727802152,
+      69.33499984546796
+    ],
+    "text": "R"
+  }
+]

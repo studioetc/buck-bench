@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Operation Black Buck — Aerial Refuelling Simulation</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <div class="brand">
+        <span class="callsign">BLACK BUCK 1</span>
+        <h1>Operation Black Buck</h1>
+        <p class="subtitle">30 Apr – 1 May 1982 · Ascension → Port Stanley · Aerial refuelling chain</p>
+      </div>
+      <div class="stats-strip" id="stats-strip">
+        <div class="stat"><span class="label">Mission time</span><span class="value" id="stat-time">00:00 Z</span></div>
+        <div class="stat"><span class="label">Distance</span><span class="value" id="stat-dist">0 nm</span></div>
+        <div class="stat"><span class="label">Airborne</span><span class="value" id="stat-airborne">0</span></div>
+        <div class="stat"><span class="label">Vulcan fuel</span><span class="value" id="stat-fuel">—</span></div>
+        <div class="stat"><span class="label">Phase</span><span class="value" id="stat-phase">Pre-flight</span></div>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <aside class="side-panel">
+        <section class="panel-block">
+          <h2>Mission brief</h2>
+          <p class="brief">
+            One Avro Vulcan B.2 and eleven Handley Page Victor K.2 tankers launch from
+            Wideawake Airfield, Ascension Island. Victors refuel Victors and the bomber
+            in a cascading chain — the longest bombing raid in history at the time
+            (~6,600 nm / 16 hours).
+          </p>
+        </section>
+
+        <section class="panel-block">
+          <h2>Legend</h2>
+          <ul class="legend">
+            <li><span class="dot vulcan"></span> Avro Vulcan (XM607)</li>
+            <li><span class="dot victor"></span> Victor K.2 tanker</li>
+            <li><span class="dot reserve"></span> Reserve / peel-off</li>
+            <li><span class="line route"></span> Planned route</li>
+            <li><span class="line trail"></span> Track flown</li>
+            <li><span class="line hose"></span> Active refuel hose</li>
+          </ul>
+        </section>
+
+        <section class="panel-block formation-block">
+          <h2>Formation snapshot</h2>
+          <div id="formation-list" class="formation-list"></div>
+        </section>
+
+        <section class="panel-block events-block">
+          <h2>Event log</h2>
+          <div id="event-log" class="event-log"></div>
+        </section>
+      </aside>
+
+      <section class="map-stage">
+        <div class="map-chrome">
+          <div class="view-modes">
+            <button type="button" class="chip active" data-view="overview">Overview</button>
+            <button type="button" class="chip" data-view="formation">Formation (scaled)</button>
+            <button type="button" class="chip" data-view="split">Split view</button>
+          </div>
+          <div class="scale-note" id="scale-note">
+            Geographic overview · aircraft enlarged for visibility
+          </div>
+        </div>
+
+        <div class="canvas-wrap" id="canvas-wrap">
+          <canvas id="map-canvas"></canvas>
+          <div class="map-overlay-labels" id="overlay-labels"></div>
+          <div class="formation-callout" id="formation-callout" hidden>
+            <div class="callout-title">Scaled formation view</div>
+            <div class="callout-body">
+              Aircraft spacing exaggerated ~50× so the probe-and-drogue chain is readable.
+              True spacing in trail was roughly 1–2 nm.
+            </div>
+          </div>
+        </div>
+
+        <div class="timeline-bar">
+          <div class="transport">
+            <button type="button" id="btn-reset" title="Reset">⏮</button>
+            <button type="button" id="btn-play" title="Play / Pause">▶</button>
+            <button type="button" id="btn-step" title="Next event">⏭</button>
+          </div>
+          <div class="scrubber">
+            <input type="range" id="timeline" min="0" max="1000" value="0" />
+            <div class="markers" id="timeline-markers"></div>
+          </div>
+          <div class="speed">
+            <label for="speed">Speed</label>
+            <select id="speed">
+              <option value="30">30×</option>
+              <option value="60" selected>60×</option>
+              <option value="120">120×</option>
+              <option value="300">300×</option>
+              <option value="600">600×</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <aside class="detail-panel">
+        <section class="panel-block">
+          <h2 id="detail-title">Standby</h2>
+          <p id="detail-body" class="detail-body">
+            Press play to launch the Black Buck 1 package from Ascension Island.
+          </p>
+        </section>
+
+        <section class="panel-block">
+          <h2>Key numbers</h2>
+          <dl class="facts">
+            <div><dt>Round trip</dt><dd>~6,600 nm</dd></div>
+            <div><dt>Duration</dt><dd>~16 hours</dd></div>
+            <div><dt>Vulcan refuels</dt><dd>7 out · 1 return</dd></div>
+            <div><dt>Victor sorties</dt><dd>15 planned</dd></div>
+            <div><dt>AAR contacts</dt><dd>~18 planned</dd></div>
+            <div><dt>Bombs</dt><dd>21 × 1,000 lb</dd></div>
+            <div><dt>Captain</dt><dd>F/L Martin Withers</dd></div>
+            <div><dt>Last tanker</dt><dd>S/L Bob Tuxford</dd></div>
+          </dl>
+        </section>
+
+        <section class="panel-block fuel-panel">
+          <h2>Vulcan fuel (illustrative)</h2>
+          <div class="fuel-meter">
+            <div class="fuel-fill" id="fuel-fill"></div>
+            <span id="fuel-label">74,000 lb max</span>
+          </div>
+          <p class="micro">
+            Capacity ~74,000 lb in 14 bag tanks. Between brackets the bomber burned
+            ~16,250 lb/hr while still above theoretical max weight.
+          </p>
+        </section>
+
+        <section class="panel-block">
+          <h2>How the chain works</h2>
+          <ol class="chain-steps">
+            <li>Package climbs south from Ascension.</li>
+            <li>Outer Victors top up inner Victors + Vulcan.</li>
+            <li>Emptied tankers peel off and recover north.</li>
+            <li>Remaining tankers become the next “givers”.</li>
+            <li>Final tanker tops Vulcan alone for the bomb run.</li>
+            <li>Return RV off Brazil restores the bomber home.</li>
+          </ol>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>Illustrative reconstruction of Black Buck 1 refuelling logistics · not an official RAF chart</span>
+      <span>Sources: RAF histories, White <em>Vulcan 607</em>, public mission accounts</span>
+    </footer>
+  </div>
+  <script src="sim.js"></script>
+</body>
+</html>

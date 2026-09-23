@@ -1,0 +1,641 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap');
+
+:root {
+    --bg-dark: #0d0e12;
+    --bg-panel: rgba(21, 24, 33, 0.85);
+    --bg-panel-hover: rgba(30, 34, 48, 0.95);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(0, 242, 254, 0.2);
+    
+    --text-primary: #f0f4f8;
+    --text-secondary: #90a4ae;
+    --text-dark: #546e7a;
+    
+    --color-vulcan: #ff00ff;
+    --color-vulcan-glow: rgba(255, 0, 255, 0.4);
+    --color-victor-teal: #00f2fe;
+    --color-victor-teal-glow: rgba(0, 242, 254, 0.4);
+    --color-victor-red: #ff3b30;
+    --color-victor-red-glow: rgba(255, 59, 48, 0.4);
+    --color-recovery: #4cd964;
+    --color-recovery-glow: rgba(76, 217, 100, 0.4);
+    
+    --accent: #ff9500;
+    --accent-glow: rgba(255, 149, 0, 0.4);
+    
+    --font-sans: 'Inter', sans-serif;
+    --font-tactical: 'Orbitron', monospace;
+    
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tactical UI Scanline Overlay */
+body::after {
+    content: " ";
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    z-index: 9999;
+    background-size: 100% 4px, 3px 100%;
+    pointer-events: none;
+    opacity: 0.4;
+}
+
+header {
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border-color);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.tactical-badge {
+    background: rgba(255, 149, 0, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: var(--font-tactical);
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+h1 {
+    font-family: var(--font-tactical);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #fff, var(--text-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.mission-metadata {
+    display: flex;
+    gap: 20px;
+    font-family: var(--font-tactical);
+    font-size: 0.85rem;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.meta-label {
+    color: var(--text-dark);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.meta-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Dashboard Layout */
+main {
+    flex: 1;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Left Sidebar - Historical Logs */
+.sidebar {
+    width: 380px;
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.panel-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    font-family: var(--font-tactical);
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.panel-title::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 12px;
+    background: var(--accent);
+}
+
+.logs-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-dark);
+}
+
+.log-entry {
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 3px solid var(--text-dark);
+    padding: 12px;
+    border-radius: 0 4px 4px 0;
+    transition: var(--transition-smooth);
+}
+
+.log-entry.active {
+    background: rgba(255, 149, 0, 0.05);
+    border-left-color: var(--accent);
+    box-shadow: inset 0 0 10px rgba(255, 149, 0, 0.03);
+}
+
+.log-entry.critical {
+    background: rgba(255, 59, 48, 0.05);
+    border-left-color: var(--color-victor-red);
+}
+
+.log-time {
+    font-family: var(--font-tactical);
+    font-size: 0.75rem;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.log-entry.active .log-time {
+    color: var(--accent);
+}
+
+.log-entry.critical .log-time {
+    color: var(--color-victor-red);
+}
+
+.log-text {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+/* Center Area - Map Visualization */
+.content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: radial-gradient(circle at center, #151825 0%, #08090d 100%);
+}
+
+.map-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+#mapCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* View Mode Selector Overlay */
+.view-selector {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 5;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    padding: 4px;
+    border-radius: 6px;
+    display: flex;
+    gap: 4px;
+}
+
+.view-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    font-family: var(--font-tactical);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: var(--transition-smooth);
+}
+
+.view-btn.active {
+    background: var(--accent);
+    color: var(--bg-dark);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Control HUD overlay */
+.playback-hud {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 500px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.playback-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    justify-content: center;
+}
+
+.hud-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+}
+
+.hud-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-secondary);
+}
+
+.hud-btn.play-pause {
+    width: 48px;
+    height: 48px;
+    background: var(--accent);
+    color: var(--bg-dark);
+    border: none;
+}
+
+.hud-btn.play-pause:hover {
+    background: #ffab40;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-tactical);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-left: 20px;
+}
+
+.speed-select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 4px 8px;
+    border-radius: 4px;
+    outline: none;
+    font-family: var(--font-tactical);
+    cursor: pointer;
+}
+
+.timeline-slider-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.slider-time {
+    font-family: var(--font-tactical);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    width: 60px;
+    text-align: center;
+}
+
+.timeline-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--accent-glow);
+    transition: var(--transition-smooth);
+}
+
+.timeline-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Right Sidebar - Fuel Dashboard */
+.dashboard-panel {
+    width: 400px;
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+}
+
+.aircraft-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.aircraft-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.aircraft-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.aircraft-card.active {
+    border-color: var(--border-glow);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.05);
+}
+
+.aircraft-card.vulcan.active {
+    border-color: var(--color-vulcan);
+}
+
+.aircraft-card.retired {
+    opacity: 0.4;
+}
+
+.aircraft-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+}
+
+.aircraft-card.vulcan::before {
+    background: var(--color-vulcan);
+}
+
+.aircraft-card.victor-teal::before {
+    background: var(--color-victor-teal);
+}
+
+.aircraft-card.victor-red::before {
+    background: var(--color-victor-red);
+}
+
+.aircraft-card.victor-recovery::before {
+    background: var(--color-recovery);
+}
+
+.aircraft-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.aircraft-identity {
+    display: flex;
+    flex-direction: column;
+}
+
+.aircraft-callsign {
+    font-family: var(--font-tactical);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.aircraft-model {
+    font-size: 0.7rem;
+    color: var(--text-dark);
+    text-transform: uppercase;
+}
+
+.aircraft-status-badge {
+    font-family: var(--font-tactical);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.status-airborne {
+    background: rgba(76, 217, 100, 0.15);
+    color: var(--color-recovery);
+    border: 1px solid var(--color-recovery);
+}
+
+.status-refuelling {
+    background: rgba(255, 149, 0, 0.15);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    animation: flash 1s infinite alternate;
+}
+
+.status-returned {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.status-aborted {
+    background: rgba(255, 59, 48, 0.15);
+    color: var(--color-victor-red);
+    border: 1px solid var(--color-victor-red);
+}
+
+.fuel-gauge-container {
+    margin-top: 5px;
+}
+
+.fuel-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+}
+
+.fuel-amount {
+    font-family: var(--font-tactical);
+    font-weight: 600;
+}
+
+.fuel-bar-outer {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.fuel-bar-inner {
+    height: 100%;
+    width: 100%;
+    background: var(--color-victor-teal);
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+
+.aircraft-card.vulcan .fuel-bar-inner {
+    background: var(--color-vulcan);
+}
+
+.aircraft-card.victor-red .fuel-bar-inner {
+    background: var(--color-victor-red);
+}
+
+.aircraft-card.victor-recovery .fuel-bar-inner {
+    background: var(--color-recovery);
+}
+
+.fuel-low .fuel-bar-inner {
+    background: var(--color-victor-red) !important;
+    animation: flash-bar 0.8s infinite alternate;
+}
+
+/* Animations */
+@keyframes flash {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+@keyframes flash-bar {
+    0% { background: var(--color-victor-red); box-shadow: 0 0 2px var(--color-victor-red-glow); }
+    100% { background: #ff7b76; box-shadow: 0 0 10px var(--color-victor-red-glow); }
+}
+
+/* Interactive Info Modals or Overlays */
+.tactical-overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 8px;
+    width: 250px;
+    z-index: 5;
+    font-size: 0.8rem;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.overlay-title {
+    font-family: var(--font-tactical);
+    font-weight: 700;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.overlay-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.overlay-val {
+    font-family: var(--font-tactical);
+    font-weight: 600;
+}

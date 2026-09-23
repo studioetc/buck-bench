@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BLACK BUCK ONE · The Refuelling Relay · v2</title>
+<style>
+  :root{
+    --bg:#04070d; --ink:#e2ecf6; --dim:#7e90a6; --dimmer:#4a586a;
+    --line:#17242f; --panel:rgba(6,11,18,.86);
+    --amber:#ffb648; --amber2:#ffd79a; --red:#ff5f63; --white:#cfe0f2;
+    --blue:#4fc9f7; --violet:#a98bfa; --green:#4fe0a8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--ink);overflow:hidden;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;-webkit-font-smoothing:antialiased}
+  canvas{display:block}
+  #map{position:fixed;inset:0}
+  .vig{position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(125% 95% at 50% 42%,transparent 42%,rgba(0,0,0,.7) 100%)}
+
+  .p{position:fixed;background:var(--panel);border:1px solid var(--line);
+     backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .p>.hd{display:flex;justify-content:space-between;align-items:center;gap:8px;
+     padding:7px 11px;border-bottom:1px solid var(--line);
+     font-size:9.5px;letter-spacing:.19em;color:var(--dim);text-transform:uppercase}
+  .p>.hd b{color:var(--amber);font-weight:600}
+
+  /* header */
+  #hdr{top:0;left:0;right:0;height:54px;display:flex;align-items:center;gap:16px;
+    padding:0 15px;border:0;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(4,7,13,.96),rgba(4,7,13,.6));z-index:8}
+  #hdr .ttl{font-size:14px;letter-spacing:.24em;color:var(--amber)}
+  #hdr .sub{font-size:9px;letter-spacing:.15em;color:var(--dim);margin-top:3px}
+  #hdr .sp{flex:1}
+  .st{text-align:right;min-width:78px}
+  .st .k{font-size:8px;letter-spacing:.15em;color:var(--dimmer)}
+  .st .v{font-size:14.5px;font-variant-numeric:tabular-nums;margin-top:2px}
+  .st .v.am{color:var(--amber)} .st .v.rd{color:var(--red)}
+
+  /* left log */
+  #log{left:13px;top:66px;width:316px;z-index:6}
+  #log .bd{padding:10px 12px 12px}
+  #phase{font-size:9.5px;letter-spacing:.2em;color:var(--amber);margin-bottom:6px}
+  #hl{font-size:14px;line-height:1.34;color:#fff;margin-bottom:6px}
+  #det{font-size:11.5px;line-height:1.62;color:#a9bcd0;
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  #det em{color:var(--amber2);font-style:normal}
+  #cal{margin-top:9px;padding:8px 9px;border-left:2px solid var(--amber);
+    background:rgba(255,182,72,.07);font-size:11px;line-height:1.5;color:var(--amber2);
+    font-family:ui-sans-serif,system-ui,sans-serif;display:none}
+  #cal.on{display:block}
+
+  /* right ladder */
+  #lad{right:13px;top:66px;width:314px;bottom:100px;display:flex;flex-direction:column;z-index:6}
+  #ladb{overflow-y:auto;padding:4px 6px 8px;flex:1;
+    scrollbar-width:thin;scrollbar-color:#1d2b3a transparent}
+  #ladb::-webkit-scrollbar{width:5px}
+  #ladb::-webkit-scrollbar-thumb{background:#1d2b3a;border-radius:3px}
+  .sec{font-size:8px;letter-spacing:.2em;color:var(--dimmer);padding:9px 3px 4px;
+    display:flex;align-items:center;gap:6px}
+  .sec:before{content:"";width:6px;height:6px;background:currentColor;
+    clip-path:polygon(50% 0,100% 100%,0 100%)}
+  .row{display:grid;grid-template-columns:14px 62px 1fr 54px;gap:6px;align-items:center;
+    padding:3px 3px;border-radius:2px}
+  .row.gone{opacity:.24} .row.pre{opacity:.18}
+  .row.act{background:rgba(255,182,72,.11);box-shadow:inset 0 0 0 1px rgba(255,182,72,.3)}
+  .fl{font-size:11px;text-align:center;line-height:1}
+  .cs{font-size:9px;letter-spacing:.05em;line-height:1.24}
+  .cs small{display:block;font-size:7.5px;color:var(--dimmer)}
+  .bar{height:11px;background:#0a121b;border:1px solid #17242f;position:relative;overflow:hidden}
+  .bar i{position:absolute;inset:0;width:100%;transform-origin:left center;
+    transform:scaleX(0);will-change:transform}
+  .bar:after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(90deg,rgba(0,0,0,.24) 0 1px,transparent 1px 4px)}
+  .fu{font-size:9px;text-align:right;font-variant-numeric:tabular-nums;color:#93a7bb}
+  .fu.low{color:var(--red)}
+
+  /* timeline */
+  #tl{left:13px;right:13px;bottom:13px;height:80px;z-index:8}
+  #tlw{padding:7px 12px 5px}
+  #trk{position:relative;height:24px;cursor:pointer}
+  #trk .rail{position:absolute;left:0;right:0;top:10px;height:3px;background:#132030}
+  #trk .fill{position:absolute;left:0;top:10px;height:3px;width:100%;
+    background:linear-gradient(90deg,#57401b,var(--amber));
+    transform-origin:left center;transform:scaleX(0);will-change:transform}
+  #trk .kn{position:absolute;left:0;top:4px;width:3px;height:15px;background:#fff;
+    margin-left:-1px;will-change:transform}
+  .mk{position:absolute;top:7px;width:9px;height:9px;margin-left:-4.5px;transform:rotate(45deg);
+    border:1px solid var(--dimmer);background:#0a121b;
+    transition:background .2s,border-color .2s}
+  .mk.hit{background:var(--amber);border-color:var(--amber)}
+  .mk.big{width:11px;height:11px;top:6px;margin-left:-5.5px;border-color:var(--red)}
+  .mk.big.hit{background:var(--red);border-color:var(--red)}
+  .mkl{position:absolute;top:21px;font-size:7px;color:var(--dimmer);letter-spacing:.1em;
+    transform:translateX(-50%);white-space:nowrap}
+  #ctr{display:flex;align-items:center;gap:7px;margin-top:14px;flex-wrap:wrap}
+  button{background:#0b141d;border:1px solid #1c2a38;color:#9fb3c7;font:inherit;font-size:9px;
+    letter-spacing:.13em;padding:5px 9px;cursor:pointer;border-radius:2px;
+    transition:border-color .15s,color .15s,background .15s}
+  button:hover{border-color:var(--amber);color:var(--amber)}
+  button.on{background:rgba(255,182,72,.16);border-color:var(--amber);color:var(--amber)}
+  #ctr .sep{width:1px;height:17px;background:var(--line)}
+  #ctr .lbl{font-size:8px;letter-spacing:.14em;color:var(--dimmer)}
+
+  /* contact stage */
+  #stage{position:fixed;z-index:7;left:50%;transform:translate(-50%,26px);
+    width:min(1050px,calc(100vw - 690px));height:min(520px,calc(100vh - 250px));
+    top:78px;opacity:0;pointer-events:none;transition:opacity .5s,transform .5s}
+  #stage.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+  #stagec{width:100%;height:calc(100% - 30px)}
+  #scrim{position:fixed;inset:0;background:radial-gradient(70% 60% at 50% 45%,
+    rgba(2,5,10,.55),rgba(2,5,10,.86));z-index:5;opacity:0;pointer-events:none;
+    transition:opacity .5s}
+  #scrim.on{opacity:1}
+  #mini{position:fixed;right:13px;bottom:100px;width:314px;height:180px;z-index:7;
+    opacity:0;pointer-events:none;transition:opacity .45s}
+  #mini.on{opacity:1}
+  #minic{width:100%;height:calc(100% - 26px)}
+
+  /* overlays */
+  .ov{position:fixed;inset:0;background:rgba(2,4,8,.94);z-index:20;display:none;
+    backdrop-filter:blur(6px)}
+  .ov.on{display:block}
+  #cascc{position:absolute;inset:0;width:100%;height:100%}
+  #cascHd{position:absolute;left:20px;top:16px;z-index:2}
+  #cascHd .t{font-size:12px;letter-spacing:.22em;color:var(--amber)}
+  #cascHd .s{font-size:10px;letter-spacing:.06em;color:var(--dim);margin-top:5px;
+    font-family:ui-sans-serif,system-ui,sans-serif;max-width:640px;line-height:1.55}
+  .ovcls{position:absolute;right:18px;top:16px;z-index:3}
+
+  #notes .box{position:absolute;inset:0;margin:auto;max-width:780px;max-height:84vh;
+    overflow-y:auto;background:#070c14;border:1px solid var(--line);padding:24px 28px;height:fit-content;
+    font-family:ui-sans-serif,system-ui,sans-serif;font-size:12.5px;line-height:1.72;color:#b4c6d8}
+  #notes h2{font-family:ui-monospace,monospace;font-size:12.5px;letter-spacing:.2em;
+    color:var(--amber);margin-bottom:14px}
+  #notes h3{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.17em;
+    color:var(--ink);margin:18px 0 6px;text-transform:uppercase}
+  #notes ul{margin:6px 0 6px 18px} #notes li{margin:4px 0}
+  #notes b{color:var(--amber2);font-weight:600}
+
+  /* briefing */
+  #brief{position:fixed;inset:0;z-index:30;background:#03060b;display:flex;
+    align-items:center;justify-content:center;transition:opacity .8s}
+  #brief.off{opacity:0;pointer-events:none}
+  #brief .in{max-width:700px;padding:30px}
+  #brief .kick{font-size:9.5px;letter-spacing:.3em;color:var(--dim);margin-bottom:14px}
+  #brief h1{font-size:30px;letter-spacing:.14em;color:var(--amber);line-height:1.16;
+    margin-bottom:16px;font-weight:500}
+  #brief .pr{font-family:ui-sans-serif,system-ui,sans-serif;font-size:14px;line-height:1.72;
+    color:#b8cade;margin-bottom:20px}
+  #brief .pr b{color:#fff;font-weight:600}
+  #brief .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);margin-bottom:22px}
+  #brief .nums div{background:#070c14;padding:11px 12px}
+  #brief .nums .n{font-size:19px;color:var(--amber);font-variant-numeric:tabular-nums}
+  #brief .nums .l{font-size:8px;letter-spacing:.13em;color:var(--dimmer);margin-top:4px;line-height:1.4}
+  #brief .go{font-size:11px;letter-spacing:.2em;padding:11px 22px}
+
+  #hint{position:fixed;left:50%;transform:translateX(-50%);bottom:100px;z-index:9;
+    font-size:8.5px;letter-spacing:.17em;color:var(--dimmer);pointer-events:none;
+    transition:opacity .7s}
+
+  @media (max-width:1300px){
+    #lad,#mini{display:none}
+    #stage{width:calc(100vw - 360px)}
+  }
+  @media (max-width:900px){#log{display:none}#stage{width:calc(100vw - 26px)}}
+</style>
+</head>
+<body>
+
+<canvas id="map"></canvas>
+<div class="vig"></div>
+<div id="scrim"></div>
+
+<div class="p" id="hdr">
+  <div>
+    <div class="ttl">OPERATION BLACK BUCK ONE</div>
+    <div class="sub">30 APR – 01 MAY 1982 · ASCENSION ISLAND → PORT STANLEY · VULCAN B.2 XM607 · THE REFUELLING RELAY</div>
+  </div>
+  <div class="sp"></div>
+  <div class="st"><div class="k">MISSION CLOCK</div><div class="v am" id="sClk">T+00:00</div></div>
+  <div class="st"><div class="k">ZULU</div><div class="v" id="sZ">2350Z</div></div>
+  <div class="st"><div class="k">AIRBORNE</div><div class="v" id="sAir">0</div></div>
+  <div class="st"><div class="k">IN CONTACT</div><div class="v" id="sCon">0</div></div>
+  <div class="st"><div class="k">XM607 FUEL</div><div class="v" id="sVf">72,000</div></div>
+  <div class="st"><div class="k">TRANSFERRED</div><div class="v" id="sX">0</div></div>
+  <button id="bCasc">▦ FUEL CASCADE</button>
+  <button id="bNotes">SOURCES</button>
+</div>
+
+<div class="p" id="log">
+  <div class="hd"><b>MISSION LOG</b><span id="logZ">—</span></div>
+  <div class="bd">
+    <div id="phase">PRE-LAUNCH</div>
+    <div id="hl">Thirteen aircraft on the pan at Wideawake.</div>
+    <div id="det">Eleven Victor K2 tankers and two Vulcan B.2 bombers on one runway, on a volcanic island in the middle of the Atlantic.</div>
+    <div id="cal"></div>
+  </div>
+</div>
+
+<div class="p" id="lad">
+  <div class="hd"><b>FUEL STATE</b><span id="ladS">RECONSTRUCTED</span></div>
+  <div id="ladb"></div>
+</div>
+
+<div class="p" id="stage">
+  <div class="hd"><b id="stgT">REFUELLING BRACKET</b><span id="stgS">—</span></div>
+  <canvas id="stagec"></canvas>
+</div>
+
+<div class="p" id="mini">
+  <div class="hd"><b>THEATRE</b><span id="miniS">—</span></div>
+  <canvas id="minic"></canvas>
+</div>
+
+<div class="p" id="tl">
+  <div id="tlw">
+    <div id="trk"><div class="rail"></div><div class="fill" id="fill"></div><div class="kn" id="knob"></div></div>
+    <div id="ctr">
+      <button id="bPrev">⏮ PREV</button>
+      <button id="bPlay">▶ PLAY</button>
+      <button id="bNext">NEXT ⏭</button>
+      <button id="bRst">↺ RESET</button>
+      <div class="sep"></div>
+      <span class="lbl">SPEED</span>
+      <button class="spd on" data-s="0">ADAPTIVE</button>
+      <button class="spd" data-s="15">15×</button>
+      <button class="spd" data-s="60">60×</button>
+      <button class="spd" data-s="240">240×</button>
+      <div class="sep"></div>
+      <button id="bStage" class="on">◫ CONTACT VIEW</button>
+      <button id="bCam" class="on">◎ AUTO CAMERA</button>
+      <button id="bFit">⛶ THEATRE</button>
+      <button id="bNight" class="on">TERMINATOR</button>
+      <button id="bLbl" class="on">LABELS</button>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="casc">
+  <canvas id="cascc"></canvas>
+  <div id="cascHd">
+    <div class="t">THE FUEL CASCADE</div>
+    <div class="s">Every aircraft is a lane. Lane thickness is the fuel in its tanks. Ribbons are
+      transfers, sized by pounds moved. Read it left to right and the shape of the problem appears:
+      fuel poured in at the top, cascading down through three sections of tankers, funnelling into
+      one bomber that has to reach 51° South and come back.</div>
+  </div>
+  <button class="ovcls" onclick="document.getElementById('casc').classList.remove('on')">CLOSE  ESC</button>
+</div>
+
+<div class="ov" id="notes"><div class="box">
+  <h2>SOURCES, MODEL &amp; HONEST CAVEATS</h2>
+  <p>A reconstruction, not a declassified plot. Here is what is documented against what I modelled.</p>
+
+  <h3>Documented: treated as fact</h3>
+  <ul>
+    <li>Launch from Wideawake Airfield, Ascension at <b>2350Z, 30 April 1982</b>: two Vulcans and eleven Victor K2 tankers at one-minute intervals.</li>
+    <li>Three sections: <b>RED (4 Victors), WHITE (4 Victors), BLUE (3 Victors + 2 Vulcans)</b>.</li>
+    <li>Primary Vulcan <b>XM598 (Sqn Ldr John Reeve)</b> aborted early with a failed cabin pressurisation seal. Reserve <b>XM607 (Flt Lt Martin Withers)</b> took the raid.</li>
+    <li>The Vulcan was refuelled <b>seven times outbound, once returning</b>. The operation ran to roughly <b>15–17 Victor sorties and 18 refuellings</b>.</li>
+    <li>Vulcan burn between brackets one and two: <b>16,250 lb/hr</b>.</li>
+    <li>Refuelling flown <b>at night, radio silent, in formation, at 300 knots</b>, probe and drogue.</li>
+    <li>The Victor K2 tanked through a <b>Mk17B centreline hose drum unit</b> rated at <b>500 gal/min</b> (roughly 4,000 lb/min) plus <b>Mk20B wing pods</b> at a much lower flow. It could feed <b>one receiver on the centreline or two on the pods, but not both at once</b>. The contact view obeys this.</li>
+    <li>Thunderstorms near <b>40° South</b> in the last refuelling area. <b>Sqn Ldr Steve Biglands' XH669</b> snapped its probe taking fuel from <b>Sqn Ldr Bob Tuxford's XL189</b>. They reversed roles: XH669 gave its fuel back so Tuxford could fly the final bracket.</li>
+    <li>Tuxford delivered <b>7,000 lb less than planned</b>; Withers left with <b>7,000 lb of margin instead of 14,000</b>. Tuxford knew he would run dry about <b>500 nm short of Ascension</b> and broke radio silence.</li>
+    <li>Attack: down to <b>300 ft</b>, up to <b>10,000 ft</b> at <b>330 kt</b>, <b>21 × 1,000 lb bombs</b> in a stick angled across the runway. H2S fixed on <b>Mount Usborne (2,313 ft)</b>, 33 miles west of Stanley. Escape at <b>60° bank, 2 g</b>. Codeword <b>SUPERFUSE</b>, 0746Z.</li>
+    <li>One bomb cratered the runway. A <b>Nimrod</b> helped Withers find <b>Sqn Ldr Barry Neal's</b> tanker off Brazil. Landed <b>1452Z</b>: about <b>15 hr 45 min</b>, <b>6,600 nm</b>.</li>
+    <li>Victor serials: XH669, XH672, XL162, XL163, XL188, XL189, XL192, XL232, XL511, XL513, XM717.</li>
+    <li>Vulcan B.2 ferry range about <b>4,000 nm</b>, against a <b>6,800 nm</b> round trip. That gap is the whole reason eleven tankers flew.</li>
+  </ul>
+
+  <h3>Modelled: reconstructed for legibility</h3>
+  <ul>
+    <li><b>Bracket positions and times.</b> The seven bracket coordinates are not published. I spaced them along the great circle so the Vulcan's documented 16,250 lb/hr burn reproduces the documented 14,000-planned / 7,000-delivered outcome at the last bracket, and so the storm bracket lands at 40° South as reported. Plausible, not archival.</li>
+    <li><b>Serial to callsign mapping.</b> Only XL189 (Tuxford) and XH669 (Biglands) are firmly attributed. The other nine are assigned to section slots illustratively.</li>
+    <li><b>Victor tank states and individual offloads</b> are reconstructed from capacity and cruise burn, then clamped so nothing goes negative. Shape of the problem, not a ledger.</li>
+    <li><b>The contact view is schematic.</b> Aircraft are not to relative scale or true separation, and hose length is exaggerated for legibility. Formation positions on the map are spread wider than reality so thirteen tracks stay separable.</li>
+    <li><b>Tanker reserves.</b> Each Victor holds back enough fuel to reach Ascension from its
+      <i>planned</i> turn-back point before it will give anything away. That rule is mine, not an
+      archival one, but it is why XL189's arithmetic stops closing: Tuxford flew 52 minutes past the
+      point his reserve was calculated for, so the shortfall falls out of the model rather than
+      being typed in. It lands at 506 nm against the reported "roughly 500".</li>
+    <li><b>Routing</b> is a clean great circle. The real track was flown around weather and threats.</li>
+    <li><b>Day and night shading</b> is a genuine solar-position calculation for 30 Apr – 1 May 1982, so the darkness over the target at release is real rather than decorative.</li>
+  </ul>
+
+  <h3>Sources</h3>
+  <ul>
+    <li>Wikipedia / Military Wiki: <i>Operation Black Buck</i></li>
+    <li>collectair.co.uk: <i>Black Buck 1, The Longest Night</i> (section structure, Biglands and Tuxford)</li>
+    <li>thefourprop.com: <i>Operation Black Buck One</i> (XL189 / XH669 role reversal)</li>
+    <li>thevictorassociation.org.uk, airvectors.net, pprune archives: Victor K2 HDU and wing-pod flow behaviour</li>
+    <li>planehistoria.com, migflug.com, vulcantothesky.org: narrative corroboration</li>
+  </ul>
+  <button style="margin-top:18px" onclick="document.getElementById('notes').classList.remove('on')">CLOSE</button>
+</div></div>
+
+<div id="brief"><div class="in">
+  <div class="kick">30 APRIL 1982 · WIDEAWAKE AIRFIELD · ASCENSION ISLAND</div>
+  <h1>One bomber.<br>Eleven tankers.<br>Nobody had tried this.</h1>
+  <div class="pr">Port Stanley is <b>3,380 nautical miles</b> south of Ascension. There is nothing in
+    between. The Vulcan cannot make the round trip on its own fuel and cannot land anywhere at the
+    far end, so every pound it burns has to be carried south and handed over in mid-air, in the
+    dark, without radio.
+    <br><br>That means tankers refuelling tankers refuelling tankers, each one turning back the
+    moment it has given away everything it can spare. Get one contact wrong and the raid folds.</div>
+  <div class="nums">
+    <div><div class="n">3,380</div><div class="l">NM TO TARGET</div></div>
+    <div><div class="n">~4,000</div><div class="l">NM VULCAN FERRY RANGE</div></div>
+    <div><div class="n">7</div><div class="l">OUTBOUND BRACKETS</div></div>
+    <div><div class="n">15:45</div><div class="l">HOURS AIRBORNE</div></div>
+  </div>
+  <button class="go" id="bGo">▶ RUN THE MISSION</button>
+</div></div>
+
+<div id="hint">DRAG TO PAN · SCROLL TO ZOOM · SPACE PLAY/PAUSE · ← → STEP · N/P JUMP EVENT · C CASCADE</div>
+
+<script>
+"use strict";
+/* ══════════════════════════════════════════════════════════════════════
+   BLACK BUCK ONE  ·  v2
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ───────── geography ───────── */
+const ASC={lon:-14.394,lat:-7.947}, STA={lon:-57.777,lat:-51.685}, RIO={lon:-40.5,lat:-26.5};
+const VIEW={lonMin:-85,lonMax:20,latMax:6,latMin:-60};
+const KX=0.883;
+const W2={x:l=>l*KX, y:a=>-a};
+
+const SAM=[-50,.5,-48.5,-1,-44.3,-2.5,-41.8,-2.9,-38.5,-3.7,-37,-4.9,-35.2,-5.8,-34.8,-7.1,
+-34.9,-8.1,-35.8,-9.7,-36.4,-10.5,-37.1,-11,-38.5,-13,-39,-14.8,-39,-16,-39.7,-18,-39.7,-18.6,
+-40.3,-20.3,-41,-21.6,-42,-22.9,-43.2,-23,-44.5,-23.1,-45.4,-23.8,-46.4,-24,-47.9,-25,-48.5,-25.6,
+-48.6,-26.9,-48.5,-27.6,-49.4,-28.5,-50,-29.3,-51.2,-30.1,-52.1,-31.4,-53.4,-33.7,-54.9,-34.9,
+-56.2,-34.9,-57.8,-34.5,-58.4,-34.6,-57.2,-36,-56.7,-36.4,-57.5,-38,-60,-38.7,-62.3,-38.9,
+-62.1,-40.2,-63.8,-41.1,-65,-40.9,-64.2,-42.4,-65,-43,-65.3,-44.5,-65.6,-45,-66.6,-45,-67.6,-46,
+-66.9,-47,-65.9,-47.8,-66.5,-48.8,-67.7,-49.3,-68.9,-50.3,-69,-51.6,-68.4,-52.3,-68.3,-53.1,
+-68,-54,-66.5,-55,-67.3,-55.9,-70,-55.5,-73,-53,-75,-50,-75.5,-46.5,-73.7,-42,-73.8,-37,-72,-33,
+-71.6,-30,-70.5,-25,-70.4,-23.6,-70.3,-18.5,-75.2,-14.5,-77.1,-12,-79,-8,-81.3,-4.7,-80.9,-2.2,
+-80,-.5,-79.5,1.5,-77.5,2.5,-75,4,-71,4.5,-66,5.5,-61,6.5,-57,5.5,-52,4.5,-51,2,-50,.5];
+const AFR=[6,4,8.5,4.5,9.4,4,9.7,3,9.6,2.2,9.4,.4,9.3,-.6,8.8,-1,9.3,-2,9.6,-2.8,10.5,-3.5,
+11.2,-3.9,11.9,-4.8,12.3,-6,13,-7,13.4,-8.8,13,-9.5,13,-11,13.4,-12.6,13.8,-13,12.2,-15.2,
+11.8,-17.3,12,-18,12.6,-19,13.4,-21,14.5,-22.9,14.4,-24,15.2,-26.6,16.5,-28.6,17.4,-30,
+17.9,-32.5,18.4,-34,20,-34.8,22.5,-34,25.6,-34,27.9,-33,31,-29.9,36,-20,40,-12,40,-2,34,3,
+25,6,15,6,6,4];
+const EFALK=[-58.9,-51.25,-57.75,-51.35,-57.6,-51.75,-58.3,-52.05,-58.9,-52.25,-59.2,-51.95,
+-58.85,-51.7,-59.3,-51.5,-58.9,-51.25];
+const WFALK=[-61.4,-51.3,-60,-51.35,-59.6,-51.6,-60.1,-51.95,-61,-51.85,-61.4,-51.55,-61.4,-51.3];
+const SGEO=[-38.3,-53.95,-36.6,-54.5,-35.8,-54.9,-36.3,-54.95,-37.5,-54.4,-38.5,-54,-38.3,-53.95];
+const PLACES=[{lon:-43.2,lat:-22.9,n:"RIO DE JANEIRO"},{lon:-34.9,lat:-8.1,n:"RECIFE"},
+{lon:-58.4,lat:-34.6,n:"BUENOS AIRES"},{lon:-70.7,lat:-33.4,n:"SANTIAGO"},
+{lon:-67.3,lat:-55.9,n:"CAPE HORN"},{lon:-36.6,lat:-54.5,n:"SOUTH GEORGIA"},
+{lon:13.4,lat:-8.8,n:"LUANDA"}];
+
+/* ───────── great-circle maths ───────── */
+const R2D=180/Math.PI, D2R=Math.PI/180;
+const toVec=p=>{const a=p.lat*D2R,o=p.lon*D2R,c=Math.cos(a);
+  return [c*Math.cos(o),c*Math.sin(o),Math.sin(a)];};
+const toLL=v=>({lat:Math.asin(v[2])*R2D,lon:Math.atan2(v[1],v[0])*R2D});
+function slerp(a,b,f){
+  const va=toVec(a),vb=toVec(b);
+  let d=Math.max(-1,Math.min(1,va[0]*vb[0]+va[1]*vb[1]+va[2]*vb[2]));
+  const t=Math.acos(d); if(t<1e-9)return{lat:a.lat,lon:a.lon};
+  const s=Math.sin(t),k1=Math.sin((1-f)*t)/s,k2=Math.sin(f*t)/s;
+  return toLL([va[0]*k1+vb[0]*k2,va[1]*k1+vb[1]*k2,va[2]*k1+vb[2]*k2]);
+}
+function gcNm(a,b){
+  const va=toVec(a),vb=toVec(b);
+  return Math.acos(Math.max(-1,Math.min(1,va[0]*vb[0]+va[1]*vb[1]+va[2]*vb[2])))*R2D*60;
+}
+function makeRoute(pts){
+  const segs=[]; let total=0;
+  for(let i=0;i<pts.length-1;i++){
+    const l=gcNm(pts[i],pts[i+1]); segs.push({a:pts[i],b:pts[i+1],len:l,acc:total}); total+=l;
+  }
+  return {segs,total,at(f){
+    f=Math.max(0,Math.min(1,f)); const d=f*total;
+    let s=segs[segs.length-1];
+    for(const g of segs){if(d<=g.acc+g.len){s=g;break;}}
+    const lf=Math.max(0,Math.min(1,(d-s.acc)/s.len));
+    const p=slerp(s.a,s.b,lf), q=slerp(s.a,s.b,Math.min(1,lf+0.004));
+    p.brg=Math.atan2(W2.y(q.lat)-W2.y(p.lat),W2.x(q.lon)-W2.x(p.lon));
+    return p;
+  }};
+}
+const R_OUT=makeRoute([ASC,STA]), R_RTN=makeRoute([STA,RIO,ASC]);
+const TOTAL_NM=R_OUT.total;
+
+/* ───────── roster ───────── */
+const SECCOL={RED:"#ff5f63",WHITE:"#cfe0f2",BLUE:"#4fc9f7",BOMBER:"#ffb648",RECOVERY:"#a98bfa"};
+const CAP_K2=116000, CAP_V=72000;
+const BURN_K2=190, BURN_V=270.8, BURN_V_LO=400, BURN_V_HI=142;
+const FLOW_HDU=2800;   // Mk17B centreline, sustained (rated ~4,000 lb/min)
+const FLOW_POD=1250;   // Mk20B wing pods, much lower flow
+
+const AC=[
+ {id:"R1",call:"RED 1",  ser:"XL511",sec:"RED",  type:"K2",lane:-6},
+ {id:"R2",call:"RED 2",  ser:"XL513",sec:"RED",  type:"K2",lane:-5},
+ {id:"R3",call:"RED 3",  ser:"XL162",sec:"RED",  type:"K2",lane:-4},
+ {id:"R4",call:"RED 4",  ser:"XL232",sec:"RED",  type:"K2",lane:-3},
+ {id:"W1",call:"WHITE 1",ser:"XH672",sec:"WHITE",type:"K2",lane:-2},
+ {id:"W2",call:"WHITE 2",ser:"XL188",sec:"WHITE",type:"K2",lane:-1},
+ {id:"W3",call:"WHITE 3",ser:"XL192",sec:"WHITE",type:"K2",lane:1},
+ {id:"W4",call:"WHITE 4",ser:"XH669",sec:"WHITE",type:"K2",lane:2,crew:"Sqn Ldr S. Biglands"},
+ {id:"B1",call:"BLUE 1", ser:"XM717",sec:"BLUE", type:"K2",lane:3},
+ {id:"B2",call:"BLUE 2", ser:"XL163",sec:"BLUE", type:"K2",lane:4},
+ {id:"B3",call:"BLUE 3", ser:"XL189",sec:"BLUE", type:"K2",lane:5,crew:"Sqn Ldr R. Tuxford"},
+ {id:"V1",call:"BLUE 4", ser:"XM598",sec:"BOMBER",type:"V",lane:6,crew:"Sqn Ldr J. Reeve"},
+ {id:"V2",call:"BLUE 5", ser:"XM607",sec:"BOMBER",type:"V",lane:0,crew:"Flt Lt M. Withers"},
+ {id:"S1",call:"RESCUE 1",  ser:"VICTOR K2",sec:"RECOVERY",type:"K2",lane:-2},
+ {id:"S2",call:"RECOVERY 1",ser:"VICTOR K2",sec:"RECOVERY",type:"K2",lane:2,crew:"Sqn Ldr B. Neal"}
+];
+const byId={}; AC.forEach(a=>byId[a.id]=a);
+AC.forEach(a=>a._legs=[]);
+const RESERVE_MARGIN=4000;
+const L=(id,r,t0,t1,f0,f1)=>byId[id]._legs.push({r,t0,t1,f0,f1});
+const F=t=>t/476;
+const T_END=902;
+
+const VIC=[["R1",146],["R2",146],["R3",146],["R4",146],["W1",192],["W2",192],
+           ["B1",238],["W3",274],["B2",312],["W4",362]];
+VIC.forEach(([id,tb],i)=>{
+  const f=F(tb), home=Math.min(T_END,tb+f*476*1.02);
+  L(id,"OUT",i%4,tb,0,f); L(id,"OUT",tb,home,f,0);
+  byId[id].tHome=home; byId[id].tPlan=home;
+});
+L("B3","OUT",10,396,0,F(396)); L("B3","OUT",396,840,F(396),0); byId["B3"].tHome=840;
+byId["B3"].tPlan=663;   // it should have turned back at bracket 6, not bracket 7
+L("V1","OUT",11,25,0,F(25));   L("V1","OUT",25,58,F(25),0);   byId["V1"].tHome=58;
+L("V2","OUT",12,473,0,1);      L("V2","RTN",478,T_END,0,1);   byId["V2"].tHome=T_END;
+L("S1","OUT",470,690,0,0.22);  L("S1","OUT",690,880,0.22,0);  byId["S1"].tHome=880;
+L("S2","RTN",560,700,1,0.52);  L("S2","RTN",700,845,0.52,1);  byId["S2"].tHome=845;
+
+/* ───────── brackets ─────────
+   tx = [giver, receiver, lb, plannedLb?]                                      */
+const BRACKETS=[
+ {n:1,t:110,
+  tx:[["R1","W1",15000],["R1","W2",15000],["R2","W3",18000],["R2","W4",15000],
+      ["R3","B1",15000],["R3","B2",15000],["R4","B3",10000],["R4","V2",29800]],
+  out:["R1","R2","R3","R4"],
+  hl:"BRACKET 1 · the whole formation drinks",
+  d:"Four RED Victors give away everything they can spare and turn for home. Every other aircraft, seven Victors and the Vulcan, is filled. Eight hose contacts in the dark at 300 knots, and not a word on the radio."},
+ {n:2,t:162,
+  tx:[["W1","W3",18000],["W1","W4",8000],["W2","B1",14000],["W2","B2",14000],["W2","V2",14080]],
+  out:["W1","W2"],
+  hl:"BRACKET 2 · the ladder sheds its first rungs",
+  d:"WHITE 1 and WHITE 2 empty into the aircraft still heading south, then peel off north. Seven left. Every tanker exists only to buy the next one a few hundred more miles."},
+ {n:3,t:214,
+  tx:[["W3","W4",8000],["W3","B3",6000],["B1","B2",14000],["B1","V2",14080]],
+  out:["B1"],
+  hl:"BRACKET 3 · five still going south",
+  d:"BLUE 1 makes its last offload into the Vulcan and turns back. Three Victors, one bomber, and fifteen hundred miles of empty ocean already behind them."},
+ {n:4,t:252,
+  tx:[["W3","W4",9000],["W3","V2",10900]],
+  out:["W3"],
+  hl:"BRACKET 4 · WHITE 3 hands over the south",
+  d:"A single tanker tops up WHITE 4 on a wing pod, then swings the centreline hose to the Vulcan before turning for Ascension. The nearest diversion airfield is now a thousand miles behind them."},
+ {n:5,t:290,
+  tx:[["B2","W4",6000],["B2","B3",12000],["B2","V2",10900]],
+  out:["B2"],
+  hl:"BRACKET 5 · down to the last three",
+  d:"BLUE 2 goes north. Only XH669 (Biglands), XL189 (Tuxford) and the Vulcan remain. From here the entire raid rests on two tankers."},
+ {n:6,t:328,storm:true,
+  tx:[["B3","V2",10900]],
+  out:[],
+  hl:"BRACKET 6 · the storm at 40° SOUTH",
+  d:"The plan: XL189 fills XH669 and turns back, XH669 flies the last bracket and takes the Vulcan to the target. Instead they fly into a violent thunderstorm.",
+  cal:"Biglands' probe SNAPS in the turbulence, leaving its tip jammed in XL189's drogue. XH669 can no longer take fuel and cannot reach the final bracket."},
+ {n:7,t:380,
+  tx:[["B3","V2",7000,14080]],
+  out:["B3"],
+  hl:"BRACKET 7 · Tuxford's decision",
+  d:"Tuxford flies past his own turn-back point to the last bracket, knowing exactly what it costs him. He gives the Vulcan every pound he can and it is still not enough.",
+  cal:"XM607 leaves with 7,000 lb of margin instead of 14,000. XL189 turns north with less fuel than it needs to reach Ascension, short by roughly 500 nm."}
+];
+const PROBE_START=337, PROBE_BREAK=343, PROBE_REVERSE=348, PROBE_END=358;
+
+/* ───────── narrative ───────── */
+const SCRIPT=[
+ {t:0,ph:"LAUNCH",hl:"2350Z · Wideawake Airfield, Ascension Island",
+  d:"Thirteen aircraft roll at one-minute intervals: <em>eleven Victor K2 tankers</em> and <em>two Vulcan B.2 bombers</em>, all at maximum weight, off one runway 3,900 miles from the target."},
+ {t:26,ph:"ABORT",hl:"XM598 turns back",
+  d:"Sqn Ldr John Reeve's Vulcan, the <em>primary</em>, loses cabin pressurisation when a cockpit window seal fails. He aborts. The reserve, <em>Flt Lt Martin Withers in XM607</em>, is now flying the raid.",
+  cal:"The reserve crew inherit the mission twenty-five minutes after takeoff."},
+ {t:62,ph:"OUTBOUND",hl:"The stream settles southbound",
+  d:"Twelve aircraft in a loose stream, radio silent, lights out. The Vulcan burns <em>16,250 lb an hour</em>. It cannot go much beyond an hour without a tanker."},
+ {t:148,ph:"OUTBOUND",hl:"RED section goes home",
+  d:"The first four tankers existed purely to fill the second wave. They are now light enough that they have to turn immediately or become a rescue problem themselves."},
+ {t:200,ph:"OUTBOUND",hl:"A relay, not a formation",
+  d:"Each Victor is a rung. It carries fuel south, hands it to the aircraft behind it in the chain, and drops away. <em>Around eighteen refuellings</em> to put twenty-one bombs on one runway."},
+ {t:276,ph:"OUTBOUND",hl:"Three aircraft south of 35°",
+  d:"XH669, XL189 and XM607. Everything else is northbound. Ahead of them, the forecast is wrong."},
+ {t:330,ph:"STORM",hl:"Into the weather at 40° South",
+  d:"Unforecast thunderstorms fill the final refuelling area. The two Victors join up anyway: <em>XL189 trailing its hose, XH669 pushing its probe at the basket in heavy turbulence.</em>"},
+ {t:344,ph:"PROBE FAILURE",hl:"The probe breaks",
+  d:"XH669's probe shears off, its tip left jammed in XL189's drogue. Biglands can no longer receive fuel. The aircraft that was to take the Vulcan the last leg is finished.",
+  cal:"There is no spare tanker within two thousand miles."},
+ {t:349,ph:"ROLE REVERSAL",hl:"They swap places",
+  d:"Tuxford and Biglands reverse the transfer: <em>XH669 gives its fuel back to XL189</em> so Tuxford can fly the final bracket instead. XH669 turns for Ascension."},
+ {t:392,ph:"THE DECISION",hl:"Tuxford presses on",
+  d:"XL189 flies south past its own point of no return. Tuxford does the arithmetic and knows the answer. He flies the bracket anyway.",
+  cal:"He would run out of fuel roughly 500 nm south of Ascension Island."},
+ {t:400,ph:"THE DECISION",hl:"Seven thousand pounds short",
+  d:"XM607 gets <em>7,000 lb less than planned</em>, leaving Withers 7,000 lb of margin rather than 14,000. He accepts it and goes on. XL189 turns north and breaks radio silence to declare the emergency."},
+ {t:440,ph:"RUN-IN",hl:"XM607 alone, descending",
+  d:"The Vulcan drops through the overcast and levels at <em>300 feet</em> above the sea to slide under the radar on the islands. No tanker, no escort, no second chance."},
+ {t:462,ph:"RUN-IN",hl:"H2S locks Mount Usborne",
+  d:"Forty miles out the bomber pops to 10,000 ft. The radar finds the <em>2,313 ft peak of Mount Usborne</em>, 33 miles west of Stanley, a hard fix to run the bombing computer from."},
+ {t:473,ph:"ATTACK",hl:"Bomb doors open · 21 × 1,000 lb",
+  d:"330 knots, 10,000 feet, a stick of twenty-one bombs walked diagonally across the runway so that at least one has to hit it. Release takes five seconds.",
+  cal:"One bomb cracks the runway centre. Withers rolls into a 60° bank (2 g) and runs north."},
+ {t:479,ph:"EGRESS",hl:"SUPERFUSE",
+  d:"The codeword goes at 0746Z. Northbound and climbing, the Vulcan now has to find a tanker in the middle of the Atlantic on a fuel state that does not close."},
+ {t:560,ph:"RECOVERY",hl:"Two aircraft running on empty",
+  d:"XL189 is 500 nm short of home. XM607 is 3,000 nm from home. Ascension launches what it has left and a <em>Nimrod</em> goes out to find the Vulcan and drag it onto its tanker."},
+ {t:691,ph:"RECOVERY",hl:"XL189 finds its tanker",
+  d:"With about <em>thirty minutes of fuel and six hundred miles to run</em>, Tuxford sees a Victor waiting for him. That is the difference between a landing and a ditching."},
+ {t:703,ph:"RECOVERY",hl:"XM607 takes fuel off Brazil",
+  d:"Guided by the Nimrod, Withers joins Sqn Ldr Barry Neal's Victor near the Brazilian coast for the <em>eighth and last refuelling</em> of the mission."},
+ {t:800,ph:"RECOVERY",hl:"Northbound for Ascension",
+  d:"Fourteen hours airborne. The crew have been strapped in since before midnight and it is not over until the wheels are down."},
+ {t:895,ph:"COMPLETE",hl:"1452Z · XM607 lands at Wideawake",
+  d:"<em>15 hours 45 minutes. 6,600 nautical miles.</em> At the time the longest-ranged bombing raid ever flown. Stanley's runway was cratered and never used by fast jets, and the message to Buenos Aires was that the British could reach anywhere.",
+  cal:"Withers received the DFC. Tuxford received the Air Force Cross."}
+];
+
+/* ══════════════════════════════════════════════════════════════════════
+   TRANSFER SCHEDULING
+   Victor K2 rule: one receiver on the centreline HDU, OR two on the wing
+   pods, never both at once. Vulcans take the centreline.
+   ══════════════════════════════════════════════════════════════════════ */
+const XFERS=[];
+(function schedule(){
+  for(const b of BRACKETS){
+    const givers={};
+    b.tx.forEach(tx=>{(givers[tx[0]]=givers[tx[0]]||[]).push(tx);});
+    let end=b.t;
+    for(const g in givers){
+      const list=givers[g];
+      const hdu=list.filter(tx=>byId[tx[1]].type==="V");     // bomber → centreline
+      const pod=list.filter(tx=>byId[tx[1]].type!=="V");     // tanker → wing pods
+      let cur=b.t;
+      for(let i=0;i<pod.length;i+=2){                        // two pods at a time
+        const pair=pod.slice(i,i+2);
+        const dur=Math.max(4,Math.round(Math.max(...pair.map(t=>t[2]))/FLOW_POD)+2);
+        pair.forEach((tx,k)=>XFERS.push({from:tx[0],to:tx[1],lb:tx[2],plan:tx[3],
+          t0:cur,t1:cur+dur,br:b.n,unit:"MK20B POD "+(k?"STBD":"PORT")}));
+        cur+=dur+1;
+      }
+      for(const tx of hdu){
+        const dur=Math.max(5,Math.round(tx[2]/FLOW_HDU)+3);
+        XFERS.push({from:tx[0],to:tx[1],lb:tx[2],plan:tx[3],
+          t0:cur,t1:cur+dur,br:b.n,unit:"MK17B CENTRELINE HDU"});
+        cur+=dur+1;
+      }
+      end=Math.max(end,cur);
+    }
+    b.dur=Math.ceil(end-b.t)+1;
+  }
+  // the storm sequence: rate-limited, so an interrupted transfer moves only what flowed
+  XFERS.push({from:"B3",to:"W4",lb:22000,rate:FLOW_POD,t0:PROBE_START,t1:PROBE_BREAK,br:6,
+    unit:"MK20B POD PORT",note:"PLANNED 22,000 LB",broke:true,override:true,
+    holdUntil:PROBE_REVERSE+3});
+  XFERS.push({from:"W4",to:"B3",lb:14000,rate:FLOW_POD,t0:PROBE_REVERSE,t1:PROBE_END,br:6,
+    unit:"MK20B POD PORT",note:"ROLE REVERSAL"});
+  BRACKETS[5].dur=Math.max(BRACKETS[5].dur,PROBE_END-BRACKETS[5].t+2);
+  // recovery contacts
+  XFERS.push({from:"S1",to:"B3",lb:34000,topUp:true,t0:690,t1:706,br:0,
+    unit:"MK17B CENTRELINE HDU",note:"EMERGENCY RENDEZVOUS"});
+  XFERS.push({from:"S2",to:"V2",lb:44000,topUp:true,t0:702,t1:720,br:0,
+    unit:"MK17B CENTRELINE HDU",note:"EIGHTH AND FINAL REFUELLING"});
+  // the Vulcan is topped to full at every bracket except the last
+  for(const x of XFERS) if(x.to==="V2"&&x.br>0&&x.br<7) x.topUp=true;
+  XFERS.sort((a,b)=>a.t0-b.t0);
+})();
+
+/* ───────── fuel simulation ───────── */
+const NT=T_END+1;
+const fuel={},active={};
+AC.forEach(a=>{fuel[a.id]=new Float64Array(NT);active[a.id]=new Uint8Array(NT);});
+const xferTotal=new Float64Array(NT);
+XFERS.forEach(x=>{x._cum=new Float64Array(NT);});
+(function simulate(){
+  const f={}; AC.forEach(a=>f[a.id]=a.type==="K2"?CAP_K2:CAP_V);
+  let cum=0;
+  for(let t=0;t<NT;t++){
+    for(const a of AC){
+      const on=a._legs.some(l=>t>=l.t0&&t<=l.t1);
+      active[a.id][t]=on?1:0;
+      if(on&&t>0){
+        let burn=a.type==="K2"?BURN_K2:(t>455&&t<478?BURN_V_LO:(t>478?BURN_V_HI:BURN_V));
+        f[a.id]-=burn;
+      }
+    }
+    for(const x of XFERS){
+      if(t>x.t0&&t<=x.t1){
+        if(x._moved===undefined)x._moved=0;
+        const cap=byId[x.to].type==="K2"?CAP_K2:CAP_V;
+        const room=Math.max(0,cap-f[x.to]);
+        const G=byId[x.from];
+        const tp=(G.tPlan!==undefined?G.tPlan:(G.tHome||T_END));
+        const reserve=Math.max(0,tp-t)*(G.type==="K2"?BURN_K2:BURN_V)+RESERVE_MARGIN;
+        const avail=Math.max(0,f[x.from]-(x.override?3000:reserve));
+        const ticks=Math.max(1,Math.floor(x.t1)-Math.floor(x.t0));
+        const step=x.rate?x.rate:(x.topUp?FLOW_HDU:x.lb/ticks);
+        const left=x.topUp?Infinity:Math.max(0,x.lb-x._moved);
+        const q=Math.min(step,room,avail,left);
+        f[x.from]-=q; f[x.to]+=q; cum+=q; x._moved+=q;
+      }
+      x._cum[t]=x._moved||0;
+    }
+    xferTotal[t]=cum;
+    for(const a of AC) fuel[a.id][t]=Math.max(0,f[a.id]);
+  }
+})();
+
+/* ───────── narrative beats (after bracket durations are known) ───────── */
+const BEATS=[...SCRIPT.map((s,i)=>({...s,key:"S"+i})),
+  ...BRACKETS.map(b=>({t:b.t,until:b.t+b.dur,key:"B"+b.n,
+    ph:"REFUELLING BRACKET "+b.n,hl:b.hl,d:b.d,cal:b.cal}))].sort((a,b)=>a.t-b.t);
+
+const EVENTS=[{t:0,l:"LAUNCH"},{t:25,l:"ABORT",big:1},
+  ...BRACKETS.map(b=>({t:b.t,l:"B"+b.n,big:b.n>=6})),
+  {t:PROBE_BREAK,l:"PROBE",big:1},{t:473,l:"BOMBS",big:1},
+  {t:690,l:"RV"},{t:702,l:"RV"},{t:902,l:"LAND"}].sort((a,b)=>a.t-b.t);
+
+/* ───────── position ───────── */
+function posAt(a,t){
+  const lg=a._legs; let L0=null;
+  for(const l of lg) if(t>=l.t0&&t<=l.t1){L0=l;break;}
+  if(!L0){
+    const pin=t<lg[0].t0?{...lg[0],f:lg[0].f0}:{...lg[lg.length-1],f:lg[lg.length-1].f1};
+    const p=(pin.r==="OUT"?R_OUT:R_RTN).at(pin.f);
+    return {lat:p.lat,lon:p.lon,brg:p.brg,ox:0,oy:0,f:pin.f,ground:true};
+  }
+  const rr=L0.r==="OUT"?R_OUT:R_RTN;
+  const k=(t-L0.t0)/Math.max(.001,L0.t1-L0.t0);
+  const f=L0.f0+(L0.f1-L0.f0)*k;
+  const p=rr.at(f), outb=L0.f1>=L0.f0;
+  if(!outb)p.brg+=Math.PI;
+  const lane=a.lane*0.52*(outb?1:-1)+(outb?0:2.6);
+  return {lat:p.lat,lon:p.lon,brg:p.brg,
+          ox:-Math.sin(p.brg)*lane, oy:Math.cos(p.brg)*lane, f, ground:false};
+}
+const liveXfers=t=>XFERS.filter(x=>t>=x.t0&&t<=x.t1&&x._moved>1);
+const shownXfers=t=>XFERS.filter(x=>t>=x.t0&&t<=(x.holdUntil||x.t1)&&x._moved>1);
+const xferAt=(x,t)=>{const i=Math.max(0,Math.min(T_END,Math.round(t)));
+  return {moved:x._cum[i], rate:x._cum[i]-x._cum[Math.max(0,i-1)]};};
+const liveBracket=t=>BRACKETS.find(b=>t>=b.t&&t<=b.t+b.dur);
+
+/* ══════════════════════════════════════════════════════════════════════
+   AIRCRAFT ART  (side profile, nose +x, up -y, ~120 units long)
+   ══════════════════════════════════════════════════════════════════════ */
+function victorProfile(c,broke){
+  c.beginPath();
+  c.moveTo(60,-3);                                  // nose
+  c.bezierCurveTo(48,-8,28,-10,4,-10);
+  c.lineTo(-26,-9); c.lineTo(-33,-8);
+  c.lineTo(-50,-33); c.lineTo(-57,-33);             // fin
+  c.lineTo(-53,-8); c.lineTo(-61,-4);
+  c.lineTo(-62,3);  c.lineTo(-40,6);                // tail cone / HDU exit
+  c.bezierCurveTo(-10,10,26,8,60,-3);
+  c.closePath();
+  return {probe:[62,-5], hoseRoot:[-62,2], tip:[74,-6], broke};
+}
+function victorDetail(c,col){
+  c.fillStyle=col;
+  c.beginPath(); c.moveTo(-64,-36); c.lineTo(-44,-36); c.lineTo(-44,-33);
+  c.lineTo(-64,-33); c.closePath(); c.fill();        // T-tailplane
+  c.beginPath(); c.moveTo(18,2); c.lineTo(-30,6); c.lineTo(-32,10);
+  c.lineTo(2,7); c.closePath(); c.fill();            // wing edge-on
+  c.globalAlpha=.5;
+  c.beginPath(); c.ellipse(0,7.5,9,2.4,0,0,7); c.fill();
+  c.beginPath(); c.ellipse(-16,7.5,7,2.2,0,0,7); c.fill();
+  c.globalAlpha=1;
+}
+function vulcanProfile(c){
+  c.beginPath();
+  c.moveTo(54,-4);
+  c.bezierCurveTo(42,-10,24,-12,4,-12);
+  c.lineTo(-16,-12); c.lineTo(-22,-11);
+  c.lineTo(-40,-38); c.lineTo(-48,-38);             // fin
+  c.lineTo(-45,-11); c.lineTo(-54,-7);
+  c.lineTo(-55,2);  c.lineTo(-30,6);
+  c.bezierCurveTo(-4,10,30,7,54,-4);
+  c.closePath();
+  return {probe:[56,-7], tip:[76,-9], hoseRoot:null};
+}
+function vulcanDetail(c,col){
+  c.fillStyle=col;
+  c.beginPath(); c.moveTo(28,3); c.lineTo(-50,9); c.lineTo(-52,14);
+  c.lineTo(-4,11); c.closePath(); c.fill();          // delta edge-on
+}
+/* probe drawn separately so it can be snapped off */
+function drawProbe(c,g,col,state){
+  const [px,py]=g.probe, [tx,ty]=g.tip;
+  c.strokeStyle=col; c.lineWidth=2.2; c.lineCap="round";
+  if(state==="broken"){
+    c.beginPath(); c.moveTo(px,py);
+    c.lineTo(px+(tx-px)*.35,py+(ty-py)*.35); c.stroke();
+  }else{
+    c.beginPath(); c.moveTo(px,py); c.lineTo(tx,ty); c.stroke();
+    c.fillStyle=col; c.beginPath(); c.arc(tx,ty,2.2,0,7); c.fill();
+  }
+}
+/* plan-view glyphs for the map */
+function planVulcan(c,x,y,r,s,col,glow){
+  c.save(); c.translate(x,y); c.rotate(r); c.scale(s,s);
+  if(glow){c.shadowColor=col;c.shadowBlur=14;}
+  c.beginPath();
+  c.moveTo(13,0); c.lineTo(-3,3.4); c.lineTo(-9,11); c.lineTo(-11,11);
+  c.lineTo(-6,0); c.lineTo(-11,-11); c.lineTo(-9,-11); c.lineTo(-3,-3.4);
+  c.closePath(); c.fillStyle=col; c.fill(); c.shadowBlur=0; c.restore();
+}
+function planVictor(c,x,y,r,s,col,glow){
+  c.save(); c.translate(x,y); c.rotate(r); c.scale(s,s);
+  if(glow){c.shadowColor=col;c.shadowBlur=9;}
+  c.beginPath();
+  c.moveTo(11,0); c.lineTo(2,1.7); c.lineTo(-2,9); c.lineTo(-5,9);
+  c.lineTo(-4,1.7); c.lineTo(-8,1.7); c.lineTo(-8,4.6); c.lineTo(-10,4.6);
+  c.lineTo(-10,-4.6); c.lineTo(-8,-4.6); c.lineTo(-8,-1.7); c.lineTo(-4,-1.7);
+  c.lineTo(-5,-9); c.lineTo(-2,-9); c.lineTo(2,-1.7);
+  c.closePath(); c.fillStyle=col; c.fill(); c.shadowBlur=0; c.restore();
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CANVAS PLUMBING
+   ══════════════════════════════════════════════════════════════════════ */
+let DPR=1;
+function fitCanvas(cv){
+  const r=cv.getBoundingClientRect();
+  cv.width=Math.max(1,Math.round(r.width*DPR));
+  cv.height=Math.max(1,Math.round(r.height*DPR));
+  const c=cv.getContext("2d"); c.setTransform(DPR,0,0,DPR,0,0);
+  return {c,w:r.width,h:r.height};
+}
+const mapCv=document.getElementById("map"), mctx=mapCv.getContext("2d");
+let W=0,H=0,fitZ=1;
+const cam={cx:0,cy:0,z:1,tcx:0,tcy:0,tz:1};
+const SX=x=>W/2+(x-cam.cx)*cam.z, SY=y=>H/2+(y-cam.cy)*cam.z;
+const UX=x=>(x-W/2)/cam.z+cam.cx, UY=y=>(y-H/2)/cam.z+cam.cy;
+const P=(lon,lat)=>[SX(W2.x(lon)),SY(W2.y(lat))];
+
+function resize(){
+  DPR=Math.min(2,window.devicePixelRatio||1);
+  W=window.innerWidth; H=window.innerHeight;
+  mapCv.style.width=W+"px"; mapCv.style.height=H+"px";
+  mapCv.width=Math.round(W*DPR); mapCv.height=Math.round(H*DPR);
+  mctx.setTransform(DPR,0,0,DPR,0,0);
+  fitZ=Math.min(W/((VIEW.lonMax-VIEW.lonMin)*KX),H/(VIEW.latMax-VIEW.latMin))*.98;
+  buildNight(true); cascDirty=true;
+}
+
+/* ───────── day / night terminator ───────── */
+const GW=106,GH=67, nightCv=document.createElement("canvas");
+nightCv.width=GW; nightCv.height=GH;
+const nctx2=nightCv.getContext("2d");
+let nightImg=nctx2.createImageData(GW,GH), lastNightT=-1e9;
+const DECL=14.9*D2R;
+function buildNight(force){
+  if(!force&&Math.abs(T-lastNightT)<3)return;
+  lastNightT=T;
+  const utc=(23+50/60)+T/60, lamS=-15*((((utc%24)+24)%24)-12), d=nightImg.data;
+  for(let j=0;j<GH;j++){
+    const lat=(VIEW.latMax-(j+.5)*(VIEW.latMax-VIEW.latMin)/GH)*D2R;
+    for(let i=0;i<GW;i++){
+      const lon=VIEW.lonMin+(i+.5)*(VIEW.lonMax-VIEW.lonMin)/GW;
+      const el=Math.asin(Math.sin(lat)*Math.sin(DECL)+
+        Math.cos(lat)*Math.cos(DECL)*Math.cos((lon-lamS)*D2R))*R2D;
+      const k=(j*GW+i)*4;
+      if(el>0){const a=Math.min(.2,el/70);d[k]=255;d[k+1]=196;d[k+2]=128;d[k+3]=a*255;}
+      else if(el>-9){const a=(-el/9)*.34;d[k]=18;d[k+1]=26;d[k+2]=52;d[k+3]=a*255;}
+      else{d[k]=2;d[k+1]=5;d[k+2]=13;d[k+3]=.42*255;}
+    }
+  }
+  nctx2.putImageData(nightImg,0,0);
+}
+
+/* ───────── helpers ───────── */
+const fmt=n=>Math.round(n).toLocaleString("en-US");
+const zulu=t=>{const m=(23*60+50+Math.round(t))%1440;
+  return String(Math.floor(m/60)).padStart(2,"0")+String(m%60).padStart(2,"0")+"Z";};
+const clock=t=>{const m=Math.round(t);
+  return "T+"+String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");};
+function hexA(h,a){const n=parseInt(h.slice(1),16);
+  return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")";}
+function polyPath(c,arr,close,proj){
+  c.beginPath();
+  for(let i=0;i<arr.length;i+=2){
+    const [x,y]=proj(arr[i],arr[i+1]);
+    i?c.lineTo(x,y):c.moveTo(x,y);
+  }
+  if(close)c.closePath();
+}
+const qPoint=(p0,p1,p2,t)=>{const u=1-t;
+  return [u*u*p0[0]+2*u*t*p1[0]+t*t*p2[0], u*u*p0[1]+2*u*t*p1[1]+t*t*p2[1]];};
+
+/* ══════════════════════════════════════════════════════════════════════
+   MAP RENDER
+   ══════════════════════════════════════════════════════════════════════ */
+let T=0, playing=false, speedSel=0, autoCam=true, showNight=true, showLbl=true;
+let stageWanted=true, stageOn=false, stageMix=0;
+let last=performance.now();
+
+const CAM=[{t:0,lon:-16,lat:-11,z:2.6},{t:70,lon:-20,lat:-16,z:2.0},
+ {t:112,lon:-24,lat:-19,z:3.0},{t:150,lon:-27,lat:-23,z:2.0},
+ {t:164,lon:-30,lat:-25,z:3.2},{t:206,lon:-33,lat:-29,z:2.2},
+ {t:216,lon:-36,lat:-30,z:3.4},{t:254,lon:-40,lat:-34,z:3.6},
+ {t:292,lon:-43,lat:-38,z:3.8},{t:330,lon:-46,lat:-41,z:4.6},
+ {t:360,lon:-47,lat:-42,z:4.0},{t:382,lon:-50,lat:-45,z:4.6},
+ {t:424,lon:-53,lat:-48,z:3.4},{t:466,lon:-57.0,lat:-51.4,z:9.0},
+ {t:480,lon:-57.6,lat:-51.6,z:11.0},{t:502,lon:-55,lat:-49,z:4.0},
+ {t:600,lon:-42,lat:-36,z:2.0},{t:704,lon:-36,lat:-28,z:2.6},
+ {t:820,lon:-22,lat:-16,z:2.0},{t:902,lon:-16,lat:-10,z:3.0}];
+function camTarget(t){
+  let a=CAM[0],b=CAM[CAM.length-1];
+  for(let i=0;i<CAM.length-1;i++) if(t>=CAM[i].t&&t<=CAM[i+1].t){a=CAM[i];b=CAM[i+1];break;}
+  const k=Math.max(0,Math.min(1,(t-a.t)/Math.max(1,b.t-a.t))), e=k*k*(3-2*k);
+  return {cx:W2.x(a.lon+(b.lon-a.lon)*e),cy:W2.y(a.lat+(b.lat-a.lat)*e),
+          z:fitZ*(a.z+(b.z-a.z)*e)/2.2};
+}
+
+function drawMap(c,w,h,proj,opt){
+  const g=c.createLinearGradient(0,0,0,h);
+  g.addColorStop(0,"#050b14"); g.addColorStop(.55,"#04080f"); g.addColorStop(1,"#020509");
+  c.fillStyle=g; c.fillRect(0,0,w,h);
+
+  if(opt.grid){
+    c.lineWidth=1; c.strokeStyle="rgba(60,110,150,.10)"; c.font="9px ui-monospace,monospace";
+    for(let lo=-80;lo<=20;lo+=10){
+      const a=proj(lo,VIEW.latMax),b=proj(lo,VIEW.latMin);
+      c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();
+    }
+    for(let la=0;la>=-60;la-=10){
+      const a=proj(VIEW.lonMin,la),b=proj(VIEW.lonMax,la);
+      c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();
+      c.fillStyle="rgba(90,140,180,.3)"; c.fillText(Math.abs(la)+"°S",a[0]+6,a[1]-4);
+    }
+  }
+  polyPath(c,SAM,true,proj); c.fillStyle="#0b1119"; c.fill();
+  c.strokeStyle="rgba(96,150,190,.42)"; c.lineWidth=1.1; c.stroke();
+  polyPath(c,AFR,true,proj); c.fillStyle="#0b1119"; c.fill(); c.stroke();
+  for(const p of [EFALK,WFALK,SGEO]){
+    polyPath(c,p,true,proj); c.fillStyle="#101a24"; c.fill();
+    c.strokeStyle="rgba(140,190,225,.66)"; c.lineWidth=1.2; c.stroke();
+  }
+  if(showNight&&opt.night){
+    buildNight(false);
+    const a=proj(VIEW.lonMin,VIEW.latMax), b=proj(VIEW.lonMax,VIEW.latMin);
+    c.save(); c.imageSmoothingEnabled=true; c.imageSmoothingQuality="high";
+    c.drawImage(nightCv,a[0],a[1],b[0]-a[0],b[1]-a[1]); c.restore();
+  }
+  if(opt.places){
+    c.font="8.5px ui-monospace,monospace";
+    for(const pl of PLACES){
+      const [x,y]=proj(pl.lon,pl.lat);
+      if(x<-60||x>w+60||y<0||y>h)continue;
+      c.fillStyle="rgba(150,190,220,.34)"; c.beginPath();c.arc(x,y,1.6,0,7);c.fill();
+      c.fillStyle="rgba(150,190,220,.4)"; c.fillText(pl.n,x+6,y+3);
+    }
+  }
+  /* route + 500 nm ticks */
+  c.strokeStyle="rgba(255,182,72,.2)"; c.lineWidth=1.2; c.setLineDash([6,6]);
+  c.beginPath();
+  for(let i=0;i<=140;i++){const p=R_OUT.at(i/140);const q=proj(p.lon,p.lat);
+    i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]);}
+  c.stroke();
+  c.strokeStyle="rgba(169,139,250,.16)"; c.beginPath();
+  for(let i=0;i<=140;i++){const p=R_RTN.at(i/140);const q=proj(p.lon,p.lat);
+    i?c.lineTo(q[0],q[1]):c.moveTo(q[0],q[1]);}
+  c.stroke(); c.setLineDash([]);
+  if(opt.ticks){
+    c.font="7.5px ui-monospace,monospace";
+    for(let nm=500;nm<TOTAL_NM;nm+=500){
+      const p=R_OUT.at(nm/TOTAL_NM), [x,y]=proj(p.lon,p.lat);
+      const px=-Math.sin(p.brg),py=Math.cos(p.brg);
+      c.strokeStyle="rgba(255,182,72,.3)"; c.lineWidth=1;
+      c.beginPath(); c.moveTo(x-px*4,y-py*4); c.lineTo(x+px*4,y+py*4); c.stroke();
+      c.fillStyle="rgba(255,182,72,.34)"; c.fillText(nm+"nm",x+px*8-8,y+py*8+3);
+    }
+  }
+  /* brackets */
+  for(const b of BRACKETS){
+    const p=R_OUT.at(F(b.t)), [x,y]=proj(p.lon,p.lat);
+    const done=T>b.t+b.dur, live=T>=b.t&&T<=b.t+b.dur;
+    if(live&&opt.grid){
+      const ph=(T-b.t)/b.dur;
+      c.strokeStyle="rgba(255,182,72,"+(.7*(1-ph))+")"; c.lineWidth=1.6;
+      c.beginPath();c.arc(x,y,10+((ph*2.2)%1)*52,0,7);c.stroke();
+    }
+    c.strokeStyle=b.storm?"#ff5f63":(done?"rgba(255,182,72,.5)":"rgba(120,150,180,.45)");
+    c.lineWidth=1.3; c.beginPath();c.arc(x,y,opt.mini?4:7,0,7);c.stroke();
+    if(!opt.mini){
+      c.beginPath();
+      c.moveTo(x-11,y);c.lineTo(x-7,y); c.moveTo(x+7,y);c.lineTo(x+11,y);
+      c.moveTo(x,y-11);c.lineTo(x,y-7); c.moveTo(x,y+7);c.lineTo(x,y+11); c.stroke();
+      c.font="8.5px ui-monospace,monospace";
+      c.fillStyle=live?"#ffb648":"rgba(150,180,210,.5)";
+      c.fillText("BKT "+b.n,x+14,y-4);
+      c.fillStyle="rgba(150,180,210,.32)";
+      c.fillText(Math.round(F(b.t)*TOTAL_NM)+" nm",x+14,y+7);
+    }
+  }
+  /* storm cell */
+  if(T>300&&T<410&&opt.grid){
+    const p=R_OUT.at(F(328)), [x,y]=proj(p.lon,p.lat);
+    const amt=Math.min(1,Math.max(0,(T-300)/20))*Math.min(1,Math.max(0,(410-T)/25));
+    const rr=Math.max(16,cam.z*2.4);
+    c.save(); c.globalAlpha=amt*.85;
+    for(let i=0;i<5;i++){
+      const a=T*.06+i*1.3, rad=rr*(.5+i*.28);
+      c.beginPath(); c.ellipse(x+Math.cos(a)*rr*.22,y+Math.sin(a)*rr*.18,rad,rad*.72,a*.4,0,7);
+      c.fillStyle="rgba(58,34,72,"+(.16-i*.02)+")"; c.fill();
+      c.strokeStyle="rgba(150,110,200,"+(.13-i*.02)+")"; c.lineWidth=1; c.stroke();
+    }
+    if(Math.sin(T*7.3)>.86||Math.sin(T*11.7)>.93){
+      c.strokeStyle="rgba(200,220,255,.85)"; c.lineWidth=1.4;
+      const a=T*3%6.28;
+      c.beginPath(); c.moveTo(x+Math.cos(a)*rr*.3,y+Math.sin(a)*rr*.3);
+      c.lineTo(x+Math.cos(a+.4)*rr*.8,y+Math.sin(a+.4)*rr*.8);
+      c.lineTo(x+Math.cos(a+.1)*rr*1.1,y+Math.sin(a+.1)*rr*1.1); c.stroke();
+    }
+    c.font="9px ui-monospace,monospace"; c.textAlign="center";
+    c.fillStyle="rgba(190,150,240,.75)"; c.fillText("THUNDERSTORM · 40°S",x,y-rr*1.35);
+    c.textAlign="left"; c.restore();
+  }
+  /* bases */
+  for(const s of [[ASC,"WIDEAWAKE","ASCENSION IS.","#4fe0a8"],[STA,"STANLEY","TARGET","#ff5f63"]]){
+    const [x,y]=proj(s[0].lon,s[0].lat);
+    c.strokeStyle=s[3]; c.lineWidth=1.3;
+    c.beginPath();c.arc(x,y,opt.mini?3.5:5,0,7);c.stroke();
+    c.fillStyle=s[3]; c.beginPath();c.arc(x,y,1.8,0,7);c.fill();
+    if(!opt.mini){
+      const pu=(Math.sin(T*1.5)+1)/2;
+      c.save(); c.globalAlpha=.35*(1-pu);
+      c.beginPath();c.arc(x,y,5+pu*22,0,7);c.stroke(); c.restore();
+      c.font="bold 9.5px ui-monospace,monospace"; c.fillStyle=s[3];
+      c.fillText(s[1],x+10,y-3);
+      c.font="8px ui-monospace,monospace"; c.fillStyle=hexA(s[3],.55);
+      c.fillText(s[2],x+10,y+8);
+    }
+  }
+  /* bomb burst */
+  if(T>=473&&T<487){
+    const [x,y]=proj(STA.lon,STA.lat), k=(T-473)/14;
+    c.strokeStyle="rgba(255,120,60,"+(1-k)+")"; c.lineWidth=2.5;
+    c.beginPath();c.arc(x,y,4+k*150,0,7);c.stroke();
+    c.fillStyle="rgba(255,180,90,"+(.55*(1-k))+")";
+    c.beginPath();c.arc(x,y,10*(1-k)+3,0,7);c.fill();
+  }
+}
+
+/* ───────── aircraft on the map, with de-cluttering ───────── */
+function drawTracks(c,w,h,proj,opt){
+  const tR=Math.round(Math.max(0,Math.min(T_END,T)));
+  const list=AC.filter(a=>active[a.id][tR]);
+  const pos={};
+  for(const a of list){
+    const p=posAt(a,T);
+    const q=proj(p.lon+ (p.ox||0)/KX, p.lat - (p.oy||0));
+    pos[a.id]={x:q[0],y:q[1],brg:p.brg,p};
+  }
+  /* trails */
+  if(opt.trails){
+    for(const a of list){
+      const isV=a.type==="V", N=22, span=isV?64:48;
+      c.lineWidth=isV?2:1.2;
+      for(let i=0;i<N;i++){
+        const t0=T-span*(i+1)/N, t1=T-span*i/N;
+        if(t0<0)break;
+        const A=posAt(a,t0),B=posAt(a,t1);
+        const a0=proj(A.lon+(A.ox||0)/KX,A.lat-(A.oy||0));
+        const b0=proj(B.lon+(B.ox||0)/KX,B.lat-(B.oy||0));
+        if(Math.hypot(b0[0]-a0[0],b0[1]-a0[1])>w*.6)continue;
+        c.strokeStyle=hexA(SECCOL[a.sec],(1-i/N)*(isV?.55:.3));
+        c.beginPath();c.moveTo(a0[0],a0[1]);c.lineTo(b0[0],b0[1]);c.stroke();
+      }
+    }
+  }
+  /* hose links on the map */
+  const lx=shownXfers(T);
+  for(const x of lx){
+    const A=pos[x.from],B=pos[x.to]; if(!A||!B)continue;
+    c.save();
+    c.strokeStyle="rgba(255,182,72,.85)"; c.lineWidth=1.7;
+    c.setLineDash([2,6]); c.lineDashOffset=-(T*26)%8;
+    c.beginPath();c.moveTo(A.x,A.y);c.lineTo(B.x,B.y);c.stroke();
+    c.restore();
+  }
+  /* de-cluster: group aircraft closer than CL px on screen */
+  const CL=opt.mini?9:30, groups=[], used=new Set();
+  for(const a of list){
+    if(used.has(a.id))continue;
+    const g={ids:[a.id],x:pos[a.id].x,y:pos[a.id].y}; used.add(a.id);
+    for(const b of list){
+      if(used.has(b.id))continue;
+      if(Math.hypot(pos[b.id].x-g.x,pos[b.id].y-g.y)<CL){g.ids.push(b.id);used.add(b.id);}
+    }
+    groups.push(g);
+  }
+  const inContact=new Set(lx.flatMap(x=>[x.from,x.to]));
+  for(const g of groups){
+    const solo=g.ids.length===1;
+    const hero=g.ids.includes("V2");
+    if(solo||opt.mini||g.ids.length<=2){
+      for(const id of g.ids){
+        const a=byId[id],pp=pos[id],col=SECCOL[a.sec];
+        const isV=a.type==="V", h=id==="V2";
+        const sc=(opt.mini?.42:(isV?.95:.74))*(opt.mini?1:1+Math.min(.7,cam.z/fitZ*.1));
+        if(h&&!opt.mini){
+          c.save(); c.globalAlpha=.45+.45*Math.sin(T*4);
+          c.strokeStyle="rgba(255,182,72,.4)"; c.lineWidth=1;
+          c.beginPath();c.arc(pp.x,pp.y,17,0,7);c.stroke(); c.restore();
+        }
+        if(inContact.has(id)&&!opt.mini){
+          c.save(); c.strokeStyle="rgba(255,182,72,.6)"; c.lineWidth=1;
+          c.beginPath();c.arc(pp.x,pp.y,12,0,7);c.stroke(); c.restore();
+        }
+        (isV?planVulcan:planVictor)(c,pp.x,pp.y,pp.brg,sc,col,h&&!opt.mini);
+        if(showLbl&&!opt.mini&&(h||inContact.has(id)||cam.z>fitZ*3.2)){
+          c.font=(h?"bold ":"")+"9px ui-monospace,monospace";
+          c.fillStyle=hexA(col,h?1:.85);
+          c.fillText(a.call+"  "+a.ser,pp.x+14,pp.y-3);
+          const fu=fuel[id][tR], cap=a.type==="K2"?CAP_K2:CAP_V, pc=fu/cap;
+          c.font="8px ui-monospace,monospace";
+          c.fillStyle=pc<.15?"rgba(255,95,99,.95)":hexA(col,.5);
+          c.fillText(fmt(fu)+" lb",pp.x+14,pp.y+7);
+          c.fillStyle="rgba(255,255,255,.1)"; c.fillRect(pp.x+14,pp.y+10,34,2.5);
+          c.fillStyle=pc<.15?"#ff5f63":col; c.fillRect(pp.x+14,pp.y+10,34*pc,2.5);
+        }
+      }
+    }else{
+      /* cluster badge: a ring segmented by section, with a count */
+      const R=13;
+      c.save();
+      c.lineWidth=3.2;
+      let a0=-Math.PI/2;
+      const secs={}; g.ids.forEach(id=>{secs[byId[id].sec]=(secs[byId[id].sec]||0)+1;});
+      for(const s in secs){
+        const sw=Math.PI*2*secs[s]/g.ids.length;
+        c.strokeStyle=SECCOL[s]; c.beginPath();
+        c.arc(g.x,g.y,R,a0,a0+sw-.06); c.stroke(); a0+=sw;
+      }
+      c.fillStyle="rgba(4,8,14,.85)"; c.beginPath();c.arc(g.x,g.y,R-2.4,0,7);c.fill();
+      c.fillStyle="#dfe9f5"; c.font="bold 11px ui-monospace,monospace";
+      c.textAlign="center"; c.textBaseline="middle";
+      c.fillText(String(g.ids.length),g.x,g.y+.5);
+      c.textAlign="left"; c.textBaseline="alphabetic";
+      if(hero){
+        c.strokeStyle="rgba(255,182,72,.9)"; c.lineWidth=1.4;
+        c.beginPath();c.arc(g.x,g.y,R+4,0,7);c.stroke();
+      }
+      if(showLbl){
+        c.font="8.5px ui-monospace,monospace"; c.fillStyle="rgba(190,210,230,.75)";
+        c.fillText(g.ids.length+" AIRCRAFT",g.x+R+6,g.y-3);
+        c.fillStyle="rgba(150,180,210,.45)";
+        c.fillText("ZOOM TO SEPARATE",g.x+R+6,g.y+7);
+      }
+      c.restore();
+    }
+  }
+}
+
+function drawLegend(c,h){
+  if(h<620)return;
+  const x=16,y=h-206;
+  const items=[["RED SECTION",SECCOL.RED],["WHITE SECTION",SECCOL.WHITE],
+    ["BLUE SECTION",SECCOL.BLUE],["VULCAN B.2",SECCOL.BOMBER],["RECOVERY SORTIE",SECCOL.RECOVERY]];
+  c.font="8.5px ui-monospace,monospace";
+  items.forEach((it,i)=>{
+    c.fillStyle=it[1]; c.fillRect(x,y+i*15,8,8);
+    c.fillStyle="rgba(160,190,215,.6)"; c.fillText(it[0],x+14,y+i*15+8);
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CONTACT STAGE  ·  the readable refuelling view
+   ══════════════════════════════════════════════════════════════════════ */
+const stageEl=document.getElementById("stage"), stageCv=document.getElementById("stagec");
+function drawContactCell(c,x,y,w,h,x0,big){
+  const A=byId[x0.from], B=byId[x0.to];
+  const colA=SECCOL[A.sec], colB=SECCOL[B.sec];
+  c.save(); c.beginPath(); c.rect(x,y,w,h); c.clip();
+  c.strokeStyle="rgba(255,255,255,.055)"; c.lineWidth=1; c.strokeRect(x+.5,y+.5,w-1,h-1);
+
+  const broken = x0.broke && T>=PROBE_BREAK;
+  const stopped = broken || T>x0.t1;
+  const s = big? Math.min(w/300,h/190) : Math.min(w/250,h/150);
+  const cy = y+h*(big?.47:.46);
+  const bob = Math.sin(T*3.1)*(big?2.4:1.2), bob2=Math.sin(T*2.6+1.1)*(big?2.0:1.0);
+  // tanker ahead-left, receiver behind-right and stepped down
+  const ax = x+w*(big?.30:.31), bx = x+w*(big?.79:.80);
+  const ay = cy-h*(big?.10:.09)+bob, by = cy+h*(big?.09:.08)+bob2;
+
+  /* tanker */
+  c.save(); c.translate(ax,ay); c.scale(s,s); c.rotate(0);
+  const gA=victorProfile(c);
+  c.fillStyle="#0c141d"; c.fill();
+  c.strokeStyle=colA; c.lineWidth=1.6/s; c.stroke();
+  victorDetail(c,hexA(colA,.5));
+  c.restore();
+
+  /* receiver */
+  c.save(); c.translate(bx,by); c.scale(s,s);
+  const gB = B.type==="V" ? vulcanProfile(c) : victorProfile(c);
+  c.fillStyle="#0c141d"; c.fill();
+  c.strokeStyle=colB; c.lineWidth=1.6/s; c.stroke();
+  (B.type==="V"?vulcanDetail:victorDetail)(c,hexA(colB,.5));
+  drawProbe(c,gB,broken?"#ff5f63":colB,broken?"broken":"ok");
+  c.restore();
+
+  /* hose from the tanker's HDU to the receiver's probe tip */
+  const hx=ax+gA.hoseRoot[0]*s, hy=ay+gA.hoseRoot[1]*s;
+  const px=bx+(broken?gB.probe[0]+(gB.tip[0]-gB.probe[0])*.35:gB.tip[0])*s;
+  const py=by+(broken?gB.probe[1]+(gB.tip[1]-gB.probe[1])*.35:gB.tip[1])*s;
+  const sag=(big?26:15)+Math.sin(T*2.2)*(big?4:2)+(broken?18:0);
+  const mid=[(hx+px)/2,(hy+py)/2+sag];
+  const hosePts=[[hx,hy],mid,[px,py]];
+  c.strokeStyle="rgba(150,170,190,.30)"; c.lineWidth=big?5:3.4; c.lineCap="round";
+  c.beginPath(); c.moveTo(hx,hy); c.quadraticCurveTo(mid[0],mid[1],px,py); c.stroke();
+  c.strokeStyle=broken?"rgba(255,95,99,.55)":"rgba(200,215,230,.5)"; c.lineWidth=big?2:1.4;
+  c.beginPath(); c.moveTo(hx,hy); c.quadraticCurveTo(mid[0],mid[1],px,py); c.stroke();
+  /* drogue basket */
+  const dg=qPoint([hx,hy],mid,[px,py],.9);
+  c.save(); c.translate(dg[0],dg[1]);
+  c.strokeStyle=broken?"#ff5f63":"rgba(210,225,240,.8)"; c.lineWidth=big?1.8:1.3;
+  const dr=big?8:5.5;
+  c.beginPath(); c.moveTo(-dr*.6,-dr*.72); c.lineTo(dr*.5,-dr*.42);
+  c.lineTo(dr*.5,dr*.42); c.lineTo(-dr*.6,dr*.72); c.stroke();
+  c.restore();
+  /* the snapped-off probe tip, left in the basket */
+  if(broken){
+    c.fillStyle="#ff5f63"; c.beginPath();c.arc(dg[0]-2,dg[1],big?3:2,0,7);c.fill();
+  }
+
+  /* flowing fuel */
+  if(!stopped){
+    const n=big?16:9;
+    for(let i=0;i<n;i++){
+      const tt=((T*(big?.55:.5)+i/n)%1);
+      const q=qPoint([hx,hy],mid,[px,py],tt);
+      const gl=big?3.1:2.1;
+      c.fillStyle="rgba(255,214,150,"+(.35+.5*Math.sin(tt*Math.PI))+")";
+      c.beginPath();c.arc(q[0],q[1],gl,0,7);c.fill();
+    }
+  }
+
+  /* labels */
+  const F1=big?11:9, F2=big?9.5:8;
+  c.textAlign="left";
+  c.font="bold "+F1+"px ui-monospace,monospace"; c.fillStyle=colA;
+  c.fillText(A.call+"  "+A.ser, x+10, y+(big?20:15));
+  c.font=F2+"px ui-monospace,monospace"; c.fillStyle="rgba(160,190,215,.65)";
+  c.fillText((A.crew||"")+"   GIVING", x+10, y+(big?34:26));
+  c.textAlign="right";
+  c.font="bold "+F1+"px ui-monospace,monospace"; c.fillStyle=colB;
+  c.fillText(B.call+"  "+B.ser, x+w-10, y+(big?20:15));
+  c.font=F2+"px ui-monospace,monospace"; c.fillStyle="rgba(160,190,215,.65)";
+  c.fillText("RECEIVING   "+(B.crew||""), x+w-10, y+(big?34:26));
+
+  /* numbers strip, read straight out of the simulation */
+  const st=xferAt(x0,T);
+  const shown=st.moved, rate=stopped?0:st.rate;
+  const by2=y+h-(big?40:26);
+  c.textAlign="left"; c.font=F2+"px ui-monospace,monospace";
+  c.fillStyle="rgba(120,150,180,.6)"; c.fillText(x0.unit, x+10, by2-(big?12:8));
+  c.fillStyle="#ffd79a";
+  c.font="bold "+(big?15:11)+"px ui-monospace,monospace";
+  c.fillText(fmt(shown)+" lb", x+10, by2+(big?12:8));
+  c.font=F2+"px ui-monospace,monospace"; c.fillStyle="rgba(160,190,215,.55)";
+  c.fillText(stopped?"FLOW STOPPED":fmt(rate)+" lb/min", x+10+(big?110:74), by2+(big?12:8));
+  /* progress toward planned */
+  const target=x0.plan||x0.lb;
+  const pw=big?w-20:w-20, ph=big?5:3.5, py2=y+h-(big?14:10);
+  c.fillStyle="rgba(255,255,255,.07)"; c.fillRect(x+10,py2,pw,ph);
+  c.fillStyle=x0.plan?"#ff5f63":"#ffb648";
+  c.fillRect(x+10,py2,pw*Math.min(1,shown/target),ph);
+  if(x0.plan){
+    c.fillStyle="rgba(255,255,255,.5)"; c.fillRect(x+10+pw-1,py2-2,1.5,ph+4);
+    c.textAlign="right"; c.font=F2+"px ui-monospace,monospace";
+    c.fillStyle="#ff5f63";
+    c.fillText("PLANNED "+fmt(x0.plan)+" lb", x+w-10, by2+(big?12:8));
+  }
+  if(x0.note){
+    c.textAlign="right"; c.font="bold "+F2+"px ui-monospace,monospace";
+    c.fillStyle=broken?"#ff5f63":"rgba(255,182,72,.85)";
+    c.fillText(x0.note, x+w-10, by2-(big?12:8));
+  }
+  c.textAlign="left";
+  c.restore();
+}
+
+
+/* ───────── target stage: the run-in and the attack ───────── */
+const ATK_T0=438, ATK_T1=502, REL=473;
+const inAttack=t=>t>=ATK_T0&&t<=ATK_T1;
+function atkPhase(t){
+  if(t<456) return {l:"DESCENT",alt:Math.round(27000-(t-ATK_T0)*(26700/18)),spd:300};
+  if(t<469) return {l:"LOW LEVEL · UNDER THE RADAR",alt:300,spd:300};
+  if(t<REL)  return {l:"CLIMBING TO BOMB HEIGHT",alt:Math.round(300+(t-469)*2425),spd:330};
+  if(t<478) return {l:"RELEASE · 21 × 1,000 LB",alt:10000,spd:330};
+  return {l:"ESCAPE · 60° BANK, 2 g",alt:10000,spd:330};
+}
+function drawTargetStage(c,w,h){
+  const ph=atkPhase(T);
+  const cx=w*0.52, cy=h*0.50;
+  const S=Math.min(w/620,h/380);
+
+  /* sea + coast sketch */
+  c.strokeStyle="rgba(120,170,210,.30)"; c.lineWidth=1.3;
+  c.beginPath();
+  c.moveTo(cx-330*S,cy+130*S);
+  c.quadraticCurveTo(cx-130*S,cy+92*S,cx-16*S,cy+126*S);
+  c.quadraticCurveTo(cx+120*S,cy+162*S,cx+330*S,cy+112*S); c.stroke();
+  c.beginPath();
+  c.moveTo(cx-330*S,cy-152*S);
+  c.quadraticCurveTo(cx-96*S,cy-118*S,cx+92*S,cy-150*S);
+  c.quadraticCurveTo(cx+210*S,cy-168*S,cx+330*S,cy-138*S); c.stroke();
+  c.font=(9)+"px ui-monospace,monospace"; c.fillStyle="rgba(120,160,200,.4)";
+  c.fillText("PORT WILLIAM",cx+120*S,cy-158*S);
+  c.fillText("SOUTH ATLANTIC",cx-320*S,cy+150*S);
+
+  /* Mount Usborne, the radar fix */
+  const ux=cx-292*S, uy=cy-34*S;
+  c.strokeStyle="rgba(160,200,235,.5)"; c.lineWidth=1.2;
+  c.beginPath(); c.moveTo(ux-13*S,uy+9*S); c.lineTo(ux,uy-13*S); c.lineTo(ux+13*S,uy+9*S);
+  c.closePath(); c.stroke();
+  c.fillStyle="rgba(160,200,235,.62)"; c.font="8.5px ui-monospace,monospace";
+  c.fillText("MT USBORNE 2,313 ft",ux-40*S,uy+24*S);
+  c.fillStyle="rgba(160,200,235,.34)";
+  c.fillText("H2S RADAR FIX · 33 mi W",ux-40*S,uy+35*S);
+  if(T>=458&&T<REL){
+    c.strokeStyle="rgba(79,224,168,"+(0.35+0.35*Math.sin(T*5))+")";
+    c.setLineDash([3,4]); c.lineWidth=1;
+    c.beginPath(); c.moveTo(ux,uy); c.lineTo(cx,cy); c.stroke(); c.setLineDash([]);
+  }
+
+  /* runway 09/27, 4,100 ft */
+  const rl=200*S, rw=13*S;
+  c.save(); c.translate(cx,cy); c.rotate(-0.10);
+  c.fillStyle="#26374a"; c.fillRect(-rl/2,-rw/2,rl,rw);
+  c.strokeStyle="rgba(185,220,245,.8)"; c.lineWidth=1.1; c.strokeRect(-rl/2,-rw/2,rl,rw);
+  c.setLineDash([7*S,7*S]); c.strokeStyle="rgba(255,255,255,.45)";
+  c.beginPath(); c.moveTo(-rl/2+8*S,0); c.lineTo(rl/2-8*S,0); c.stroke(); c.setLineDash([]);
+  c.restore();
+  c.font="9px ui-monospace,monospace"; c.fillStyle="rgba(160,200,230,.7)";
+  c.fillText("RWY 09/27 · 4,100 ft",cx-rl/2,cy+34*S);
+  c.fillStyle="rgba(160,200,230,.4)";
+  c.fillText("BAM MALVINAS / STANLEY AIRFIELD",cx-rl/2,cy+46*S);
+
+  /* bomb stick, walked across the runway at ~35° */
+  const ang=-0.62;
+  if(T>=REL){
+    const k=Math.min(1,(T-REL)/6), n=Math.floor(21*k+0.001);
+    c.strokeStyle="rgba(255,182,72,.28)"; c.setLineDash([4,5]); c.lineWidth=1;
+    c.beginPath();
+    c.moveTo(cx+Math.cos(ang)*-215*S,cy+Math.sin(ang)*-215*S);
+    c.lineTo(cx+Math.cos(ang)*215*S,cy+Math.sin(ang)*215*S); c.stroke(); c.setLineDash([]);
+    for(let i=0;i<21;i++){
+      if(i>=n) break;
+      const d=(i-10)*19.6*S;
+      const bx=cx+Math.cos(ang)*d, by=cy+Math.sin(ang)*d;
+      const hit=Math.abs(d)<rw*0.95;
+      const age=Math.min(1,Math.max(0,(T-REL-i*0.26)/3));
+      if(hit){
+        c.fillStyle="rgba(255,150,60,"+(0.95-age*0.2)+")";
+        c.beginPath(); c.arc(bx,by,13*S,0,7); c.fill();
+        c.strokeStyle="rgba(255,140,50,"+(1-age)+")"; c.lineWidth=2;
+        c.beginPath(); c.arc(bx,by,13*S+age*60*S,0,7); c.stroke();
+        c.fillStyle="rgba(20,10,4,.75)";
+        c.beginPath(); c.arc(bx,by,6*S,0,7); c.fill();
+      }else{
+        c.fillStyle="rgba(255,196,120,"+(0.72-age*0.28)+")";
+        c.beginPath(); c.arc(bx,by,6*S,0,7); c.fill();
+      }
+    }
+    c.textAlign="center"; c.font="bold "+(10)+"px ui-monospace,monospace";
+    c.fillStyle="#ffb648"; c.fillText(n+" / 21 RELEASED",cx,cy-64*S);
+    if(n>=11){c.fillStyle="#ff8a3c";c.font="bold 11px ui-monospace,monospace";
+      c.fillText("RUNWAY CRATERED",cx,cy-78*S);}
+    c.textAlign="left";
+  }
+
+  /* the Vulcan on its run-in / escape */
+  let vx,vy,vr;
+  if(T<REL){
+    const k=(T-ATK_T0)/(REL-ATK_T0);
+    vx=cx-300*S+300*S*k; vy=cy+96*S-96*S*k; vr=-0.30;
+  }else{
+    const k=Math.min(1,(T-REL)/(ATK_T1-REL));
+    vx=cx+k*250*S; vy=cy-k*150*S; vr=-0.30-k*1.5;
+  }
+  c.save(); c.translate(vx,vy); c.rotate(vr); c.scale(1.05*S,1.05*S);
+  const gv=vulcanProfile(c);
+  c.fillStyle="#0c141d"; c.fill();
+  c.strokeStyle="#ffb648"; c.lineWidth=1.6/(1.05*S); c.stroke();
+  vulcanDetail(c,hexA("#ffb648",.55));
+  drawProbe(c,gv,"#ffb648","ok");
+  c.restore();
+  c.font="bold 10px ui-monospace,monospace"; c.fillStyle="#ffb648";
+  c.fillText("XM607",vx+18*S,vy-22*S);
+
+  /* instrument strip */
+  const by=h-26;
+  c.fillStyle="rgba(255,255,255,.02)"; c.fillRect(0,by-16,w,42);
+  c.strokeStyle="rgba(255,255,255,.05)"; c.beginPath();
+  c.moveTo(0,by-16); c.lineTo(w,by-16); c.stroke();
+  const cells=[["PHASE",ph.l],["ALTITUDE",fmt(ph.alt)+" ft"],["AIRSPEED",ph.spd+" kt"],
+    ["FUEL",fmt(fuel["V2"][Math.round(Math.min(T_END,T))])+" lb"],
+    ["BOMB LOAD",T<REL?"21 × 1,000 lb":Math.max(0,21-Math.floor(Math.min(1,(T-REL)/6)*21))+" × 1,000 lb"]];
+  let bxp=12;
+  for(const [k,v] of cells){
+    c.font="8px ui-monospace,monospace"; c.fillStyle="rgba(120,150,180,.6)";
+    c.fillText(k,bxp,by-2);
+    c.font="bold 11px ui-monospace,monospace"; c.fillStyle="#dfe9f5";
+    c.fillText(v,bxp,by+13);
+    bxp+=Math.max(110,c.measureText(v).width+58);
+  }
+  c.font="8px ui-monospace,monospace"; c.textAlign="right";
+  c.fillStyle="rgba(120,150,180,.45)"; c.fillText("SCHEMATIC · NOT TO SCALE",w-10,by+13);
+  c.textAlign="left";
+}
+
+function drawStage(){
+  if(stageMix<=0.01) return;
+  const {c,w,h}=fitCanvas(stageCv);
+  c.clearRect(0,0,w,h);
+  c.fillStyle="#050a11"; c.fillRect(0,0,w,h);
+  /* faint grid */
+  c.strokeStyle="rgba(70,110,145,.09)"; c.lineWidth=1;
+  for(let i=0;i<w;i+=26){c.beginPath();c.moveTo(i,0);c.lineTo(i,h);c.stroke();}
+  for(let j=0;j<h;j+=26){c.beginPath();c.moveTo(0,j);c.lineTo(w,j);c.stroke();}
+
+  const lx=shownXfers(T);
+  const b=liveBracket(T);
+  const stripH=64, gridH=h-stripH;
+
+  if(!lx.length && inAttack(T)){
+    drawTargetStage(c,w,h);
+    document.getElementById("stgT").textContent="TARGET · STANLEY AIRFIELD";
+    document.getElementById("stgS").textContent=atkPhase(T).l+" · "+zulu(T);
+    return;
+  }
+  if(!lx.length){
+    c.textAlign="center"; c.font="10px ui-monospace,monospace";
+    c.fillStyle="rgba(150,180,210,.5)";
+    c.fillText(b?"BRACKET "+b.n+" · JOINING UP":"NO CONTACT",w/2,gridH/2);
+    c.textAlign="left";
+  }else{
+    const n=lx.length, pad=7;
+    let cols=1, best=1e9;
+    for(let k=1;k<=Math.min(4,n);k++){
+      const r=Math.ceil(n/k);
+      const cw=(w-pad*(k+1))/k, ch=(gridH-pad*(r+1))/r;
+      if(ch<62) continue;                        // too short to read a profile pair
+      const err=Math.abs(cw/ch-2.35);
+      if(err<best){best=err;cols=k;}
+    }
+    const rows=Math.ceil(n/cols);
+    const cw=(w-pad*(cols+1))/cols, ch=(gridH-pad*(rows+1))/rows;
+    const big = cw>=420 && ch>=168;
+    lx.forEach((x,i)=>{
+      const cx=pad+(i%cols)*(cw+pad), cy=pad+Math.floor(i/cols)*(ch+pad);
+      drawContactCell(c,cx,cy,cw,ch,x,big);
+    });
+  }
+
+  /* formation strip: everything in the bracket, in stream order */
+  const tR=Math.round(Math.max(0,Math.min(T_END,T)));
+  const anchor = lx.length? posAt(byId[lx[0].from],T) : posAt(byId["V2"],T);
+  const here=AC.filter(a=>active[a.id][tR]&&gcNm(anchor,posAt(a,T))<420)
+               .sort((p,q)=>gcNm(ASC,posAt(q,T))-gcNm(ASC,posAt(p,T)));
+  const inC=new Set(lx.flatMap(x=>[x.from,x.to]));
+  const leaving=new Set(b?b.out:[]);
+  const y0=gridH+4;
+  c.fillStyle="rgba(255,255,255,.02)"; c.fillRect(0,y0,w,stripH-4);
+  c.strokeStyle="rgba(255,255,255,.05)"; c.beginPath();
+  c.moveTo(0,y0);c.lineTo(w,y0);c.stroke();
+  c.font="8px ui-monospace,monospace"; c.fillStyle="rgba(120,150,180,.55)";
+  c.fillText("FORMATION · "+here.length+" AIRCRAFT IN THIS BRACKET",8,y0+13);
+  const step=Math.min(78,(w-24)/Math.max(1,here.length));
+  here.forEach((a,i)=>{
+    const gx=16+i*step+step/2, gy=y0+36;
+    const col=SECCOL[a.sec];
+    (a.type==="V"?planVulcan:planVictor)(c,gx,gy,-Math.PI/2,.62,col,a.id==="V2");
+    if(inC.has(a.id)){
+      c.strokeStyle="rgba(255,182,72,.85)"; c.lineWidth=1.2;
+      c.beginPath();c.arc(gx,gy,11,0,7);c.stroke();
+    }
+    c.textAlign="center"; c.font="7.5px ui-monospace,monospace";
+    c.fillStyle=inC.has(a.id)?"#ffd79a":(leaving.has(a.id)?"rgba(255,95,99,.8)":hexA(col,.7));
+    c.fillText(a.call,gx,gy+20);
+    const st=inC.has(a.id)?"CONTACT":(leaving.has(a.id)?"DEPARTING":"WAITING");
+    c.fillStyle="rgba(120,150,180,.45)"; c.fillText(st,gx,gy-15);
+    c.textAlign="left";
+  });
+
+  /* header text */
+  document.getElementById("stgT").textContent =
+    b? "REFUELLING BRACKET "+b.n+" · "+lx.length+" CONTACT"+(lx.length===1?"":"S")
+     : (lx.length?"RENDEZVOUS · "+lx.length+" CONTACT"+(lx.length===1?"":"S"):"CONTACT VIEW");
+  const p=posAt(byId["V2"],T);
+  document.getElementById("stgS").textContent =
+    Math.abs(p.lat).toFixed(1)+"°S "+Math.abs(p.lon).toFixed(1)+"°W · "+
+    fmt(gcNm(ASC,p))+" nm FROM ASCENSION · "+zulu(T);
+}
+
+/* ───────── mini theatre ───────── */
+const miniEl=document.getElementById("mini"), miniCv=document.getElementById("minic");
+function drawMini(){
+  if(stageMix<=.01)return;
+  const {c,w,h}=fitCanvas(miniCv);
+  const p=posAt(byId["V2"],T);
+  const spanLon=34, spanLat=spanLon*h/w/KX;
+  const proj=(lon,lat)=>[ (lon-(p.lon-spanLon/2))/spanLon*w, (lat-(p.lat+spanLat/2))/-spanLat*h ];
+  c.clearRect(0,0,w,h);
+  drawMap(c,w,h,proj,{grid:false,night:true,places:false,ticks:false,mini:true});
+  drawTracks(c,w,h,proj,{trails:false,mini:true});
+  document.getElementById("miniS").textContent=fmt(gcNm(ASC,p))+" nm OUT";
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FUEL CASCADE
+   ══════════════════════════════════════════════════════════════════════ */
+const cascEl=document.getElementById("casc"), cascCv=document.getElementById("cascc");
+let cascDirty=true, cascBase=null;
+function buildCascade(w,h){
+  const off=document.createElement("canvas");
+  off.width=Math.round(w*DPR); off.height=Math.round(h*DPR);
+  const c=off.getContext("2d"); c.setTransform(DPR,0,0,DPR,0,0);
+  const PL=132, PR=34, PT=96, PB=54;
+  const iw=w-PL-PR, ih=h-PT-PB;
+  const X=t=>PL+t/T_END*iw;
+  const groups=[["RED",4],["WHITE",4],["BLUE",3],["BOMBER",2],["RECOVERY",2]];
+  const gap=16, nLane=15;
+  const laneH=(ih-gap*(groups.length-1))/nLane;
+  const laneY={}; let yy=PT, gi=0;
+  for(const [sec,cnt] of groups){
+    for(const a of AC.filter(x=>x.sec===sec)){ laneY[a.id]=yy+laneH/2; yy+=laneH; }
+    if(++gi<groups.length) yy+=gap;
+  }
+  c.fillStyle="rgba(0,0,0,0)"; c.clearRect(0,0,w,h);
+
+  /* time grid */
+  c.font="8.5px ui-monospace,monospace";
+  for(let hh=0;hh<=15;hh++){
+    const t=hh*60; if(t>T_END)break;
+    const x=X(t);
+    c.strokeStyle=hh%3===0?"rgba(90,130,170,.16)":"rgba(90,130,170,.07)";
+    c.lineWidth=1; c.beginPath();c.moveTo(x,PT-22);c.lineTo(x,h-PB+6);c.stroke();
+    c.fillStyle="rgba(120,155,190,.5)"; c.textAlign="center";
+    c.fillText("T+"+String(hh).padStart(2,"0")+":00",x,h-PB+20);
+  }
+  c.textAlign="left";
+  /* event ticks */
+  for(const e of EVENTS){
+    const x=X(e.t);
+    c.strokeStyle=e.big?"rgba(255,95,99,.5)":"rgba(255,182,72,.35)";
+    c.setLineDash([2,4]); c.lineWidth=1;
+    c.beginPath();c.moveTo(x,PT-26);c.lineTo(x,h-PB);c.stroke(); c.setLineDash([]);
+    c.save(); c.translate(x,PT-32); c.rotate(-Math.PI/2.6);
+    c.fillStyle=e.big?"rgba(255,120,124,.9)":"rgba(255,182,72,.7)";
+    c.font="8px ui-monospace,monospace"; c.fillText(e.l,0,0); c.restore();
+  }
+
+  /* transfer ribbons, drawn under the lanes */
+  const wScale=lb=>Math.max(1.6,Math.min(15,lb/34000*15));
+  for(const x0 of XFERS){
+    const yA=laneY[x0.from], yB=laneY[x0.to]; if(yA===undefined||yB===undefined)continue;
+    const xa=X(x0.t1), xb=X(x0.t1)+Math.max(7,(X(x0.t1)-X(x0.t0))*.6);
+    const ww=wScale(x0._moved||x0.lb);
+    const up=yB<yA;
+    const y1=yA+(up?-1:1)*laneH*.30, y2=yB+(up?1:-1)*laneH*.30;
+    c.beginPath();
+    c.moveTo(xa,y1);
+    c.bezierCurveTo(xa+(xb-xa)*.6,y1, xb-(xb-xa)*.6,y2, xb,y2);
+    c.lineTo(xb,y2+ww); c.bezierCurveTo(xb-(xb-xa)*.6,y2+ww, xa+(xb-xa)*.6,y1+ww, xa,y1+ww);
+    c.closePath();
+    const gr=c.createLinearGradient(xa,y1,xb,y2);
+    gr.addColorStop(0,hexA(SECCOL[byId[x0.from].sec],.55));
+    gr.addColorStop(1,hexA(SECCOL[byId[x0.to].sec],.55));
+    c.fillStyle=gr; c.fill();
+    if(x0.broke){
+      c.strokeStyle="#ff5f63"; c.lineWidth=1.2; c.stroke();
+    }
+  }
+
+  /* lanes: thickness = fuel */
+  for(const a of AC){
+    const cap=a.type==="K2"?CAP_K2:CAP_V, y=laneY[a.id], col=SECCOL[a.sec];
+    const half=laneH*.42;
+    let started=false;
+    c.beginPath();
+    for(let t=0;t<=T_END;t+=2){
+      if(!active[a.id][t])continue;
+      const x=X(t), r=fuel[a.id][t]/cap*half;
+      if(!started){c.moveTo(x,y-r);started=true;} else c.lineTo(x,y-r);
+    }
+    for(let t=T_END;t>=0;t-=2){
+      if(!active[a.id][t])continue;
+      const x=X(t), r=fuel[a.id][t]/cap*half;
+      c.lineTo(x,y+r);
+    }
+    c.closePath();
+    c.fillStyle=hexA(col,a.id==="V2"?.55:.3); c.fill();
+    c.strokeStyle=hexA(col,a.id==="V2"?1:.7); c.lineWidth=a.id==="V2"?1.6:1; c.stroke();
+    /* centreline */
+    c.strokeStyle=hexA(col,.16); c.lineWidth=1;
+    c.setLineDash([1,4]); c.beginPath();
+    c.moveTo(X(0),y); c.lineTo(X(a.tHome||T_END),y); c.stroke(); c.setLineDash([]);
+    /* label */
+    c.textAlign="right"; c.font=(a.id==="V2"?"bold ":"")+"9.5px ui-monospace,monospace";
+    c.fillStyle=hexA(col,.95); c.fillText(a.call,PL-42,y+1);
+    c.font="8px ui-monospace,monospace"; c.fillStyle="rgba(130,160,190,.6)";
+    c.fillText(a.ser,PL-8,y+1);
+    c.textAlign="left";
+    /* turn-back marker */
+    if(a.tHome&&a.tHome<T_END-2){
+      const x=X(a.tHome);
+      c.fillStyle=hexA(col,.85); c.beginPath();
+      c.moveTo(x,y-3.4);c.lineTo(x+5,y);c.lineTo(x,y+3.4);c.closePath();c.fill();
+    }
+  }
+  /* section brackets on the left */
+  yy=PT; gi=0;
+  for(const [sec,cnt] of groups){
+    const y1=yy, y2=yy+cnt*laneH;
+    c.strokeStyle=hexA(SECCOL[sec],.55); c.lineWidth=2;
+    c.beginPath();c.moveTo(PL-124,y1+3);c.lineTo(PL-124,y2-3);c.stroke();
+    c.save(); c.translate(PL-130,(y1+y2)/2); c.rotate(-Math.PI/2);
+    c.textAlign="center"; c.font="8px ui-monospace,monospace";
+    c.fillStyle=hexA(SECCOL[sec],.8);
+    c.fillText(sec==="BOMBER"?"VULCAN":(sec==="RECOVERY"?"RECOVERY":sec),0,0);
+    c.restore(); c.textAlign="left";
+    yy=y2; if(++gi<groups.length) yy+=gap;
+  }
+  return {img:off,X,laneY,PT,PB,laneH};
+}
+function drawCascade(){
+  if(!cascEl.classList.contains("on"))return;
+  const {c,w,h}=fitCanvas(cascCv);
+  if(cascDirty||!cascBase||cascBase.w!==w||cascBase.h!==h){
+    cascBase=buildCascade(w,h); cascBase.w=w; cascBase.h=h; cascDirty=false;
+  }
+  c.clearRect(0,0,w,h);
+  c.fillStyle="#04070d"; c.fillRect(0,0,w,h);
+  c.drawImage(cascBase.img,0,0,w,h);
+  /* playhead */
+  const x=cascBase.X(Math.max(0,Math.min(T_END,T)));
+  c.strokeStyle="rgba(255,255,255,.85)"; c.lineWidth=1.2;
+  c.beginPath();c.moveTo(x,cascBase.PT-34);c.lineTo(x,h-cascBase.PB+4);c.stroke();
+  c.fillStyle="#fff"; c.font="bold 9.5px ui-monospace,monospace";
+  c.fillText(clock(T)+"  "+zulu(T),x+6,cascBase.PT-38);
+  /* live dot per lane */
+  const tR=Math.round(Math.max(0,Math.min(T_END,T)));
+  for(const a of AC){
+    if(!active[a.id][tR])continue;
+    const cap=a.type==="K2"?CAP_K2:CAP_V;
+    const y=cascBase.laneY[a.id];
+    c.fillStyle=SECCOL[a.sec];
+    c.beginPath();c.arc(x,y,a.id==="V2"?3.4:2.2,0,7);c.fill();
+    c.fillStyle=hexA(SECCOL[a.sec],.9); c.font="8px ui-monospace,monospace";
+    c.fillText(fmt(fuel[a.id][tR]/1000)+"k",x+7,y-4);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   HUD
+   ══════════════════════════════════════════════════════════════════════ */
+const $=id=>document.getElementById(id);
+const ladb=$("ladb"), rowEls={};
+(function buildLadder(){
+  for(const [sec,title] of [["RED","RED SECTION"],["WHITE","WHITE SECTION"],
+      ["BLUE","BLUE SECTION"],["BOMBER","VULCAN B.2"],["RECOVERY","RECOVERY SORTIES"]]){
+    const hd=document.createElement("div"); hd.className="sec";
+    hd.style.color=SECCOL[sec]; hd.textContent=title; ladb.appendChild(hd);
+    for(const a of AC.filter(v=>v.sec===sec)){
+      const r=document.createElement("div"); r.className="row";
+      r.innerHTML='<div class="fl"></div>'+
+        '<div class="cs" style="color:'+SECCOL[sec]+'">'+a.call+
+        '<small>'+a.ser+'</small></div>'+
+        '<div class="bar"><i style="background:'+SECCOL[sec]+'"></i></div>'+
+        '<div class="fu">—</div>';
+      ladb.appendChild(r);
+      rowEls[a.id]={row:r,bar:r.querySelector("i"),fu:r.querySelector(".fu"),
+                    fl:r.querySelector(".fl")};
+    }
+  }
+})();
+(function buildMarks(){
+  const tr=$("trk");
+  for(const e of EVENTS){
+    const d=document.createElement("div");
+    d.className="mk"+(e.big?" big":""); d.style.left=(e.t/T_END*100)+"%";
+    tr.appendChild(d); e.el=d;
+    const l=document.createElement("div"); l.className="mkl";
+    l.style.left=(e.t/T_END*100)+"%"; l.textContent=e.l; tr.appendChild(l);
+  }
+})();
+
+let lastBeat=null;
+function updateHUD(){
+  const tR=Math.round(Math.max(0,Math.min(T_END,T)));
+  const lx=shownXfers(T);
+  $("sClk").textContent=clock(T); $("sZ").textContent=zulu(T); $("logZ").textContent=zulu(T);
+  const air=AC.filter(a=>active[a.id][tR]).length;
+  $("sAir").textContent=air;
+  $("sCon").textContent=lx.length;
+  const vf=fuel["V2"][tR];
+  const vE=$("sVf"); vE.textContent=fmt(vf); vE.className="v"+(vf<12000?" rd":" am");
+  $("sX").textContent=fmt(xferTotal[tR]/1000)+"k lb";
+  $("ladS").textContent=air+" AIRBORNE";
+
+  const inC=new Set(lx.flatMap(x=>[x.from,x.to]));
+  const givers=new Set(lx.map(x=>x.from)), recvs=new Set(lx.map(x=>x.to));
+  for(const a of AC){
+    const e=rowEls[a.id], cap=a.type==="K2"?CAP_K2:CAP_V, f=fuel[a.id][tR];
+    const on=active[a.id][tR], started=tR>=a._legs[0].t0;
+    e.bar.style.transform="scaleX("+(f/cap).toFixed(4)+")";
+    e.fu.textContent=fmt(f/1000)+"k";
+    e.fu.className="fu"+(f/cap<.15?" low":"");
+    e.row.className="row"+(!started?" pre":(!on?" gone":""))+(inC.has(a.id)?" act":"");
+    e.fl.textContent = recvs.has(a.id)?"▲":(givers.has(a.id)?"▼":"");
+    e.fl.style.color = recvs.has(a.id)?"#4fe0a8":(givers.has(a.id)?"#ffb648":"transparent");
+  }
+
+  const pc=T/T_END;
+  $("fill").style.transform="scaleX("+pc.toFixed(5)+")";
+  $("knob").style.transform="translateX("+(pc*$("trk").clientWidth).toFixed(1)+"px)";
+  for(const e of EVENTS) e.el.classList.toggle("hit",T>=e.t);
+
+  let s=BEATS[0];
+  for(const b of BEATS){
+    if(T<b.t)break;
+    if(b.until!==undefined&&T>b.until)continue;
+    s=b;
+  }
+  if(s.key!==lastBeat){
+    lastBeat=s.key;
+    $("phase").textContent=s.ph; $("hl").textContent=s.hl; $("det").innerHTML=s.d;
+    const cal=$("cal");
+    if(s.cal){cal.textContent=s.cal;cal.classList.add("on");}else cal.classList.remove("on");
+    $("hl").animate([{opacity:0,transform:"translateY(6px)"},{opacity:1,transform:"none"}],
+      {duration:420,easing:"cubic-bezier(.2,.7,.3,1)"});
+    $("det").animate([{opacity:0},{opacity:1}],{duration:600});
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   LOOP
+   ══════════════════════════════════════════════════════════════════════ */
+function effSpeed(){
+  if(speedSel>0) return speedSel;
+  const b=liveBracket(T), lx=shownXfers(T);
+  if(lx.length||b) return 12;                                  // slow right down for contacts
+  for(const e of EVENTS) if(Math.abs(T-e.t)<8) return 25;
+  if(inAttack(T)) return 10;
+  if(T>20&&T<32) return 20;
+  return 260;
+}
+function frame(){
+  const now=performance.now(), dt=Math.min(.1,(now-last)/1000); last=now;
+  if(playing){ T+=dt*effSpeed()/60; if(T>=T_END){T=T_END;setPlay(false);} }
+
+  /* stage visibility */
+  const want = stageWanted && (shownXfers(T).length>0 || !!liveBracket(T) || inAttack(T));
+  if(want!==stageOn){
+    stageOn=want;
+    stageEl.classList.toggle("on",want);
+    $("scrim").classList.toggle("on",want);
+    miniEl.classList.toggle("on",want);
+  }
+  stageMix += ((stageOn?1:0)-stageMix)*Math.min(1,dt*4);
+
+  if(autoCam){
+    const t=camTarget(T);
+    cam.cx+=(t.cx-cam.cx)*Math.min(1,dt*2.4);
+    cam.cy+=(t.cy-cam.cy)*Math.min(1,dt*2.4);
+    cam.z +=(t.z -cam.z )*Math.min(1,dt*2.0);
+  }else{
+    cam.cx+=(cam.tcx-cam.cx)*Math.min(1,dt*8);
+    cam.cy+=(cam.tcy-cam.cy)*Math.min(1,dt*8);
+    cam.z +=(cam.tz -cam.z )*Math.min(1,dt*8);
+  }
+
+  mctx.clearRect(0,0,W,H);
+  drawMap(mctx,W,H,P,{grid:true,night:true,places:true,ticks:true});
+  drawTracks(mctx,W,H,P,{trails:true});
+  drawLegend(mctx,H);
+
+  drawStage();
+  drawMini();
+  drawCascade();
+  updateHUD();
+  requestAnimationFrame(frame);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CONTROLS
+   ══════════════════════════════════════════════════════════════════════ */
+function setPlay(v){
+  playing=v;
+  $("bPlay").textContent=v?"❚❚ PAUSE":"▶ PLAY";
+  $("bPlay").classList.toggle("on",v);
+}
+$("bPlay").onclick=()=>setPlay(!playing);
+$("bRst").onclick=()=>{T=0;lastBeat=null;setPlay(false);};
+$("bNext").onclick=()=>{const e=EVENTS.find(e=>e.t>T+1); T=e?e.t-2:T_END; lastBeat=null;};
+$("bPrev").onclick=()=>{const r=EVENTS.filter(e=>e.t<T-3).pop(); T=r?r.t-2:0; lastBeat=null;};
+document.querySelectorAll(".spd").forEach(b=>b.onclick=()=>{
+  speedSel=+b.dataset.s;
+  document.querySelectorAll(".spd").forEach(x=>x.classList.toggle("on",x===b));
+});
+const bCam=$("bCam");
+bCam.onclick=()=>{autoCam=!autoCam;bCam.classList.toggle("on",autoCam);
+  if(!autoCam){cam.tcx=cam.cx;cam.tcy=cam.cy;cam.tz=cam.z;}};
+$("bFit").onclick=()=>{autoCam=false;bCam.classList.remove("on");
+  cam.tcx=(VIEW.lonMin+VIEW.lonMax)/2*KX; cam.tcy=-(VIEW.latMin+VIEW.latMax)/2; cam.tz=fitZ;};
+const bStage=$("bStage");
+bStage.onclick=()=>{stageWanted=!stageWanted;bStage.classList.toggle("on",stageWanted);};
+const bNight=$("bNight");
+bNight.onclick=()=>{showNight=!showNight;bNight.classList.toggle("on",showNight);};
+const bLbl=$("bLbl");
+bLbl.onclick=()=>{showLbl=!showLbl;bLbl.classList.toggle("on",showLbl);};
+$("bCasc").onclick=()=>{cascEl.classList.toggle("on");cascDirty=true;};
+$("bNotes").onclick=()=>$("notes").classList.add("on");
+for(const id of ["casc","notes"]) $(id).addEventListener("click",e=>{
+  if(e.target.id===id) e.currentTarget.classList.remove("on");});
+
+const trk=$("trk"); let scrub=false;
+const seek=e=>{const r=trk.getBoundingClientRect();
+  T=Math.max(0,Math.min(T_END,(e.clientX-r.left)/r.width*T_END)); lastBeat=null;};
+trk.addEventListener("pointerdown",e=>{scrub=true;trk.setPointerCapture(e.pointerId);seek(e);});
+trk.addEventListener("pointermove",e=>{if(scrub)seek(e);});
+trk.addEventListener("pointerup",()=>scrub=false);
+
+let drag=null;
+mapCv.addEventListener("pointerdown",e=>{
+  drag={x:e.clientX,y:e.clientY,cx:cam.cx,cy:cam.cy};
+  autoCam=false;bCam.classList.remove("on");mapCv.setPointerCapture(e.pointerId);});
+mapCv.addEventListener("pointermove",e=>{
+  if(!drag)return;
+  cam.tcx=cam.cx=drag.cx-(e.clientX-drag.x)/cam.z;
+  cam.tcy=cam.cy=drag.cy-(e.clientY-drag.y)/cam.z;});
+mapCv.addEventListener("pointerup",()=>drag=null);
+mapCv.addEventListener("wheel",e=>{
+  e.preventDefault(); autoCam=false;bCam.classList.remove("on");
+  const wx=UX(e.clientX),wy=UY(e.clientY);
+  const nz=Math.max(fitZ*.6,Math.min(fitZ*60,cam.z*Math.exp(-e.deltaY*.0016)));
+  cam.cx=wx-(e.clientX-W/2)/nz; cam.cy=wy-(e.clientY-H/2)/nz; cam.z=nz;
+  cam.tcx=cam.cx;cam.tcy=cam.cy;cam.tz=cam.z;
+},{passive:false});
+
+addEventListener("keydown",e=>{
+  if(e.code==="Space"){e.preventDefault();setPlay(!playing);}
+  if(e.code==="ArrowRight"){T=Math.min(T_END,T+(e.shiftKey?30:4));lastBeat=null;}
+  if(e.code==="ArrowLeft"){T=Math.max(0,T-(e.shiftKey?30:4));lastBeat=null;}
+  if(e.key==="n"||e.key==="N")$("bNext").click();
+  if(e.key==="p"||e.key==="P")$("bPrev").click();
+  if(e.key==="c"||e.key==="C")$("bCasc").click();
+  if(e.key==="Escape"){cascEl.classList.remove("on");$("notes").classList.remove("on");}
+});
+addEventListener("resize",resize);
+
+resize();
+cam.cx=W2.x(-16); cam.cy=W2.y(-11); cam.z=fitZ*2.6/2.2;
+
+const QS=new URLSearchParams(location.search);
+const qT=parseFloat(QS.get("t"));
+if(!isNaN(qT)){T=Math.max(0,Math.min(T_END,qT));
+  const c0=camTarget(T);cam.cx=c0.cx;cam.cy=c0.cy;cam.z=c0.z;}
+if(QS.get("brief")==="0"||!isNaN(qT)) $("brief").classList.add("off");
+if(QS.get("casc")==="1") cascEl.classList.add("on");
+
+$("bGo").onclick=()=>{$("brief").classList.add("off");setPlay(true);};
+setTimeout(()=>{$("hint").style.opacity=0;},9000);
+
+window.BB={get T(){return T},set T(v){T=v;lastBeat=null},AC,byId,fuel,active,xferTotal,
+  BRACKETS,XFERS,BEATS,EVENTS,posAt,gcNm,ASC,R_OUT,F,TOTAL_NM,BURN_K2,CAP_K2,CAP_V,
+  liveXfers,shownXfers,xferAt,liveBracket,PROBE_BREAK,PROBE_REVERSE};
+
+frame();
+if(QS.get("paused")!=="1"&&(QS.get("brief")==="0"||!isNaN(qT))) setTimeout(()=>setPlay(true),400);
+</script>
+</body>
+</html>
