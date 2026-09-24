@@ -101,6 +101,15 @@ groups.sort((a, b) => {
   const bDate = modelReleases[b.model]?.date || '';
   return bDate.localeCompare(aDate) || a.model.localeCompare(b.model);
 });
+
+// Manual placement overrides applied after the chronological sort.
+const pinnedPositions = { 'Claude Fable 5': 1 };
+Object.entries(pinnedPositions).forEach(([model, position]) => {
+  const index = groups.findIndex((group) => group.model === model);
+  if (index === -1) return;
+  const [group] = groups.splice(index, 1);
+  groups.splice(position, 0, group);
+});
 const releaseDateFormat = new Intl.DateTimeFormat('en-AU', {
   day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'
 });
