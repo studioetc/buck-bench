@@ -303,6 +303,32 @@
       }
     },
     {
+      "id": "sonnet45-era200-fixed",
+      "files": [
+        {
+          "path": "raw/claude-sonnet-4-5/sonnet45-era200-fixed/black-buck-simulation.html",
+          "bytes": 27861,
+          "sha256": "bd83ef248c52b29d022007c2ff2b5e8a4af601e3fd394030fd52115736d88692"
+        }
+      ],
+      "model": "claude-sonnet-4-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/2062de6d-5c44-4373-9896-590a5f83f1f9.jsonl",
+          "session_id": "2062de6d-5c44-4373-9896-590a5f83f1f9",
+          "harness": "Claude Code 2.0.0 (run on Node 22; 2.0.0 crashes on Node 26)"
+        }
+      ],
+      "notes": "Revision of sonnet45-era200, chosen as the Sonnet 4.5 entry (2026-11-19). The original's Play button advanced 0.1 mission-seconds per frame against a 57,600-second mission, so nothing visibly moved. The same session (2062de6d) was resumed on Claude Code 2.1.327 (--safe-mode) with one user message naming the timing problem; Sonnet 4.5 changed `missionTime += 0.1` to `+= 8` (one line, 4 turns, ~$0.28). Verified: after Play, 12 s of real time reached mission time 1:36 with 15 log events and no errors.",
+      "release": {
+        "date": "2025-09-29",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date."
+      }
+    },
+    {
       "id": "sonnet45-era200",
       "files": [
         {
