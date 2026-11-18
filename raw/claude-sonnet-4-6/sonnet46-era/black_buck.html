@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operation Black Buck — Refuelling Simulation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#06101e;color:#c8d8e8;font-family:'Courier New',monospace;overflow:hidden;height:100vh;width:100vw}
+#c{position:relative;width:100vw;height:100vh}
+canvas{display:block;position:absolute;top:0;left:0}
+#ui{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
+
+#title{position:absolute;top:13px;left:50%;transform:translateX(-50%);text-align:center}
+#title h1{font-size:20px;letter-spacing:7px;color:#f0c040;text-shadow:0 0 22px #f0c04099;font-weight:bold}
+#title .s{font-size:10px;letter-spacing:3px;color:#506878;margin-top:3px}
+
+#clock{position:absolute;top:14px;left:18px;font-size:11px;line-height:1.9}
+#clock .l{font-size:9px;letter-spacing:2px;color:#2d5060}
+#clock .v{color:#40cc70;font-size:14px}
+#clock .vs{color:#60a888;font-size:11px}
+
+#roster{position:absolute;top:14px;right:18px;font-size:9.5px;line-height:1.75;text-align:right}
+#roster .h{font-size:9px;letter-spacing:2px;color:#2d5060;margin-bottom:2px}
+
+#pb{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);text-align:center;width:min(740px,88vw)}
+#pn{font-size:12px;letter-spacing:3px;color:#f0c040;text-shadow:0 0 10px #f0c04055;margin-bottom:4px}
+#pt{font-size:11px;color:#7a98a8;line-height:1.6;min-height:32px}
+#pw{margin-top:7px;height:3px;background:#0a1c28;border-radius:2px}
+#pp{height:100%;background:linear-gradient(90deg,#f0c040,#ff6820);box-shadow:0 0 8px #f0c04066;width:0%;transition:width .4s}
+
+#leg{position:absolute;bottom:108px;left:14px;font-size:10px;line-height:1.9}
+#leg .h{font-size:9px;letter-spacing:2px;color:#2d5060;margin-bottom:3px}
+#leg .r{display:flex;align-items:center;gap:7px;color:#506878}
+.ld{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.lb{width:18px;height:2px;flex-shrink:0}
+
+#btns{position:absolute;bottom:108px;right:14px;pointer-events:all;display:flex;flex-direction:column;gap:7px}
+.btn{background:#060f1c;border:1px solid #183448;color:#5090b0;font-family:'Courier New',monospace;font-size:11px;letter-spacing:1px;padding:6px 12px;cursor:pointer;transition:all .15s}
+.btn:hover{background:#0d2030;color:#f0c040;border-color:#f0c040}
+
+#flash{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,255,200,.2) 0%,transparent 65%);opacity:0;pointer-events:none;transition:opacity .2s}
+#scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none}
+</style>
+</head>
+<body>
+<div id="c">
+  <canvas id="bg"></canvas>
+  <canvas id="fg"></canvas>
+  <div id="flash"></div>
+  <div id="scan"></div>
+  <div id="ui">
+    <div id="title">
+      <h1>OPERATION BLACK BUCK</h1>
+      <div class="s">30 APRIL – 1 MAY 1982 &nbsp;·&nbsp; ASCENSION ISLAND → PORT STANLEY &nbsp;·&nbsp; 3,380 NM &nbsp;·&nbsp; 16 HOURS</div>
+    </div>
+    <div id="clock">
+      <div class="l">MISSION TIME</div>
+      <div class="v" id="ct">T+00:00</div>
+      <div class="l" style="margin-top:5px">FROM ASCENSION</div>
+      <div class="vs" id="cn">0 nm</div>
+      <div class="l" style="margin-top:5px">ACTIVE AIRCRAFT</div>
+      <div class="vs" id="ca">13</div>
+      <div class="l" style="margin-top:5px">PLAYBACK</div>
+      <div class="vs" id="cs">1×</div>
+    </div>
+    <div id="roster">
+      <div class="h">VICTOR FORCE STATUS</div>
+      <div id="rr"></div>
+    </div>
+    <div id="pb">
+      <div id="pn">AWAITING LAUNCH</div>
+      <div id="pt"></div>
+      <div id="pw"><div id="pp"></div></div>
+    </div>
+    <div id="leg">
+      <div class="h">LEGEND</div>
+      <div class="r"><span class="ld" style="background:#f0c040;box-shadow:0 0 5px #f0c040"></span>Vulcan XM607 (bomber)</div>
+      <div class="r"><span class="ld" style="background:#38aae8;box-shadow:0 0 4px #38aae888"></span>Victor K2 tanker (active)</div>
+      <div class="r"><span class="ld" style="background:#1e4868"></span>Victor (returned to base)</div>
+      <div class="r"><span class="ld" style="background:#e84020"></span>Victor (distress)</div>
+      <div class="r"><span class="lb" style="background:#f0c040;opacity:.75"></span>Vulcan flight path</div>
+      <div class="r"><span class="lb" style="background:#1e4878;opacity:.85"></span>Victor RTB path</div>
+    </div>
+    <div id="btns">
+      <button class="btn" id="bp" onclick="togglePause()">⏸ PAUSE</button>
+      <button class="btn" onclick="spd(1)">▶ 1×</button>
+      <button class="btn" onclick="spd(4)">▶▶ 4×</button>
+      <button class="btn" onclick="spd(10)">▶▶▶ 10×</button>
+      <button class="btn" onclick="restart()">↺ RESTART</button>
+    </div>
+  </div>
+</div>
+<script>
+"use strict";
+const bgC=document.getElementById('bg'), fgC=document.getElementById('fg');
+const bc=bgC.getContext('2d'), fc=fgC.getContext('2d');
+let W,H;
+
+// ── MAP BOUNDS ─────────────────────────────────────────────────────
+// Route: Ascension (-7.97°S, -14.37°W) → Stanley (-51.70°S, -57.85°W)
+// Map shows the South Atlantic corridor with both coasts as narrow strips
+const MLAT0=7, MLAT1=-57;   // top lat, bottom lat
+const MLON0=-67, MLON1=-9;  // left lon, right lon
+// Padding: leave room for HUD
+const PL=0.055, PR=0.22, PT=0.085, PB=0.135;
+
+function proj(lat,lon){
+  const fx=(lon-MLON0)/(MLON1-MLON0);
+  const fy=(lat-MLAT0)/(MLAT1-MLAT0);
+  return [PL*W+fx*W*(1-PL-PR), PT*H+fy*H*(1-PT-PB)];
+}
+
+// ── GEOGRAPHY ──────────────────────────────────────────────────────
+// South America east coast — lat/lon pairs going N→S
+// These trace the actual Atlantic coastline of Brazil/Argentina
+const SA_COAST_E = [
+  [5.0,-52.0],[3.5,-51.2],[1.5,-50.0],[0,-50.0],[-2,-44.5],[-4,-38.0],
+  [-5,-35.5],[-8,-35.0],[-10,-37.0],[-13,-38.9],[-15,-39.1],[-17,-39.3],
+  [-20,-40.3],[-22,-43.0],[-24,-46.3],[-26,-48.5],[-28,-48.8],[-30,-50.0],
+  [-32,-52.0],[-34,-53.5],[-35,-57.5],[-38,-57.5],[-40,-62.0],[-42,-63.3],
+  [-45,-65.5],[-48,-66.0],[-52,-67.5],[-54,-65.5],[-55,-67.0]
+];
+// 3° inland from coast (add ~3° to lon)
+const SA_COAST_W = SA_COAST_E.map(([la,lo])=>[la, Math.min(lo+3.5, MLON0+1)]).reverse();
+// Full SA strip polygon
+const SA_POLY = [...SA_COAST_E, ...SA_COAST_W];
+
+// Africa west coast — lat/lon going N→S (these lons are ~-9 to -17 in this lat range)
+const AF_COAST_W = [
+  [7,-13.5],[5,-9.5],[3,-8.5],[1,-9.0],[0,-9.5],[-2,-9.5],[-4,-9.0],
+  [-6,-12.0],[-8,-13.0],[-11,-14.5],[-13,-16.5],[-16,-16.5],[-19,-12.5],
+  [-22,-14.0],[-25,-15.0],[-28,-15.5],[-30,-17.0],[-33,-17.5],[-35,-19.0],
+  [-38,-21.0],[-41,-23.0],[-44,-28.0],[-46,-29.0]
+];
+// 3° inland (subtract ~3° from lon = more eastward)
+const AF_COAST_E = AF_COAST_W.map(([la,lo])=>[la, Math.min(lo+4, MLON1-0.5)]).reverse();
+const AF_POLY = [...AF_COAST_W, ...AF_COAST_E];
+
+// Falklands
+const FK_POLY = [
+  [-51.0,-60.5],[-51.3,-59.5],[-51.7,-58.3],[-52.0,-58.0],
+  [-52.4,-59.2],[-52.6,-60.2],[-51.9,-61.0],[-51.0,-60.5]
+];
+
+// ── STARS ──────────────────────────────────────────────────────────
+const STARS=Array.from({length:300},()=>({
+  x:Math.random(),y:Math.random()*0.55,
+  r:Math.random()*1.1+0.1,a:0.15+Math.random()*0.6,tw:Math.random()*6.28
+}));
+
+// ── DRAW BACKGROUND ────────────────────────────────────────────────
+function drawBG(){
+  bc.clearRect(0,0,W,H);
+  // Ocean gradient
+  const og=bc.createLinearGradient(0,0,0,H);
+  og.addColorStop(0,'#07101e'); og.addColorStop(0.5,'#060d18'); og.addColorStop(1,'#040a12');
+  bc.fillStyle=og; bc.fillRect(0,0,W,H);
+
+  // Stars (top half = night sky)
+  STARS.forEach(s=>{
+    bc.beginPath(); bc.arc(s.x*W,s.y*H,s.r,0,6.28);
+    bc.fillStyle=`rgba(210,225,255,${s.a})`; bc.fill();
+  });
+
+  // Grid
+  bc.setLineDash([2,8]); bc.lineWidth=0.5;
+  for(let la=-50;la<=5;la+=10){
+    const[x0,y0]=proj(la,MLON0+1),[x1]=proj(la,MLON1-1);
+    bc.strokeStyle='rgba(18,48,68,0.5)';
+    bc.beginPath(); bc.moveTo(x0,y0); bc.lineTo(x1,y0); bc.stroke();
+    bc.fillStyle='rgba(28,68,88,0.6)'; bc.font='8px Courier New'; bc.textAlign='left';
+    bc.fillText(la>=0?`${la}°N`:`${-la}°S`,x0+3,y0-2);
+  }
+  for(let lo=-60;lo<=-15;lo+=15){
+    const[x0,y0]=proj(MLAT0-1,lo),[,y1]=proj(MLAT1+4,lo);
+    bc.strokeStyle='rgba(18,48,68,0.5)';
+    bc.beginPath(); bc.moveTo(x0,y0); bc.lineTo(x0,y1); bc.stroke();
+    bc.fillStyle='rgba(28,68,88,0.6)'; bc.font='8px Courier New'; bc.textAlign='center';
+    bc.fillText(`${-lo}°W`,x0,y0+10);
+  }
+  bc.setLineDash([]);
+
+  // Landmasses
+  polyFill(bc, SA_POLY, '#0d1a0c', '#283a20');
+  polyFill(bc, AF_POLY, '#0c1218', '#1e2e3c');
+  polyFill(bc, FK_POLY, '#121a10', '#243024');
+
+  // Coastline strokes
+  polyStroke(bc, SA_COAST_E, '#3a6030', 1.3);
+  polyStroke(bc, AF_COAST_W, '#204060', 1.3);
+
+  // Key locations
+  dot(bc,...proj(...[-7.97,-14.37]),'#50c840','#80f060','ASCENSION IS.','Wideawake Airfield',7);
+  dot(bc,...proj(...[-51.70,-57.85]),'#c03020','#ff5030','PORT STANLEY','Target: Airfield',6);
+
+  // Rio RV marker
+  const[rx,ry]=proj(-22.5,-40);
+  bc.beginPath(); bc.arc(rx,ry,4,0,6.28); bc.fillStyle='#1e4878'; bc.fill();
+  bc.strokeStyle='#2a5a90'; bc.lineWidth=1; bc.stroke();
+  bc.fillStyle='#3a6090'; bc.font='8px Courier New'; bc.textAlign='left';
+  bc.fillText('Rio RV',rx+7,ry+3);
+
+  // Scale bar (~500nm)
+  const[sx,sy]=proj(-52,-17);
+  bc.strokeStyle='#2a4860'; bc.lineWidth=1.5;
+  bc.beginPath(); bc.moveTo(sx,sy); bc.lineTo(sx+85,sy); bc.stroke();
+  bc.beginPath(); bc.moveTo(sx,sy-3); bc.lineTo(sx,sy+3); bc.stroke();
+  bc.beginPath(); bc.moveTo(sx+85,sy-3); bc.lineTo(sx+85,sy+3); bc.stroke();
+  bc.fillStyle='#2a4860'; bc.font='8.5px Courier New'; bc.textAlign='center';
+  bc.fillText('≈ 500 nm',sx+42,sy-5);
+
+  // Vignette — deepen edges for cinematic feel
+  const vg=bc.createRadialGradient(W/2,H/2,H*0.25,W/2,H/2,H*0.78);
+  vg.addColorStop(0,'transparent');
+  vg.addColorStop(1,'rgba(0,0,0,0.55)');
+  bc.fillStyle=vg; bc.fillRect(0,0,W,H);
+}
+
+function polyFill(ctx,pts,fill,stroke){
+  if(!pts.length) return;
+  ctx.beginPath();
+  pts.forEach(([la,lo],i)=>{ const[x,y]=proj(la,lo); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+  ctx.strokeStyle=stroke; ctx.lineWidth=0.7; ctx.stroke();
+}
+function polyStroke(ctx,pts,col,lw){
+  ctx.beginPath();
+  pts.forEach(([la,lo],i)=>{ const[x,y]=proj(la,lo); i?ctx.lineTo(x,y):ctx.moveTo(x,y); });
+  ctx.strokeStyle=col; ctx.lineWidth=lw; ctx.stroke();
+}
+function dot(ctx,x,y,dc,tc,main,sub,r){
+  ctx.beginPath(); ctx.arc(x,y,r,0,6.28); ctx.fillStyle=dc; ctx.fill();
+  ctx.strokeStyle=tc; ctx.lineWidth=1; ctx.stroke();
+  ctx.fillStyle=tc; ctx.font='bold 10px Courier New'; ctx.textAlign='left';
+  ctx.fillText(main,x+r+5,y-2);
+  ctx.fillStyle=dc; ctx.font='8.5px Courier New';
+  ctx.fillText(sub,x+r+5,y+10);
+}
+
+// ── ROUTE WAYPOINTS ────────────────────────────────────────────────
+// [t_hours, lat, lon, bracketLabel or '']
+const WP=[
+  {t:0,   la:-7.97, lo:-14.37, lbl:''},
+  {t:1.75,la:-16.0, lo:-18.5,  lbl:'BKT 1 · 730 nm'},
+  {t:2.5, la:-23.0, lo:-23.5,  lbl:'BKT 2 · 1,000 nm'},
+  {t:4.0, la:-31.0, lo:-30.0,  lbl:'BKT 3 · 1,650 nm'},
+  {t:5.5, la:-37.5, lo:-37.0,  lbl:'BKT 4 · 2,340 nm  ⚡ STORM'},
+  {t:6.5, la:-41.5, lo:-43.0,  lbl:'BKT 5 · 2,600 nm'},
+  {t:7.3, la:-45.5, lo:-49.5,  lbl:'BKT 6 · 350 nm NE Stanley'},
+  {t:8.0, la:-51.70,lo:-57.85, lbl:''},
+  // return arc
+  {t:8.4, la:-49.5, lo:-55.0,  lbl:''},
+  {t:9.5, la:-41.5, lo:-50.5,  lbl:''},
+  {t:11.0,la:-33.0, lo:-46.0,  lbl:''},
+  {t:12.0,la:-22.5, lo:-40.0,  lbl:''},
+  {t:13.5,la:-16.0, lo:-30.0,  lbl:''},
+  {t:16.0,la:-7.97, lo:-14.37, lbl:''},
+];
+
+function routePos(t){
+  if(t<=WP[0].t) return proj(WP[0].la,WP[0].lo);
+  for(let i=0;i<WP.length-1;i++){
+    if(t>=WP[i].t&&t<=WP[i+1].t){
+      const f=(t-WP[i].t)/(WP[i+1].t-WP[i].t);
+      return proj(WP[i].la+(WP[i+1].la-WP[i].la)*f, WP[i].lo+(WP[i+1].lo-WP[i].lo)*f);
+    }
+  }
+  return proj(WP[WP.length-1].la,WP[WP.length-1].lo);
+}
+
+// ── PHASE NARRATIVE ────────────────────────────────────────────────
+const PHASES=[
+  {t:0,   n:'LAUNCH — WIDEAWAKE AIRFIELD',
+   d:'T+0:00 · 30 April 1982, 23:00 Ascension time. 11 Victor K2 tankers + 2 Vulcan B.2s take off at one-minute intervals in total radio silence — navigation lights off, heading south.'},
+  {t:0.4, n:'ABORT — PRIMARY VULCAN & RESERVE VICTOR',
+   d:'T+0:25 · XM598 (Sqn Ldr Reeve) loses pressurisation. One Victor has a faulty hose unit. Both abort. Reserve XM607, Flt Lt Martin Withers, is now the primary bomber. No reserve capacity remains.'},
+  {t:1.5, n:'SOUTHBOUND — APPROACH TO BRACKET 1',
+   d:'Climbing to 31,000 ft. Fuel burn is running higher than planned at this altitude. The 11-aircraft formation heads into darkness over the South Atlantic.'},
+  {t:1.75,n:'REFUELLING BRACKET 1 — 730 NM SOUTH',
+   d:'T+1:45 · First cascading transfer. 4 Victors top up 4 others + the Vulcan, then peel off for Ascension. The returning four land critically low — forced to stack up on the single runway simultaneously.'},
+  {t:2.3, n:'APPROACH TO BRACKET 2 — 1,000 NM',
+   d:'Force reduced to 7 aircraft. Fuel deficit growing. Both types burning more than the planners calculated at this altitude/speed combination.'},
+  {t:2.5, n:'REFUELLING BRACKET 2 — 1,000 NM SOUTH',
+   d:'T+2:30 · Victor tops up Vulcan. Two more pass fuel to the three continuing south, then turn back. Flt Lt Skelton turns for home — then discovers a fuel leak. Emergency tanker scrambled from Ascension.'},
+  {t:3.5, n:'APPROACH TO BRACKET 3 — 1,650 NM',
+   d:'Three Victors + one Vulcan remain. The ocean is featureless. Carousel inertial nav systems holding track.'},
+  {t:4.0, n:'REFUELLING BRACKET 3 — 1,650 NM SOUTH',
+   d:'T+4:00 · Skelton passes all remaining fuel to the two continuing Victors, then turns back — deep in reserves with an active fuel leak. A tanker scrambles from Ascension to find him.'},
+  {t:5.3, n:'APPROACHING THE STORM — 2,340 NM',
+   d:'Only two Victors remain with the Vulcan: Tuxford (XL189) and Biglands (XH669). They are heading directly into a violent tropical storm at the planned transfer point.'},
+  {t:5.5, n:'BRACKET 4 — ⚡ THE STORM — 2,340 NM SOUTH',
+   d:"T+5:30 · St Elmo's fire dances on cockpits. Biglands tries to take fuel from Tuxford in violent turbulence — his refuelling probe snaps off. The aircraft swap roles: Biglands dumps fuel to Tuxford and limps home. Mission in jeopardy."},
+  {t:6.3, n:'BRACKET 5 — FINAL TANKER TOP-UP — 2,600 NM',
+   d:"T+6:20 · Tuxford makes the final pre-target transfer — passing everything he can spare. The Vulcan gets 6,000 lb less than planned. Tuxford will likely not reach Ascension. He cannot break radio silence until the target is struck."},
+  {t:7.1, n:'BOMB RUN — DESCENT TO DECK',
+   d:'T+7:05 · 250 nm from Stanley, Withers throttles back and descends to 2,000 ft — below Argentine radar horizon. At 40 nm, four Olympus engines surge to full thrust. Climbing to 10,000 ft for the attack.'},
+  {t:8.0, n:'★  TARGET STRUCK — 04:46 LOCAL',
+   d:'T+8:00 · 21 × 1,000-lb bombs released diagonally across the runway. One pierces the tarmac. "SUPERFUSE" transmitted. Tuxford finally breaks silence — calls Ascension for an emergency tanker or faces ditching.'},
+  {t:8.3, n:'RECOVERY — NORTHBOUND TO RIO RV',
+   d:'T+8:20 · Withers turns NE towards the pre-planned rendezvous off Brazil. Wg Cdr Seymour scrambles from Ascension to reach Tuxford with 30 minutes of fuel remaining. Nimrod guides Withers to the tanker.'},
+  {t:12.0,n:'RIO RV — RETURN REFUELLING',
+   d:"T+12:00 · Sqn Ldr Neal's Victor meets XM607 off the Brazilian coast. The probe connection leaks badly — fuel sprays the windscreen. Withers holds blind contact for 10 minutes. It works."},
+  {t:14.5,n:'HOMEWARD BOUND',
+   d:'T+14:30 · All aircraft returning to Wideawake. XM607 touches down at 14:52Z — 15 hr 45 min airborne, 7,860 miles, 7 aerial refuellings for the bomber alone.'},
+  {t:15.8,n:'MISSION COMPLETE',
+   d:'One runway hit at Port Stanley. Argentina never stationed fast jets on the Falklands. The longest bombing raid in history at that time — 3,380 nm each way.'},
+];
+function getPhase(t){let p=PHASES[0]; for(const ph of PHASES) if(t>=ph.t) p=ph; return p;}
+
+// ── VICTOR AIRCRAFT ────────────────────────────────────────────────
+// returnT = peel-off time, distressT = when in trouble
+const VIC=[
+  {id:0,n:'Red 1',   retT:1.75},
+  {id:1,n:'Red 2',   retT:1.75},
+  {id:2,n:'Red 3',   retT:1.75},
+  {id:3,n:'Red 4',   retT:1.75},
+  {id:4,n:'White 1', retT:2.5},
+  {id:5,n:'White 3', retT:2.5},
+  {id:6,n:'Blue 2',  retT:2.5},
+  {id:7,n:'Skelton', retT:4.0,  distT:4.1, rescT:7.0},
+  {id:8,n:'Biglands',retT:5.8},
+  {id:9,n:'Tuxford', retT:10.0, distT:7.5, rescT:10.8, sp:true},
+  {id:10,n:'Reserve A',retT:0.5},
+  {id:11,n:'Neal (Rio RV)',retT:14.0,launchT:5.3},
+  {id:12,n:'Seymour', retT:11.5,launchT:7.5},
+];
+
+// Formation offsets in degrees lat/lon
+const FOFF=[
+  [0.4,0.4],[-.4,0.4],[0.4,-.4],[-.4,-.4],
+  [0.6,0.7],[-.6,0.7],[0.0,0.6],
+  [0.5,0.1],[-.5,0.1],[0.0,-.5],
+  [0.0,0.0],[0.5,0.5],[-.5,0.5]
+];
+
+function vicWPLatLon(v,t){
+  const rt=Math.min(t,v.retT);
+  if(rt<=WP[0].t) return [WP[0].la,WP[0].lo];
+  for(let i=0;i<WP.length-1;i++){
+    if(rt>=WP[i].t&&rt<=WP[i+1].t){
+      const f=(rt-WP[i].t)/(WP[i+1].t-WP[i].t);
+      return [WP[i].la+(WP[i+1].la-WP[i].la)*f, WP[i].lo+(WP[i+1].lo-WP[i].lo)*f];
+    }
+  }
+  return [WP[WP.length-1].la,WP[WP.length-1].lo];
+}
+
+function vicPos(v,t){
+  const launched=!v.launchT||t>=v.launchT;
+  if(!launched) return proj(-7.97,-14.37);
+  const off=FOFF[v.id]||[0,0];
+  if(t<=v.retT){
+    const[la,lo]=vicWPLatLon(v,t);
+    return proj(la+off[0]*0.5, lo+off[1]*0.5);
+  } else {
+    const[sla,slo]=vicWPLatLon(v,v.retT);
+    const frac=Math.min((t-v.retT)/4,1);
+    const f2=1-frac;
+    return proj(sla+(-7.97-sla)*frac+off[0]*0.5*f2, slo+(-14.37-slo)*frac+off[1]*0.5*f2);
+  }
+}
+
+function vicColor(v,t){
+  if(v.distT&&t>v.distT&&t<(v.rescT||99)) return '#e84020';
+  if(t>v.retT+0.3) return '#1a4060';
+  return v.sp?'#58e0ff':'#38aae8';
+}
+
+// ── AIRCRAFT DRAWING ───────────────────────────────────────────────
+function drawVulcan(x,y,hdg,sc=1){
+  fc.save(); fc.translate(x,y); fc.rotate(hdg); fc.scale(sc,sc);
+  // glow
+  const g=fc.createRadialGradient(0,0,0,0,0,24);
+  g.addColorStop(0,'rgba(240,192,64,.3)'); g.addColorStop(1,'transparent');
+  fc.fillStyle=g; fc.beginPath(); fc.arc(0,0,24,0,6.28); fc.fill();
+  // delta wings
+  fc.beginPath(); fc.moveTo(13,0); fc.lineTo(-9,-14); fc.lineTo(-12,-1.5); fc.closePath();
+  fc.fillStyle='#a07010'; fc.fill();
+  fc.beginPath(); fc.moveTo(13,0); fc.lineTo(-9,14); fc.lineTo(-12,1.5); fc.closePath();
+  fc.fillStyle='#a07010'; fc.fill();
+  // fuselage
+  fc.beginPath(); fc.moveTo(14,0); fc.lineTo(2,-2.5); fc.lineTo(-12,-1.5);
+  fc.lineTo(-13,0); fc.lineTo(-12,1.5); fc.lineTo(2,2.5); fc.closePath();
+  fc.fillStyle='#f0c040'; fc.fill();
+  // engine exhausts
+  [-5.5,5.5].forEach(ey=>{
+    fc.beginPath(); fc.arc(-9,ey,2,0,6.28); fc.fillStyle='#ff8820'; fc.fill();
+    fc.beginPath(); fc.arc(-13,ey,1.5,0,6.28); fc.fillStyle='rgba(255,100,20,.5)'; fc.fill();
+  });
+  fc.restore();
+}
+
+function drawVictor(x,y,ang,col,sc=1,alpha=1){
+  fc.save(); fc.globalAlpha=alpha; fc.translate(x,y); fc.rotate(ang); fc.scale(sc,sc);
+  // swept wings (upper + lower)
+  [[0,-13,-1],[1,13,1]].forEach(([wi,wy,ys])=>{
+    fc.beginPath(); fc.moveTo(8,0); fc.lineTo(-5,wy); fc.lineTo(-9,ys); fc.closePath();
+    fc.fillStyle=col+'88'; fc.fill();
+  });
+  // fuselage
+  fc.beginPath(); fc.moveTo(11,0); fc.lineTo(1,-2); fc.lineTo(-9,-1.5);
+  fc.lineTo(-10,0); fc.lineTo(-9,1.5); fc.lineTo(1,2); fc.closePath();
+  fc.fillStyle=col; fc.fill();
+  // T-tail
+  fc.beginPath(); fc.moveTo(-7,0); fc.lineTo(-10,-6); fc.lineTo(-10,6); fc.closePath();
+  fc.fillStyle=col; fc.fill();
+  fc.restore();
+}
+
+function angle(x1,y1,x2,y2){return Math.atan2(y2-y1,x2-x1);}
+
+// ── SIM STATE ──────────────────────────────────────────────────────
+let T=0, speed=1, paused=false, lastTS=null;
+let trail=[]; // [{x,y,t}]
+const TOTAL=16;
+
+function restart(){
+  T=0; trail=[]; paused=false; lastTS=null;
+  document.getElementById('bp').textContent='⏸ PAUSE';
+}
+function togglePause(){
+  paused=!paused;
+  document.getElementById('bp').textContent=paused?'▶ RESUME':'⏸ PAUSE';
+  if(!paused){lastTS=null; requestAnimationFrame(loop);}
+}
+function spd(s){speed=s; document.getElementById('cs').textContent=s+'×';}
+
+// bracket times for refuel effect
+const BKT_T=[1.75,2.5,4.0,6.5,7.3,12.0];
+
+// ── MAIN LOOP ──────────────────────────────────────────────────────
+function loop(ts){
+  if(!paused){
+    if(lastTS!==null && T<TOTAL){
+      T=Math.min(T+((ts-lastTS)/1000)*speed, TOTAL);
+    }
+    lastTS=ts;
+  } else { lastTS=ts; }
+
+  fc.clearRect(0,0,W,H);
+
+  // 1. Ghost route line
+  fc.save(); fc.setLineDash([5,10]); fc.strokeStyle='rgba(240,192,64,.1)'; fc.lineWidth=1.2;
+  fc.beginPath();
+  WP.forEach(({la,lo},i)=>{ const[x,y]=proj(la,lo); i?fc.lineTo(x,y):fc.moveTo(x,y); });
+  fc.stroke(); fc.restore();
+
+  // 2. Vulcan trail
+  const[vx,vy]=routePos(T);
+  if(!trail.length||Math.hypot(vx-trail[trail.length-1].x,vy-trail[trail.length-1].y)>2.5)
+    trail.push({x:vx,y:vy,t:T});
+  trail=trail.filter(p=>T-p.t<9);
+  for(let i=1;i<trail.length;i++){
+    const a=Math.max(0,.85-(T-trail[i].t)/9);
+    fc.beginPath(); fc.moveTo(trail[i-1].x,trail[i-1].y); fc.lineTo(trail[i].x,trail[i].y);
+    fc.strokeStyle=`rgba(240,192,64,${a})`; fc.lineWidth=1.8; fc.stroke();
+  }
+
+  // 3. Victor RTB trails
+  const[ax,ay]=proj(-7.97,-14.37);
+  VIC.forEach(v=>{
+    if(T<=v.retT+0.1) return;
+    const[rx,ry]=vicPos(v,v.retT+0.05);
+    const frac=Math.min((T-v.retT)/4,1);
+    const ex=rx+(ax-rx)*frac, ey=ry+(ay-ry)*frac;
+    fc.save(); fc.setLineDash([3,9]);
+    fc.strokeStyle=`rgba(28,72,120,${0.4*(1-frac*.6)})`; fc.lineWidth=1;
+    fc.beginPath(); fc.moveTo(rx,ry); fc.lineTo(ex,ey); fc.stroke(); fc.restore();
+  });
+
+  // 4. Bracket markers
+  WP.forEach(w=>{
+    if(!w.lbl) return;
+    const[x,y]=proj(w.la,w.lo);
+    const reached=T>=w.t, storm=w.lbl.includes('STORM');
+    const alpha=reached?0.9:0.22;
+    const isNow=T>=w.t&&T<w.t+0.5;
+    if(isNow){
+      const p=0.6+0.4*Math.sin(Date.now()/110);
+      fc.beginPath(); fc.arc(x,y,20*p,0,6.28);
+      fc.strokeStyle=storm?`rgba(255,130,20,${.75*p})`:`rgba(255,255,100,${.6*p})`;
+      fc.lineWidth=2; fc.stroke();
+    }
+    fc.save(); fc.globalAlpha=alpha;
+    fc.beginPath(); fc.arc(x,y,10,0,6.28);
+    fc.strokeStyle=storm?'#ff9020':'#c8b848'; fc.lineWidth=1.3; fc.stroke();
+    fc.beginPath();
+    fc.moveTo(x-14,y); fc.lineTo(x+14,y);
+    fc.moveTo(x,y-14); fc.lineTo(x,y+14);
+    fc.stroke();
+    // Label: split "BKT N · dist" and optional storm line
+    const hasStorm=w.lbl.includes('⚡');
+    const mainPart=w.lbl.split('·')[0].trim();
+    const distPart=(w.lbl.split('·')[1]||'').replace('⚡ STORM','').trim();
+    fc.font='9px Courier New'; fc.textAlign='center';
+    fc.fillStyle=reached?'#d8c858':'#787040';
+    fc.fillText(mainPart,x,y+22);
+    if(distPart){ fc.fillStyle=reached?'#a89840':'#606030'; fc.fillText(distPart,x,y+33); }
+    if(hasStorm){ fc.fillStyle='#ffa030'; fc.fillText('⚡ STORM',x,y+44); }
+    fc.restore();
+  });
+
+  // 5. Victors
+  VIC.forEach(v=>{
+    if(v.launchT&&T<v.launchT) return;
+    if(T>v.retT+4.5) return;
+    const[vvx,vvy]=vicPos(v,T);
+    const[vvx2,vvy2]=vicPos(v,Math.min(T+0.04,v.retT+0.001));
+    const col=vicColor(v,T);
+    const alpha=T>v.retT?Math.max(0,1-(T-v.retT)/4.5):.93;
+    drawVictor(vvx,vvy,angle(vvx,vvy,vvx2,vvy2),col,v.sp?1:.82,alpha);
+    // labels for notable
+    if(v.sp||v.n==='Skelton'||v.n==='Biglands'||v.n.startsWith('Neal')){
+      fc.save(); fc.globalAlpha=alpha*.9;
+      fc.font='8px Courier New'; fc.fillStyle=col; fc.textAlign='left';
+      fc.fillText(v.n,vvx+13,vvy+3); fc.restore();
+    }
+    // distress flash
+    if(v.distT&&T>v.distT&&T<(v.rescT||99)){
+      const flash=((Date.now()/350|0)%2===0);
+      if(flash){
+        fc.save();
+        fc.beginPath(); fc.arc(vvx,vvy,10,0,6.28);
+        fc.strokeStyle='rgba(255,80,20,0.8)'; fc.lineWidth=1.5; fc.stroke();
+        fc.font='bold 10px Courier New'; fc.fillStyle='#ff5020';
+        fc.textAlign='center'; fc.fillText('MAYDAY',vvx,vvy-16); fc.restore();
+      }
+    }
+  });
+
+  // 6. Refuel connections
+  BKT_T.forEach(bt=>{
+    const dt=T-bt;
+    if(dt<0||dt>.35) return;
+    const p=1-dt/.35;
+    const[vvx,vvy]=routePos(T);
+    let bst=null, bd=9999;
+    VIC.forEach(v=>{
+      if(T>v.retT||(v.launchT&&T<v.launchT)) return;
+      const[tx,ty]=vicPos(v,T);
+      const d=Math.hypot(tx-vvx,ty-vvy);
+      if(d<bd){bd=d; bst=[tx,ty];}
+    });
+    if(!bst) return;
+    fc.save(); fc.globalAlpha=.85*p;
+    fc.strokeStyle='rgba(255,255,160,.9)'; fc.lineWidth=1.8;
+    fc.shadowBlur=8; fc.shadowColor='#ffff80';
+    fc.setLineDash([4,5]);
+    fc.beginPath(); fc.moveTo(bst[0],bst[1]); fc.lineTo(vvx,vvy); fc.stroke();
+    fc.setLineDash([]); fc.shadowBlur=0;
+    for(let k=0;k<5;k++){
+      const f=((T*4+k/5)%1);
+      fc.beginPath(); fc.arc(bst[0]+(vvx-bst[0])*f, bst[1]+(vvy-bst[1])*f, 2,0,6.28);
+      fc.fillStyle='rgba(255,255,140,.9)'; fc.fill();
+    }
+    fc.restore();
+    if(dt<0.04){
+      const el=document.getElementById('flash');
+      el.style.opacity='1'; setTimeout(()=>el.style.opacity='0',300);
+    }
+  });
+
+  // 7. Vulcan
+  const[vx2,vy2]=routePos(Math.min(T+0.04,TOTAL));
+  drawVulcan(vx,vy,angle(vx,vy,vx2,vy2),1.3);
+  fc.save();
+  fc.font='bold 11px Courier New'; fc.fillStyle='#f0c040'; fc.textAlign='left';
+  fc.fillText('XM607',vx+22,vy-7);
+  fc.font='8.5px Courier New'; fc.fillStyle='#b08830';
+  fc.fillText('Flt Lt Withers',vx+22,vy+5);
+  fc.restore();
+
+  // 8. Attack
+  if(T>=8&&T<8.9) drawAttack();
+
+  // 9. Storm
+  if(T>=5.5&&T<6.4) drawStorm();
+
+  // 10. Twinkle stars
+  for(let i=0;i<40;i++){
+    const s=STARS[i]; s.tw+=0.012;
+    const a=s.a*(0.6+0.4*Math.sin(s.tw));
+    bc.beginPath(); bc.arc(s.x*W,s.y*H,s.r,0,6.28);
+    bc.fillStyle=`rgba(220,230,255,${a})`; bc.fill();
+  }
+
+  // 11. HUD
+  updateHUD();
+
+  requestAnimationFrame(loop);
+}
+
+function drawAttack(){
+  const[px,py]=proj(-51.70,-57.85);
+  const dt=T-8;
+  for(let i=0;i<21;i++){
+    const dl=i/21*.4; if(dt<dl) continue;
+    const pg=Math.min((dt-dl)/.18,1);
+    const bx=px+(i-10)*5-10, by=py+(i-10)*3+5;
+    if(pg<1){ fc.beginPath(); fc.arc(bx,by,10*(1-pg),0,6.28);
+      fc.fillStyle=`rgba(255,110,20,${.4*(1-pg)})`; fc.fill(); }
+    fc.beginPath(); fc.arc(bx,by,2,0,6.28);
+    fc.fillStyle=i===10?'#ff2010':'#ff6820';
+    fc.globalAlpha=pg; fc.fill(); fc.globalAlpha=1;
+  }
+  if(dt>.4){
+    fc.save(); fc.font='bold 12px Courier New'; fc.fillStyle='#ff2010';
+    fc.textAlign='center'; fc.shadowBlur=14; fc.shadowColor='#ff0000';
+    fc.fillText('★ RUNWAY HIT',px,py-24); fc.restore();
+  }
+}
+
+function drawStorm(){
+  const[bx,by]=proj(-37.5,-37.0);
+  const dt=T-5.5;
+  const q=Math.min(dt/.3,1)*Math.max(0,1-(dt-.6)/.25);
+  const sg=fc.createRadialGradient(bx,by,0,bx,by,70);
+  sg.addColorStop(0,`rgba(45,25,80,${.5*q})`); sg.addColorStop(1,'transparent');
+  fc.fillStyle=sg; fc.beginPath(); fc.arc(bx,by,70,0,6.28); fc.fill();
+  if(Math.random()<.09*q){
+    const ex=bx+(Math.random()-.5)*70, ey=by+(Math.random()-.5)*50;
+    fc.save(); fc.strokeStyle=`rgba(170,170,255,${.9*q})`; fc.lineWidth=1.5;
+    fc.shadowBlur=10; fc.shadowColor='#8080ff';
+    fc.beginPath(); fc.moveTo(ex,ey-18); fc.lineTo(ex+5,ey-5);
+    fc.lineTo(ex-3,ey+5); fc.lineTo(ex+2,ey+18); fc.stroke(); fc.restore();
+  }
+  fc.save(); fc.globalAlpha=q;
+  fc.font='9px Courier New'; fc.fillStyle='rgba(200,160,255,.95)'; fc.textAlign='center';
+  fc.fillText('⚡ VIOLENT STORM — PROBE BREAKS',bx,by-44); fc.restore();
+}
+
+function updateHUD(){
+  const h=Math.floor(T), m=Math.floor((T-h)*60);
+  document.getElementById('ct').textContent=`T+${p2(h)}:${p2(m)}`;
+  let nm=T<=8?Math.round(T/8*3380):Math.max(0,Math.round((1-(T-8)/8)*3380));
+  document.getElementById('cn').textContent=nm.toLocaleString()+' nm';
+  const active=VIC.filter(v=>(!v.launchT||T>=v.launchT)&&T<=v.retT).length+(T<TOTAL?1:0);
+  document.getElementById('ca').textContent=active;
+  const ph=getPhase(T);
+  document.getElementById('pn').textContent=ph.n;
+  document.getElementById('pt').textContent=ph.d;
+  document.getElementById('pp').style.width=(T/TOTAL*100).toFixed(1)+'%';
+  // roster
+  document.getElementById('rr').innerHTML=VIC.map(v=>{
+    let st,cl;
+    if(v.launchT&&T<v.launchT){st='STANDBY';cl='#606040';}
+    else if(T>v.retT+4){st='RTB';cl='#1e3c50';}
+    else if(T>v.retT){st='RTB';cl='#2a5870';}
+    else if(v.distT&&T>v.distT&&T<(v.rescT||99)){st='DISTRESS';cl='#e84020';}
+    else{st='ACTIVE';cl='#38c858';}
+    const b=v.sp?'font-weight:bold;':'';
+    return `<div style="display:flex;justify-content:flex-end;gap:8px;${b}"><span style="color:#3a5868">${v.n}</span><span style="width:56px;text-align:right;color:${cl}">${st}</span></div>`;
+  }).join('');
+}
+function p2(n){return String(n).padStart(2,'0');}
+
+// ── BOOT ───────────────────────────────────────────────────────────
+function resize(){
+  W=window.innerWidth; H=window.innerHeight;
+  bgC.width=fgC.width=W; bgC.height=fgC.height=H;
+  drawBG();
+}
+window.addEventListener('resize',resize);
+resize();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

@@ -32,6 +32,10 @@ cd ~/Dev/buck && CLAUDE_CODE_DISABLE_FEATURE_FLAGS=1 claude -p --safe-mode --chr
 - The JSONL is saved as normal under `~/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/`.
 - Effort that actually applied (session log): Sonnet 5.5 xhigh; Opus 4.6, Opus 4.5, Sonnet 4.6 high; Sonnet 4.5 none.
 
+### Release-era Claude Code (optional, 2026-11-19)
+
+To match a model's original harness, install the Claude Code version current at its release with `npm install --prefix <dir> @anthropic-ai/claude-code@<version>` and run it with a clean `CLAUDE_CONFIG_DIR` (one `/login`). Set `DISABLE_AUTOUPDATER=1`, `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1`, `ENABLE_CLAUDEAI_MCP_SERVERS=false`, and unset `CLAUDECODE` when launching from inside Claude Code. These versions rewrite Chrome's native-host file (`~/Library/Application Support/Google/Chrome/NativeMessagingHosts/com.anthropic.claude_code_browser_extension.json`); back it up and restore it after. Remove the install, config and its `Claude Code-credentials-<hash>` keychain item when done.
+
 After each run: move everything in `~/Dev/buck` out, leave the folder empty, delete the project's `memory/` folder, keep the JSONL.
 
 ## 2. Add it to the gallery

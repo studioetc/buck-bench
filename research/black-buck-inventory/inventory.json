@@ -119,6 +119,32 @@
       }
     },
     {
+      "id": "opus46-era",
+      "files": [
+        {
+          "path": "raw/claude-opus-4-6/opus46-era/black-buck.html",
+          "bytes": 54178,
+          "sha256": "a7c2b149a1e5033d922d0314af4a40a707fb81c4fdaf3517deb8a557a8de08a2"
+        }
+      ],
+      "model": "claude-opus-4-6",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/486a5871-bb68-4551-b4ce-6371126c25f5.jsonl",
+          "session_id": "486a5871-bb68-4551-b4ce-6371126c25f5",
+          "harness": "Claude Code 2.1.32"
+        }
+      ],
+      "notes": "Added 2026-11-19. Release-era harness: Claude Code 2.1.32 installed in isolation (npm), clean CLAUDE_CONFIG_DIR (no skills/plugins/hooks/CLAUDE.md, auto-memory and auto-update off), subscription /login, `-p --dangerously-skip-permissions --chrome --output-format json`, CLAUDE_CODE_EFFORT_LEVEL=high (the version default), CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000, run folder served at localhost:8607 with the same appended line. In these versions WebSearch/WebFetch load upfront (only MCP tools are deferred); no scratchpad, no Artifact tool. About 18 min, 69 turns, ~$5.14 list price. 8 WebSearch, 24 WebFetch, TodoWrite; wrote black-buck.html in the run folder and checked it in Chrome.",
+      "release": {
+        "date": "2026-02-05",
+        "source": "https://www.anthropic.com/news/claude-opus-4-6",
+        "verified_on": "2026-11-19",
+        "note": "Anthropic announcement, 5 February 2026. models.dev says 2026-02-04."
+      }
+    },
+    {
       "id": "opus46-run2",
       "files": [
         {
@@ -168,6 +194,32 @@
         "source": "https://www.anthropic.com/news/claude-opus-4-6",
         "verified_on": "2026-11-19",
         "note": "Anthropic announcement, 5 February 2026. models.dev says 2026-02-04."
+      }
+    },
+    {
+      "id": "sonnet46-era",
+      "files": [
+        {
+          "path": "raw/claude-sonnet-4-6/sonnet46-era/black_buck.html",
+          "bytes": 30610,
+          "sha256": "3389d83598531a38a9d882f38e7ce26a27d31e4fa33077dd57474b183d3499c9"
+        }
+      ],
+      "model": "claude-sonnet-4-6",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/773f8b60-581a-4122-b2de-0a18761b397b.jsonl",
+          "session_id": "773f8b60-581a-4122-b2de-0a18761b397b",
+          "harness": "Claude Code 2.1.45"
+        }
+      ],
+      "notes": "Added 2026-11-19. Release-era harness: Claude Code 2.1.45 installed in isolation (npm), clean CLAUDE_CONFIG_DIR (no skills/plugins/hooks/CLAUDE.md, auto-memory and auto-update off), subscription /login, `-p --dangerously-skip-permissions --chrome --output-format json`, CLAUDE_CODE_EFFORT_LEVEL=high (the version default), CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000, run folder served at localhost:8607 with the same appended line. In these versions WebSearch/WebFetch load upfront (only MCP tools are deferred); no scratchpad, no Artifact tool. About 24 min, 93 turns, ~$8.05 list price. Researched with mcp__claude_ai_Exa__web_search_exa (2 calls): 2.1.45 loaded the logged-in account's claude.ai connectors because the clean config lacked ENABLE_CLAUDEAI_MCP_SERVERS=false — a deviation from a pure era setup. Wrote black_buck.html in the run folder and checked it in Chrome (24 actions, JS and console checks, 14 edits). A first launch failed before any API call with the nested-session check (CLAUDECODE env); fixed by unsetting it.",
+      "release": {
+        "date": "2026-02-17",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date; Anthropic's deprecations page gives retirement 'not sooner than Feb 17, 2027'."
       }
     },
     {
