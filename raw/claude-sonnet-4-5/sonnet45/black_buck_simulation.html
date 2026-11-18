@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation Black Buck - Aerial Refueling Simulation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0e27;
+            color: #00ff41;
+            overflow: hidden;
+        }
+
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            background: #0a0e27;
+        }
+
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #header {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            background: rgba(10, 14, 39, 0.9);
+            padding: 15px 30px;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            pointer-events: auto;
+        }
+
+        #header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        #header .subtitle {
+            font-size: 14px;
+            color: #00cc33;
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 120px;
+            left: 20px;
+            background: rgba(10, 14, 39, 0.95);
+            padding: 20px;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            width: 350px;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            pointer-events: auto;
+        }
+
+        #info-panel h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #00ff41;
+            padding-bottom: 5px;
+        }
+
+        .stat-line {
+            margin: 8px 0;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .stat-label {
+            color: #00cc33;
+        }
+
+        .stat-value {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        #phase-indicator {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0, 255, 65, 0.1);
+            border-left: 3px solid #00ff41;
+        }
+
+        .aircraft-list {
+            margin: 15px 0;
+        }
+
+        .aircraft-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: rgba(0, 255, 65, 0.05);
+            border-left: 2px solid #00cc33;
+            font-size: 12px;
+        }
+
+        .aircraft-item.refueling {
+            background: rgba(255, 165, 0, 0.1);
+            border-left-color: #ffa500;
+            animation: pulse 1s infinite;
+        }
+
+        .aircraft-item.returned {
+            opacity: 0.5;
+            border-left-color: #666;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 39, 0.95);
+            padding: 20px;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            pointer-events: auto;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        button {
+            background: #00ff41;
+            color: #0a0e27;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #00cc33;
+            box-shadow: 0 0 20px #00ff41;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 150px;
+            pointer-events: auto;
+        }
+
+        #legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(10, 14, 39, 0.95);
+            padding: 15px;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            pointer-events: auto;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+
+        .legend-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border: 1px solid #00ff41;
+        }
+
+        .refuel-line-demo {
+            height: 2px;
+            background: #ffa500;
+        }
+
+        #timeline {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(10, 14, 39, 0.95);
+            padding: 15px;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            width: 300px;
+            pointer-events: auto;
+        }
+
+        .timeline-item {
+            font-size: 11px;
+            padding: 5px;
+            margin: 3px 0;
+            border-left: 2px solid #00cc33;
+            padding-left: 8px;
+        }
+
+        .timeline-item.completed {
+            opacity: 0.5;
+        }
+
+        .timeline-item.active {
+            border-left-color: #00ff41;
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 255, 65, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00ff41;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+
+        <div id="ui-overlay">
+            <div id="header">
+                <h1>OPERATION BLACK BUCK</h1>
+                <div class="subtitle">Falklands War - 1 May 1982 - Aerial Refueling Simulation</div>
+            </div>
+
+            <div id="info-panel">
+                <h2>MISSION STATUS</h2>
+                <div id="phase-indicator">Phase: Initialization</div>
+
+                <div class="stat-line">
+                    <span class="stat-label">Mission Time:</span>
+                    <span class="stat-value" id="mission-time">00:00:00</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Distance Covered:</span>
+                    <span class="stat-value" id="distance">0 nm</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Remaining to Target:</span>
+                    <span class="stat-value" id="remaining">3,900 nm</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Total Refuelings:</span>
+                    <span class="stat-value" id="refuel-count">0 / 17</span>
+                </div>
+                <div class="stat-line">
+                    <span class="stat-label">Fuel Transferred:</span>
+                    <span class="stat-value" id="fuel-transferred">0 tonnes</span>
+                </div>
+
+                <h2 style="margin-top: 20px;">AIRCRAFT STATUS</h2>
+                <div class="aircraft-list" id="aircraft-list"></div>
+            </div>
+
+            <div id="timeline">
+                <h2 style="font-size: 16px; margin-bottom: 10px;">MISSION TIMELINE</h2>
+                <div id="timeline-events"></div>
+            </div>
+
+            <div id="controls">
+                <button id="start-btn">START MISSION</button>
+                <button id="pause-btn" style="display:none;">PAUSE</button>
+                <button id="reset-btn">RESET</button>
+                <div id="speed-control">
+                    <span style="color: #00ff41; font-size: 12px;">Speed:</span>
+                    <input type="range" id="speed-slider" min="1" max="10" value="3" step="1">
+                    <span style="color: #00ff41; font-size: 12px;" id="speed-display">3x</span>
+                </div>
+            </div>
+
+            <div id="legend">
+                <h2 style="font-size: 14px; margin-bottom: 10px;">LEGEND</h2>
+                <div class="legend-item">
+                    <div class="legend-icon" style="background: #ff0000;"></div>
+                    <span>Vulcan Bomber</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon" style="background: #00ff41;"></div>
+                    <span>Victor Tanker</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon" style="background: #666;"></div>
+                    <span>Returned Aircraft</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-icon refuel-line-demo"></div>
+                    <span>Refueling Connection</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drawMap();
+        });
+
+        // Mission constants (in nautical miles)
+        const TOTAL_DISTANCE = 3900;
+        const ASCENSION_POS = { lat: -7.95, lon: -14.4 };
+        const FALKLANDS_POS = { lat: -51.8, lon: -59.5 };
+
+        // Convert lat/lon to canvas coordinates
+        function latLonToCanvas(lat, lon) {
+            const x = ((lon + 180) / 360) * canvas.width;
+            const y = ((90 - lat) / 180) * canvas.height;
+            return { x, y };
+        }
+
+        // Calculate great circle intermediate point
+        function intermediatePoint(lat1, lon1, lat2, lon2, fraction) {
+            const φ1 = lat1 * Math.PI / 180;
+            const φ2 = lat2 * Math.PI / 180;
+            const λ1 = lon1 * Math.PI / 180;
+            const λ2 = lon2 * Math.PI / 180;
+
+            const δ = 2 * Math.asin(Math.sqrt(
+                Math.pow(Math.sin((φ1 - φ2) / 2), 2) +
+                Math.cos(φ1) * Math.cos(φ2) * Math.pow(Math.sin((λ1 - λ2) / 2), 2)
+            ));
+
+            const a = Math.sin((1 - fraction) * δ) / Math.sin(δ);
+            const b = Math.sin(fraction * δ) / Math.sin(δ);
+
+            const x = a * Math.cos(φ1) * Math.cos(λ1) + b * Math.cos(φ2) * Math.cos(λ2);
+            const y = a * Math.cos(φ1) * Math.sin(λ1) + b * Math.cos(φ2) * Math.sin(λ2);
+            const z = a * Math.sin(φ1) + b * Math.sin(φ2);
+
+            const φi = Math.atan2(z, Math.sqrt(x * x + y * y));
+            const λi = Math.atan2(y, x);
+
+            return {
+                lat: φi * 180 / Math.PI,
+                lon: λi * 180 / Math.PI
+            };
+        }
+
+        // Aircraft classes
+        class Aircraft {
+            constructor(id, type, role, departTime, returnTime) {
+                this.id = id;
+                this.type = type;
+                this.role = role;
+                this.departTime = departTime;
+                this.returnTime = returnTime;
+                this.position = { ...ASCENSION_POS };
+                this.distance = 0;
+                this.active = false;
+                this.returned = false;
+                this.isRefueling = false;
+                this.fuelGiven = 0;
+                this.fuelReceived = 0;
+            }
+
+            update(missionTime, speed) {
+                if (missionTime < this.departTime) {
+                    this.active = false;
+                    return;
+                }
+
+                if (!this.active && missionTime >= this.departTime) {
+                    this.active = true;
+                }
+
+                if (this.active && !this.returned) {
+                    if (this.returnTime && missionTime >= this.returnTime) {
+                        this.returned = true;
+                        this.active = false;
+                        return;
+                    }
+
+                    const effectiveTime = missionTime - this.departTime;
+                    const targetDistance = this.returnTime ?
+                        (this.returnTime - this.departTime) / 16 * TOTAL_DISTANCE :
+                        effectiveTime / 16 * TOTAL_DISTANCE;
+
+                    this.distance = Math.min(targetDistance, TOTAL_DISTANCE);
+                    const fraction = this.distance / TOTAL_DISTANCE;
+
+                    const pos = intermediatePoint(
+                        ASCENSION_POS.lat, ASCENSION_POS.lon,
+                        FALKLANDS_POS.lat, FALKLANDS_POS.lon,
+                        fraction
+                    );
+                    this.position = pos;
+                }
+            }
+
+            draw() {
+                if (!this.active) return;
+
+                const canvasPos = latLonToCanvas(this.position.lat, this.position.lon);
+
+                ctx.save();
+                ctx.translate(canvasPos.x, canvasPos.y);
+
+                if (this.type === 'Vulcan') {
+                    ctx.fillStyle = this.isRefueling ? '#ff6600' : '#ff0000';
+                    ctx.shadowColor = '#ff0000';
+                    ctx.shadowBlur = 15;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, -12);
+                    ctx.lineTo(-8, 8);
+                    ctx.lineTo(-3, 8);
+                    ctx.lineTo(-3, 12);
+                    ctx.lineTo(3, 12);
+                    ctx.lineTo(3, 8);
+                    ctx.lineTo(8, 8);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 10px Courier New';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('VULCAN', 0, 25);
+                } else {
+                    ctx.fillStyle = this.isRefueling ? '#ff6600' : (this.returned ? '#666666' : '#00ff41');
+                    ctx.shadowColor = this.returned ? '#666666' : '#00ff41';
+                    ctx.shadowBlur = 10;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0, -10);
+                    ctx.lineTo(-6, 6);
+                    ctx.lineTo(-2, 6);
+                    ctx.lineTo(-2, 10);
+                    ctx.lineTo(2, 10);
+                    ctx.lineTo(2, 6);
+                    ctx.lineTo(6, 6);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = this.returned ? '#999' : '#fff';
+                    ctx.font = '8px Courier New';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(this.id, 0, 22);
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Refueling event
+        class RefuelEvent {
+            constructor(time, giver, receiver, amount, description) {
+                this.time = time;
+                this.giver = giver;
+                this.receiver = receiver;
+                this.amount = amount;
+                this.description = description;
+                this.completed = false;
+                this.duration = 0.3;
+            }
+        }
+
+        // Initialize aircraft fleet
+        const aircraft = [
+            new Aircraft('V1', 'Victor', 'Primary Tanker Wave', 0, 2.5),
+            new Aircraft('V2', 'Victor', 'Primary Tanker Wave', 0, 3.0),
+            new Aircraft('V3', 'Victor', 'Primary Tanker Wave', 0, 4.0),
+            new Aircraft('V4', 'Victor', 'Primary Tanker Wave', 0, 5.5),
+            new Aircraft('V5', 'Victor', 'Primary Tanker Wave', 0, 6.5),
+            new Aircraft('V6', 'Victor', 'Secondary Tanker Wave', 0, 7.0),
+            new Aircraft('V7', 'Victor', 'Secondary Tanker Wave', 0, 7.5),
+            new Aircraft('V8', 'Victor', 'Secondary Tanker Wave', 0, 8.5),
+            new Aircraft('V9', 'Victor', 'Reserve Tanker', 0, 9.0),
+            new Aircraft('V10', 'Victor', 'Final Outbound Tanker', 0, 10.5),
+            new Aircraft('V11', 'Victor', 'Return Journey Tanker', 12.0, null),
+            new Aircraft('XM607', 'Vulcan', 'Primary Bomber', 0, null)
+        ];
+
+        // Refueling schedule
+        const refuelEvents = [
+            new RefuelEvent(1.0, 'V1', 'V2', 8, 'Early cascade begins'),
+            new RefuelEvent(1.5, 'V2', 'V3', 8, 'Tanker-to-tanker refuel'),
+            new RefuelEvent(2.0, 'V3', 'V4', 9, 'Wave 1 progression'),
+            new RefuelEvent(2.5, 'V1', 'V5', 7, 'V1 final transfer'),
+            new RefuelEvent(3.0, 'V4', 'XM607', 12, 'First Vulcan refuel'),
+            new RefuelEvent(3.5, 'V5', 'V6', 10, 'Secondary wave prep'),
+            new RefuelEvent(4.0, 'V2', 'V7', 8, 'V2 final transfer'),
+            new RefuelEvent(4.5, 'V6', 'XM607', 14, 'Second Vulcan refuel'),
+            new RefuelEvent(5.0, 'V7', 'V8', 11, 'Deep mission support'),
+            new RefuelEvent(5.5, 'V3', 'V9', 9, 'V3 final transfer'),
+            new RefuelEvent(6.0, 'V8', 'XM607', 15, 'Third Vulcan refuel'),
+            new RefuelEvent(6.5, 'V4', 'V10', 10, 'V4 final transfer'),
+            new RefuelEvent(7.5, 'V9', 'XM607', 13, 'Fourth Vulcan refuel'),
+            new RefuelEvent(8.5, 'V10', 'XM607', 18, 'Critical pre-target refuel'),
+            new RefuelEvent(9.0, 'V6', 'V10', 7, 'Emergency reserve transfer'),
+            new RefuelEvent(13.0, 'V11', 'XM607', 20, 'Return journey refuel'),
+            new RefuelEvent(14.0, 'V11', 'XM607', 15, 'Final refuel home')
+        ];
+
+        // Timeline events
+        const timelineEvents = [
+            { time: 0, text: 'Mission start - All aircraft launch' },
+            { time: 1.0, text: 'First refueling bracket begins' },
+            { time: 2.5, text: 'V1 returns to Ascension' },
+            { time: 3.0, text: 'First Vulcan refuel complete' },
+            { time: 4.0, text: 'V2 returns - Secondary wave active' },
+            { time: 5.5, text: 'V3 returns - Deep mission phase' },
+            { time: 6.5, text: 'V4 returns - Vulcan reaches halfway' },
+            { time: 8.5, text: 'V10 final outbound refuel' },
+            { time: 9.0, text: 'V6, V7, V8, V9 all returned' },
+            { time: 10.0, text: 'Vulcan begins attack run' },
+            { time: 10.5, text: 'Bombs away - Target hit!' },
+            { time: 11.0, text: 'Vulcan begins return journey' },
+            { time: 12.0, text: 'V11 launches for return support' },
+            { time: 13.0, text: 'Critical return journey refuel' },
+            { time: 15.0, text: 'Final approach to Ascension' },
+            { time: 16.0, text: 'Mission complete - All aircraft recovered' }
+        ];
+
+        // Simulation state
+        let missionTime = 0;
+        let isRunning = false;
+        let simulationSpeed = 3;
+        let lastTimestamp = 0;
+        let totalRefuelings = 0;
+        let totalFuelTransferred = 0;
+
+        function drawMap() {
+            ctx.fillStyle = '#0a0e27';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            ctx.strokeStyle = 'rgba(0, 255, 65, 0.1)';
+            ctx.lineWidth = 1;
+
+            for (let lon = -180; lon <= 180; lon += 15) {
+                const start = latLonToCanvas(90, lon);
+                const end = latLonToCanvas(-90, lon);
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.lineTo(end.x, end.y);
+                ctx.stroke();
+            }
+
+            for (let lat = -90; lat <= 90; lat += 15) {
+                const start = latLonToCanvas(lat, -180);
+                const end = latLonToCanvas(lat, 180);
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.lineTo(end.x, end.y);
+                ctx.stroke();
+            }
+
+            // Draw continents (simplified)
+            ctx.fillStyle = 'rgba(0, 255, 65, 0.05)';
+            ctx.strokeStyle = 'rgba(0, 255, 65, 0.3)';
+            ctx.lineWidth = 2;
+
+            // South America
+            ctx.beginPath();
+            const saPoints = [
+                [-60, -80], [-50, -72], [-40, -68], [-30, -62], [-20, -58],
+                [-10, -54], [0, -52], [10, -60], [5, -72], [-5, -78],
+                [-15, -82], [-30, -80], [-45, -78], [-60, -80]
+            ].map(([lat, lon]) => latLonToCanvas(lat, lon));
+
+            ctx.moveTo(saPoints[0].x, saPoints[0].y);
+            saPoints.forEach(p => ctx.lineTo(p.x, p.y));
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Africa (western coast)
+            ctx.beginPath();
+            const afPoints = [
+                [30, -10], [20, -15], [10, -18], [0, -12], [-10, -8],
+                [-20, -5], [-30, 15], [-35, 20], [-30, 25], [-20, 20],
+                [0, 10], [15, 5], [25, -5], [30, -10]
+            ].map(([lat, lon]) => latLonToCanvas(lat, lon));
+
+            ctx.moveTo(afPoints[0].x, afPoints[0].y);
+            afPoints.forEach(p => ctx.lineTo(p.x, p.y));
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw flight path
+            ctx.strokeStyle = 'rgba(0, 255, 65, 0.4)';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath();
+
+            const ascensionCanvas = latLonToCanvas(ASCENSION_POS.lat, ASCENSION_POS.lon);
+            const falklandsCanvas = latLonToCanvas(FALKLANDS_POS.lat, FALKLANDS_POS.lon);
+
+            ctx.moveTo(ascensionCanvas.x, ascensionCanvas.y);
+
+            for (let i = 0; i <= 100; i++) {
+                const point = intermediatePoint(
+                    ASCENSION_POS.lat, ASCENSION_POS.lon,
+                    FALKLANDS_POS.lat, FALKLANDS_POS.lon,
+                    i / 100
+                );
+                const canvasPoint = latLonToCanvas(point.lat, point.lon);
+                ctx.lineTo(canvasPoint.x, canvasPoint.y);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw bases
+            drawBase(ASCENSION_POS, 'ASCENSION ISLAND\nRAF Wideawake', '#00ff41');
+            drawBase(FALKLANDS_POS, 'FALKLAND ISLANDS\nPort Stanley Airport', '#ff0000');
+        }
+
+        function drawBase(pos, label, color) {
+            const canvasPos = latLonToCanvas(pos.lat, pos.lon);
+
+            ctx.fillStyle = color;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 20;
+
+            ctx.beginPath();
+            ctx.arc(canvasPos.x, canvasPos.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(canvasPos.x, canvasPos.y, 15, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 11px Courier New';
+            ctx.textAlign = 'center';
+            const lines = label.split('\n');
+            lines.forEach((line, i) => {
+                ctx.fillText(line, canvasPos.x, canvasPos.y + 30 + (i * 14));
+            });
+        }
+
+        function drawRefuelingConnections() {
+            const currentEvents = refuelEvents.filter(e =>
+                missionTime >= e.time &&
+                missionTime < e.time + e.duration &&
+                !e.completed
+            );
+
+            currentEvents.forEach(event => {
+                const giver = aircraft.find(a => a.id === event.giver);
+                const receiver = aircraft.find(a => a.id === event.receiver);
+
+                if (giver && receiver && giver.active && receiver.active) {
+                    giver.isRefueling = true;
+                    receiver.isRefueling = true;
+
+                    const giverPos = latLonToCanvas(giver.position.lat, giver.position.lon);
+                    const receiverPos = latLonToCanvas(receiver.position.lat, receiver.position.lon);
+
+                    const gradient = ctx.createLinearGradient(
+                        giverPos.x, giverPos.y,
+                        receiverPos.x, receiverPos.y
+                    );
+                    gradient.addColorStop(0, '#ffa500');
+                    gradient.addColorStop(1, '#ff6600');
+
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = 3;
+                    ctx.shadowColor = '#ffa500';
+                    ctx.shadowBlur = 15;
+
+                    ctx.beginPath();
+                    ctx.moveTo(giverPos.x, giverPos.y);
+                    ctx.lineTo(receiverPos.x, receiverPos.y);
+                    ctx.stroke();
+
+                    ctx.shadowBlur = 0;
+
+                    if (missionTime >= e.time + e.duration - 0.1) {
+                        e.completed = true;
+                        totalRefuelings++;
+                        totalFuelTransferred += e.amount;
+                        giver.fuelGiven += e.amount;
+                        receiver.fuelReceived += e.amount;
+                    }
+                }
+            });
+
+            aircraft.forEach(a => {
+                if (!currentEvents.some(e => e.giver === a.id || e.receiver === a.id)) {
+                    a.isRefueling = false;
+                }
+            });
+        }
+
+        function updateUI() {
+            const hours = Math.floor(missionTime);
+            const minutes = Math.floor((missionTime % 1) * 60);
+            const seconds = Math.floor(((missionTime % 1) * 60 % 1) * 60);
+            document.getElementById('mission-time').textContent =
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            const vulcan = aircraft.find(a => a.type === 'Vulcan');
+            const distanceCovered = Math.round(vulcan.distance);
+            document.getElementById('distance').textContent = `${distanceCovered} nm`;
+            document.getElementById('remaining').textContent = `${TOTAL_DISTANCE - distanceCovered} nm`;
+            document.getElementById('refuel-count').textContent = `${totalRefuelings} / ${refuelEvents.length}`;
+            document.getElementById('fuel-transferred').textContent = `${totalFuelTransferred.toFixed(1)} tonnes`;
+
+            let phase = 'Initialization';
+            if (missionTime < 1) phase = 'Formation Assembly';
+            else if (missionTime < 4) phase = 'Primary Tanker Wave';
+            else if (missionTime < 8) phase = 'Secondary Tanker Wave';
+            else if (missionTime < 10) phase = 'Deep Mission Phase';
+            else if (missionTime < 10.5) phase = 'Attack Run';
+            else if (missionTime < 12) phase = 'Post-Attack Egress';
+            else if (missionTime < 15) phase = 'Return Journey';
+            else phase = 'Final Approach';
+
+            document.getElementById('phase-indicator').textContent = `Phase: ${phase}`;
+
+            const aircraftList = document.getElementById('aircraft-list');
+            aircraftList.innerHTML = aircraft.map(a => {
+                const status = !a.active && missionTime < a.departTime ? 'Standby' :
+                               a.returned ? 'Returned' :
+                               a.active ? 'Active' : 'Standby';
+                const className = a.isRefueling ? 'refueling' : a.returned ? 'returned' : '';
+                return `<div class="aircraft-item ${className}">
+                    ${a.id} - ${a.type}<br>
+                    Status: ${status} | Dist: ${Math.round(a.distance)} nm<br>
+                    ${a.fuelGiven > 0 ? `Fuel Given: ${a.fuelGiven.toFixed(1)}t` : ''}
+                    ${a.fuelReceived > 0 ? `Fuel Received: ${a.fuelReceived.toFixed(1)}t` : ''}
+                </div>`;
+            }).join('');
+
+            const timelineContainer = document.getElementById('timeline-events');
+            timelineContainer.innerHTML = timelineEvents.map(evt => {
+                const className = missionTime > evt.time + 0.5 ? 'completed' :
+                                 missionTime >= evt.time ? 'active' : '';
+                return `<div class="timeline-item ${className}">
+                    T+${evt.time.toFixed(1)}h: ${evt.text}
+                </div>`;
+            }).join('');
+        }
+
+        function animate(timestamp) {
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const delta = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+
+            if (isRunning) {
+                missionTime += delta * simulationSpeed * 0.5;
+
+                if (missionTime >= 16) {
+                    missionTime = 16;
+                    isRunning = false;
+                    document.getElementById('pause-btn').style.display = 'none';
+                    document.getElementById('start-btn').style.display = 'inline-block';
+                    document.getElementById('start-btn').textContent = 'REPLAY';
+                }
+            }
+
+            drawMap();
+
+            aircraft.forEach(a => a.update(missionTime, simulationSpeed));
+
+            drawRefuelingConnections();
+
+            aircraft.forEach(a => a.draw());
+
+            updateUI();
+
+            requestAnimationFrame(animate);
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            isRunning = true;
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('pause-btn').style.display = 'inline-block';
+        });
+
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            isRunning = false;
+            document.getElementById('pause-btn').style.display = 'none';
+            document.getElementById('start-btn').style.display = 'inline-block';
+            document.getElementById('start-btn').textContent = 'RESUME';
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            missionTime = 0;
+            totalRefuelings = 0;
+            totalFuelTransferred = 0;
+            isRunning = false;
+
+            aircraft.forEach(a => {
+                a.position = { ...ASCENSION_POS };
+                a.distance = 0;
+                a.active = false;
+                a.returned = false;
+                a.isRefueling = false;
+                a.fuelGiven = 0;
+                a.fuelReceived = 0;
+            });
+
+            refuelEvents.forEach(e => e.completed = false);
+
+            document.getElementById('pause-btn').style.display = 'none';
+            document.getElementById('start-btn').style.display = 'inline-block';
+            document.getElementById('start-btn').textContent = 'START MISSION';
+        });
+
+        document.getElementById('speed-slider').addEventListener('input', (e) => {
+            simulationSpeed = parseInt(e.target.value);
+            document.getElementById('speed-display').textContent = `${simulationSpeed}x`;
+        });
+
+        drawMap();
+        updateUI();
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>

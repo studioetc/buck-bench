@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operation Black Buck — Falklands War 1982</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#020810;overflow:hidden;width:100vw;height:100vh;font-family:'Courier New',Courier,monospace;color:#00ff44;user-select:none}
+#canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+#hud{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+
+/* title bar */
+#tbar{position:absolute;top:0;left:0;right:285px;height:68px;background:rgba(0,8,20,.9);border-bottom:1px solid rgba(0,255,68,.25);display:flex;align-items:center;padding:0 18px;gap:24px;z-index:10}
+.t-main{font-size:20px;font-weight:bold;letter-spacing:4px;color:#00ff44;text-shadow:0 0 18px #00ff44}
+.t-sub{font-size:10px;color:#009933;letter-spacing:2px;margin-top:3px}
+.t-class{font-size:10px;color:#ff3300;letter-spacing:3px;border:1px solid #ff3300;padding:2px 8px;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* phase bar */
+#pbar{position:absolute;top:68px;left:0;right:285px;padding:5px 18px;background:rgba(0,6,16,.8);border-bottom:1px solid rgba(0,255,68,.12);display:flex;gap:16px;align-items:center;z-index:10}
+.phase-nm{font-size:12px;letter-spacing:3px;color:#00ff44}
+.phase-t{font-size:10px;color:#009933;letter-spacing:1px}
+
+/* right panel */
+#rpanel{position:absolute;top:0;right:0;width:285px;height:100%;background:rgba(0,5,15,.95);border-left:1px solid rgba(0,255,68,.18);padding:12px 10px;overflow:hidden;pointer-events:all;z-index:10}
+.psec{margin-bottom:16px}
+.ptitle{font-size:9px;letter-spacing:3px;color:#009933;border-bottom:1px solid rgba(0,153,51,.25);padding-bottom:3px;margin-bottom:7px}
+.srow{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;font-size:10px}
+.sl{color:#008833;letter-spacing:1px}
+.sv{color:#00ff44;font-weight:bold}
+.sv.w{color:#ff9900}
+.sv.c{color:#ff2200;animation:blink .5s infinite}
+
+/* aircraft list */
+.acr{display:flex;align-items:center;padding:2px 0;gap:6px;font-size:9px;border-bottom:1px solid rgba(0,255,68,.04)}
+.acl{flex:1;letter-spacing:.5px;min-width:0}
+.acl.fly{color:#00ff44}
+.acl.rtb{color:#ff9900}
+.acl.dn{color:#1a331a;text-decoration:line-through}
+.acl.w8{color:#005522}
+.fbb{width:44px;height:5px;background:rgba(0,255,68,.08);border:1px solid rgba(0,255,68,.15);border-radius:1px;overflow:hidden;flex-shrink:0}
+.fbf{height:100%;background:#00ff44;border-radius:1px}
+.fbf.w{background:#ff9900}
+.fbf.c{background:#ff2200}
+.asts{font-size:8px;color:#555;width:28px;text-align:right;flex-shrink:0}
+
+/* event popup */
+#epop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:420px;max-width:90vw;background:rgba(0,6,18,.97);border:1px solid rgba(0,255,68,.35);padding:18px 20px;display:none;pointer-events:none;z-index:50;box-shadow:0 0 60px rgba(0,255,68,.1)}
+#epop.show{display:block;animation:popIn .3s ease}
+@keyframes popIn{from{opacity:0;transform:translate(-50%,-48%)}to{opacity:1;transform:translate(-50%,-50%)}}
+.ep-title{font-size:13px;letter-spacing:4px;color:#00ff44;margin-bottom:6px;text-shadow:0 0 12px #00ff44}
+.ep-note{font-size:10px;color:#ff9900;letter-spacing:1px;margin-bottom:10px}
+.ep-detail{font-size:9px;color:#009933;line-height:1.65;letter-spacing:.5px}
+.ep-close{font-size:8px;color:#005522;letter-spacing:2px;margin-top:12px;text-align:right}
+
+/* timeline */
+#tline{position:absolute;bottom:0;left:0;right:285px;height:88px;background:rgba(0,5,14,.92);border-top:1px solid rgba(0,255,68,.18);padding:8px 14px;pointer-events:all;z-index:10}
+.tl-labels{display:flex;justify-content:space-between;font-size:8px;color:#008833;margin-bottom:4px;letter-spacing:1px}
+.tl-track{position:relative;height:18px;background:rgba(0,255,68,.04);border:1px solid rgba(0,255,68,.18);border-radius:2px;cursor:pointer;overflow:visible}
+.tl-fill{height:100%;background:rgba(0,255,68,.12);pointer-events:none;transition:width .05s}
+.tl-mark{position:absolute;top:-4px;width:2px;height:26px;background:rgba(255,100,0,.5);pointer-events:none}
+.tl-mlabel{position:absolute;top:-16px;font-size:7px;color:#cc5500;white-space:nowrap;letter-spacing:1px;transform:translateX(-50%);pointer-events:none}
+.tl-cursor{position:absolute;top:-3px;width:3px;height:24px;background:#00ff44;border-radius:1px;box-shadow:0 0 6px #00ff44;pointer-events:none;transform:translateX(-50%)}
+.tl-ctrl{display:flex;gap:7px;align-items:center;margin-top:7px}
+.btn{background:rgba(0,255,68,.07);border:1px solid rgba(0,255,68,.25);color:#00ff44;font-family:inherit;font-size:10px;padding:4px 11px;cursor:pointer;letter-spacing:1px;transition:all .1s}
+.btn:hover,.btn.on{background:rgba(0,255,68,.18);box-shadow:0 0 8px rgba(0,255,68,.25)}
+.spdlbl{font-size:9px;color:#009933;letter-spacing:1px}
+
+/* intro overlay */
+#intro{position:absolute;top:0;left:0;width:100%;height:100%;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:200;transition:opacity 1.2s}
+.intro-cls{font-size:11px;letter-spacing:6px;color:#ff3300;border:1px solid #ff3300;padding:3px 14px;animation:blink 1s infinite}
+.intro-op{font-size:32px;letter-spacing:8px;color:#00ff44;text-shadow:0 0 40px #00ff44}
+.intro-sub{font-size:11px;letter-spacing:3px;color:#009933}
+.intro-txt{font-size:9px;color:#004422;letter-spacing:2px;text-align:center;max-width:460px;line-height:1.8}
+.intro-cnt{font-size:11px;letter-spacing:3px;color:#ff9900}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+
+<div id="hud">
+  <div id="tbar">
+    <div><div class="t-main">OPERATION BLACK BUCK</div><div class="t-sub">RAF VULCAN · FALKLANDS WAR · 30 APR – 1 MAY 1982</div></div>
+    <div class="t-class">TOP SECRET</div>
+  </div>
+  <div id="pbar">
+    <span class="phase-nm" id="ph-name">BRIEFING</span>
+    <span class="phase-t" id="ph-time">T+00:00</span>
+  </div>
+
+  <div id="rpanel">
+    <div class="psec">
+      <div class="ptitle">▸ MISSION STATUS</div>
+      <div class="srow"><span class="sl">ELAPSED</span><span class="sv" id="st-time">00:00</span></div>
+      <div class="srow"><span class="sl">FORMATION</span><span class="sv" id="st-form">13 ACFT</span></div>
+      <div class="srow"><span class="sl">XM607 FUEL</span><span class="sv" id="st-fuel">100%</span></div>
+      <div class="srow"><span class="sl">DIST TO TGT</span><span class="sv" id="st-dist">3,860 nm</span></div>
+      <div class="srow"><span class="sl">STATUS</span><span class="sv" id="st-stat">STANDBY</span></div>
+    </div>
+    <div class="psec">
+      <div class="ptitle">▸ AIRCRAFT</div>
+      <div id="aclist"></div>
+    </div>
+    <div class="psec">
+      <div class="ptitle">▸ OPERATION NOTES</div>
+      <div style="font-size:8px;color:#005522;line-height:1.6;letter-spacing:.5px" id="op-notes">Longest bombing mission in history. 13 aircraft departed Ascension Island. Victor K2 tankers performed cascading air-to-air refuels. One Avro Vulcan B.2 XM607 delivered 21 × 1,000lb bombs to Stanley Airport.</div>
+    </div>
+    <div class="psec" style="margin-top:4px">
+      <div class="ptitle">▸ SPEED</div>
+      <div style="display:flex;gap:5px">
+        <button class="btn on" id="spd-1" onclick="setSpd(1)">1×</button>
+        <button class="btn" id="spd-2" onclick="setSpd(2)">2×</button>
+        <button class="btn" id="spd-4" onclick="setSpd(4)">4×</button>
+        <button class="btn" id="spd-8" onclick="setSpd(8)">8×</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="epop">
+    <div class="ep-title" id="ep-title">BRACKET ALPHA</div>
+    <div class="ep-note" id="ep-note"></div>
+    <div class="ep-detail" id="ep-detail"></div>
+    <div class="ep-close">▸ CONTINUE</div>
+  </div>
+
+  <div id="tline">
+    <div class="tl-labels"><span>◀ ASCENSION</span><span>TIMELINE — OPERATION BLACK BUCK</span><span>HOME ▶</span></div>
+    <div class="tl-track" id="ttrack" onclick="seek(event)">
+      <div class="tl-fill" id="tfill" style="width:0%"></div>
+      <div class="tl-cursor" id="tcursor" style="left:0%"></div>
+    </div>
+    <div class="tl-ctrl">
+      <button class="btn on" id="btn-play" onclick="togglePlay()" style="pointer-events:all">⏸ PAUSE</button>
+      <button class="btn" onclick="restart()" style="pointer-events:all">↺ RESTART</button>
+      <span class="spdlbl" id="spd-lbl">SPEED: 1×</span>
+    </div>
+  </div>
+</div>
+
+<div id="intro">
+  <div class="intro-cls">CLASSIFIED</div>
+  <div class="intro-op">BLACK BUCK</div>
+  <div class="intro-sub">OPERATION ORDER · RAF BOMBER COMMAND · 1982</div>
+  <div class="intro-txt">
+    TASK: Avro Vulcan B.2 aircraft to conduct long-range<br>
+    conventional bombing of Stanley Airport, Falkland Islands<br><br>
+    13 AIRCRAFT DEPARTING RAF WIDEAWAKE, ASCENSION ISLAND<br>
+    11× VICTOR K2 TANKERS · 2× VULCAN B.2<br>
+    DISTANCE: 3,860 NAUTICAL MILES (ONE WAY)
+  </div>
+  <div class="intro-cnt" id="icnt">COMMENCING IN 5</div>
+</div>
+
+<script>
+'use strict';
+// ================================================================
+//  OPERATION BLACK BUCK — FALKLANDS WAR 1982
+//  Animated air-to-air refuelling simulation
+// ================================================================
+
+// --- MAP BOUNDS ---
+const LON0=-78, LON1=25, LAT0=-65, LAT1=15; // viewport
+
+// --- KEY POSITIONS ---
+const ASC = {lat:-7.95, lon:-14.37};
+const STA = {lat:-51.68, lon:-57.85};
+
+// --- PALETTE ---
+const C = {
+  bg:'#020810', ocean:'#060f1f', oceanDk:'#030a16',
+  land:'#0a1a07', landBd:'#162b0d',
+  grid:'rgba(0,100,160,.07)',
+  route:'rgba(0,180,220,.12)', flown:'#00d8ff', retRoute:'rgba(255,80,80,.35)',
+  vulcan:'#cce8ff', vulcanGl:'#2244ee',
+  victor:'#ff9900', victorGl:'#ff5000',
+  heroV:'#ffcc00', heroVGl:'#ffaa00',
+  fuel:'#ff4400', hud:'#00ff44', hudDk:'#008833',
+  bracketRing:'rgba(255,60,0,',
+  expl:'#ff8800', explCore:'#ffffff',
+};
+
+// --- TIMING (ms at 1×) ---
+const TL = {
+  DEPART:3000,
+  A_IN:16000,  A_OUT:22000,
+  B_IN:33000,  B_OUT:39000,
+  C_IN:50000,  C_OUT:56000,
+  D_IN:64000,  D_OUT:70500,
+  STA_T:83000,
+  BOMB:84000,
+  RET:86000,
+  RRV_IN:104000, RRV_OUT:110500,
+  HOME:128000,
+  END:135000,
+  TOTAL:140000,
+};
+
+// bracket t-values (0=ASC, 1=STA)
+const BT = {alpha:.22, bravo:.44, charlie:.67, delta:.82, retRV:.60};
+
+// --- BRACKET EVENTS ---
+const BRKS = [
+  { id:'alpha', name:'BRACKET ALPHA',
+    lat:-17.5, lon:-22,
+    tIn:TL.A_IN, tOut:TL.A_OUT,
+    rtb:['V1','V2','V3'],
+    note:'ALT 25,000ft · SPD 420kts · 3 Victors offload and RTB',
+    detail:'Three Victor K2 tankers complete their first offload transfers. Having given their fuel to the remaining aircraft, they bank north and begin the long return flight to Ascension — 2,400nm away. The formation has shrunk from 13 to 10 aircraft. The South Atlantic stretches dark and endless below.' },
+  { id:'bravo', name:'BRACKET BRAVO',
+    lat:-27.5, lon:-33,
+    tIn:TL.B_IN, tOut:TL.B_OUT,
+    rtb:['V4','V5','V6'],
+    note:'MID-ATLANTIC · 2nd wave offload · Formation now 7 aircraft',
+    detail:'The mid-Atlantic bracket. The cascading refuel continues as three more Victors complete their transfers. Each departing tanker carries just enough fuel to reach Ascension — flying the return at minimum power, lights off, in the South Atlantic night.' },
+  { id:'charlie', name:'BRACKET CHARLIE',
+    lat:-37.5, lon:-44,
+    tIn:TL.C_IN, tOut:TL.C_OUT,
+    rtb:['V7','V8','XM598'],
+    note:'SPARE VULCAN XM598 RTB · V7 & V8 RTB · 4 aircraft remain',
+    detail:'Spare Vulcan XM598 (Flt Lt Reeve) is confirmed not needed — XM607 is fully serviceable and pressurised. XM598 turns north with Victors V7 and V8. Only four aircraft continue south: XM607 and three Victors.' },
+  { id:'delta', name:'BRACKET DELTA — FINAL HANDOFF',
+    lat:-44.5, lon:-51,
+    tIn:TL.D_IN, tOut:TL.D_OUT,
+    rtb:['V9','V10'],
+    finalVictor:'V11',
+    note:'Victor XL189 · Flt Lt Biglands · TRANSFERS ALL AVAILABLE FUEL TO XM607',
+    detail:'The critical moment. Victor XL189 (Flt Lt Steve Biglands) transfers virtually all his remaining fuel to XM607 — leaving himself only enough to reach a waiting tanker 1,400nm to the north. XM607 is now alone. The longest bombing mission in history continues into the South Atlantic darkness.' },
+];
+
+// --- CANVAS ---
+let canvas, ctx, W, H, ML, MT, MR, MB, MW, MH;
+
+function setupCanvas() {
+  canvas = document.getElementById('canvas');
+  ctx = canvas.getContext('2d');
+  resize();
+  window.addEventListener('resize', resize);
+}
+function resize() {
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = W; canvas.height = H;
+  ML = 10; MT = 100; MR = W-290; MB = H-92;
+  MW = MR-ML; MH = MB-MT;
+}
+
+// --- COORDINATE CONVERSION ---
+function xy(lat, lon) {
+  const x = ML + (lon-LON0)/(LON1-LON0)*MW;
+  const y = MT + (LAT1-lat)/(LAT1-LAT0)*MH;
+  return [x, y];
+}
+function routePt(t) {
+  return { lat: ASC.lat + t*(STA.lat-ASC.lat), lon: ASC.lon + t*(STA.lon-ASC.lon) };
+}
+
+// Screen heading: 0=north(up), clockwise
+function screenHdg(dx, dy) { return Math.atan2(dx, -dy); }
+let HDG_OUT, HDG_RET;
+function computeHeadings() {
+  const [x1,y1]=xy(ASC.lat,ASC.lon), [x2,y2]=xy(STA.lat,STA.lon);
+  HDG_OUT = screenHdg(x2-x1, y2-y1);
+  HDG_RET = HDG_OUT + Math.PI;
+}
+
+// --- ROUTE T ---
+function outboundT(at) {
+  if(at<TL.DEPART) return 0;
+  const segs=[
+    [TL.DEPART,0,TL.A_IN,.22],[TL.A_IN,.22,TL.A_OUT,.22],
+    [TL.A_OUT,.22,TL.B_IN,.44],[TL.B_IN,.44,TL.B_OUT,.44],
+    [TL.B_OUT,.44,TL.C_IN,.67],[TL.C_IN,.67,TL.C_OUT,.67],
+    [TL.C_OUT,.67,TL.D_IN,.82],[TL.D_IN,.82,TL.D_OUT,.82],
+    [TL.D_OUT,.82,TL.STA_T,1],[TL.STA_T,1,TL.RET,1],
+  ];
+  for(const [t0,v0,t1,v1] of segs)
+    if(at>=t0&&at<t1) return v0+(v1-v0)*(at-t0)/(t1-t0);
+  return 1;
+}
+function mainT(at) {
+  if(at<=TL.RET) return outboundT(at);
+  if(at<TL.RRV_IN)  { const f=(at-TL.RET)/(TL.RRV_IN-TL.RET);   return 1-(1-BT.retRV)*f; }
+  if(at<TL.RRV_OUT) return BT.retRV;
+  if(at<TL.HOME)    { const f=(at-TL.RRV_OUT)/(TL.HOME-TL.RRV_OUT); return BT.retRV*(1-f); }
+  return 0;
+}
+
+// outbound fly time (cumulative, excluding dwells) to each bracket
+function flyTimeTo(bkt) {
+  const F = TL.A_IN-TL.DEPART; // first leg
+  const G = TL.B_IN-TL.A_OUT;
+  const H2= TL.C_IN-TL.B_OUT;
+  const I = TL.D_IN-TL.C_OUT;
+  if(bkt==='alpha')   return F;
+  if(bkt==='bravo')   return F+G;
+  if(bkt==='charlie') return F+G+H2;
+  if(bkt==='delta'||bkt==='final') return F+G+H2+I;
+  return 0;
+}
+
+// --- AIRCRAFT DEFINITIONS ---
+const ACDEFS = [
+  {id:'XM607',type:'vulcan',label:'XM607',   note:'Sqn Ldr M. Withers',      col:C.vulcan, gl:C.vulcanGl, dlat:0,    dlon:0,    rtbBkt:null,      rtbT:Infinity},
+  {id:'XM598',type:'vulcan',label:'XM598',   note:'Flt Lt Reeve (spare)',     col:C.vulcan, gl:C.vulcanGl, dlat:.35,  dlon:-.25, rtbBkt:'charlie', rtbT:TL.C_OUT},
+  {id:'V1',   type:'victor',label:'V1',       note:'Victor Wave 1',            col:C.victor, gl:C.victorGl, dlat:-.45, dlon:.55,  rtbBkt:'alpha',   rtbT:TL.A_OUT},
+  {id:'V2',   type:'victor',label:'V2',       note:'Victor Wave 1',            col:C.victor, gl:C.victorGl, dlat:.45,  dlon:.55,  rtbBkt:'alpha',   rtbT:TL.A_OUT},
+  {id:'V3',   type:'victor',label:'V3',       note:'Victor Wave 1',            col:C.victor, gl:C.victorGl, dlat:0,    dlon:1.0,  rtbBkt:'alpha',   rtbT:TL.A_OUT},
+  {id:'V4',   type:'victor',label:'V4',       note:'Victor Wave 2',            col:C.victor, gl:C.victorGl, dlat:-.45, dlon:1.5,  rtbBkt:'bravo',   rtbT:TL.B_OUT},
+  {id:'V5',   type:'victor',label:'V5',       note:'Victor Wave 2',            col:C.victor, gl:C.victorGl, dlat:.45,  dlon:1.5,  rtbBkt:'bravo',   rtbT:TL.B_OUT},
+  {id:'V6',   type:'victor',label:'V6',       note:'Victor Wave 2',            col:C.victor, gl:C.victorGl, dlat:0,    dlon:2.0,  rtbBkt:'bravo',   rtbT:TL.B_OUT},
+  {id:'V7',   type:'victor',label:'V7',       note:'Victor Wave 3',            col:C.victor, gl:C.victorGl, dlat:-.35, dlon:2.5,  rtbBkt:'charlie', rtbT:TL.C_OUT},
+  {id:'V8',   type:'victor',label:'V8',       note:'Victor Wave 3',            col:C.victor, gl:C.victorGl, dlat:.35,  dlon:2.5,  rtbBkt:'charlie', rtbT:TL.C_OUT},
+  {id:'V9',   type:'victor',label:'V9',       note:'Victor Wave 4',            col:C.victor, gl:C.victorGl, dlat:-.35, dlon:3.0,  rtbBkt:'delta',   rtbT:TL.D_OUT},
+  {id:'V10',  type:'victor',label:'V10',      note:'Victor Wave 4',            col:C.victor, gl:C.victorGl, dlat:.35,  dlon:3.0,  rtbBkt:'delta',   rtbT:TL.D_OUT},
+  {id:'V11',  type:'victor',label:'V11 XL189',note:'Flt Lt Biglands — HERO',   col:C.heroV,  gl:C.heroVGl,  dlat:0,    dlon:3.5,  rtbBkt:'final',   rtbT:TL.D_OUT},
+  {id:'VR',   type:'victor',label:'VR',       note:'Return tanker',            col:C.victor, gl:C.victorGl, dlat:0,    dlon:0,    rtbBkt:null,      rtbT:Infinity, isRet:true},
+];
+let aircraft=[];
+
+function initAircraft() {
+  aircraft = ACDEFS.map(d=>({...d, tPos:0, lat:ASC.lat, lon:ASC.lon,
+    sx:0, sy:0, heading:0, trail:[], fuel:1, vis:!d.isRet, status:'wait'}));
+}
+
+// Get aircraft state at time `at`
+function acState(ac, at) {
+  if(ac.isRet) {
+    if(at<TL.RET)        return {vis:false, tPos:0, stat:'wait', hdg:HDG_OUT};
+    if(at<TL.RRV_IN)     { const f=(at-TL.RET)/(TL.RRV_IN-TL.RET); return {vis:true, tPos:f*BT.retRV, stat:'fly', hdg:HDG_OUT}; }
+    if(at<TL.RRV_OUT)    return {vis:true, tPos:BT.retRV, stat:'refuel', hdg:HDG_OUT};
+    if(at<TL.HOME)       { const f=(at-TL.RRV_OUT)/(TL.HOME-TL.RRV_OUT); return {vis:true, tPos:BT.retRV*(1-f), stat:'rtb', hdg:lerpHdg(HDG_OUT,HDG_RET,Math.min(1,f*8))}; }
+    return {vis:false, tPos:0, stat:'dn', hdg:HDG_RET};
+  }
+  if(at<TL.DEPART) return {vis:true, tPos:0, stat:'wait', hdg:HDG_OUT};
+
+  if(ac.rtbT<Infinity && at>=ac.rtbT) {
+    const bktT = BT[ac.rtbBkt]||BT.delta;
+    const ftOut = flyTimeTo(ac.rtbBkt);
+    const rtbDur = ftOut * (ac.id==='V11'?1.3:1.0);
+    const elapsed = at-ac.rtbT;
+    const tPos = Math.max(0, bktT - bktT*(elapsed/rtbDur));
+    const turnF = Math.min(1, elapsed/1800);
+    if(tPos<=0.001) return {vis:false, tPos:0, stat:'dn', hdg:HDG_RET};
+    return {vis:true, tPos, stat:'rtb', hdg:lerpHdg(HDG_OUT,HDG_RET,eio(turnF))};
+  }
+
+  // For XM607 on return leg
+  if(ac.id==='XM607' && at>=TL.RET) {
+    const t = mainT(at);
+    const retProg = (at-TL.RET)/(TL.HOME-TL.RET);
+    const stat = (at>=TL.RRV_IN&&at<TL.RRV_OUT)?'refuel':'fly';
+    return {vis:t>0.001||at<TL.HOME, tPos:Math.max(0,t), stat, hdg:lerpHdg(HDG_OUT,HDG_RET,eio(Math.min(1,(at-TL.RET)/2500)))};
+  }
+
+  const tPos = outboundT(at);
+  return {vis:true, tPos, stat:'fly', hdg:HDG_OUT};
+}
+
+function lerpHdg(a,b,f) {
+  let d=b-a; while(d>Math.PI)d-=2*Math.PI; while(d<-Math.PI)d+=2*Math.PI;
+  return a+d*f;
+}
+function eio(t) { return t<.5?2*t*t:-1+(4-2*t)*t; }
+
+// --- PARTICLES ---
+let parts=[];
+function spawnFuel(x1,y1,x2,y2,n) {
+  for(let i=0;i<n;i++){
+    const t=Math.random(); const jit=(Math.random()-.5)*5;
+    parts.push({x:x1+(x2-x1)*t+jit, y:y1+(y2-y1)*t+jit,
+      vx:Math.cos(Math.atan2(y2-y1,x2-x1))*(0.4+Math.random()*1.2)+( Math.random()-.5)*.5,
+      vy:Math.sin(Math.atan2(y2-y1,x2-x1))*(0.4+Math.random()*1.2)+( Math.random()-.5)*.5,
+      life:1, dec:0.025+Math.random()*.03, r:1.2+Math.random()*2,
+      col:`hsl(${15+Math.random()*25},100%,${45+Math.random()*35}%)`});
+  }
+}
+function spawnExpl(x,y) {
+  for(let i=0;i<100;i++){
+    const a=Math.random()*Math.PI*2, sp=0.3+Math.random()*5;
+    parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,
+      life:1,dec:0.012+Math.random()*.018,r:1+Math.random()*4.5,
+      col:Math.random()>.45?C.expl:C.explCore});
+  }
+}
+function tickParts() {
+  for(let i=parts.length-1;i>=0;i--){
+    const p=parts[i]; p.x+=p.vx; p.y+=p.vy; p.vy+=.025; p.life-=p.dec;
+    if(p.life<=0) parts.splice(i,1);
+  }
+}
+function drawParts() {
+  for(const p of parts){
+    ctx.globalAlpha=Math.max(0,p.life); ctx.fillStyle=p.col;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+}
+
+// --- GEOGRAPHIC DATA ---
+
+// South America
+const SA=[
+  [12,-63],[10,-61],[9,-60],[8,-60],[7,-60],[6.5,-58.5],[5.8,-57],[4.5,-52],[2,-50.5],
+  [.5,-50],[-.5,-50],[-1,-48.5],[-2,-44.8],[-3,-40.5],[-4.5,-37.3],
+  [-5.3,-35.3],[-7,-34.9],[-9,-35.5],[-11,-37],[-13,-38.5],
+  [-16,-39],[-19,-39.8],[-22,-41.5],[-23,-43.3],[-24.5,-47],
+  [-26.5,-48.5],[-29,-49.5],[-30,-50.5],[-32.5,-51.8],
+  [-33.5,-53],[-34.9,-56.3],[-36.5,-56.8],[-38,-57.5],
+  [-39,-62],[-40.5,-62.5],[-41.5,-63.5],[-43.5,-65.5],
+  [-45,-65.6],[-47,-66],[-49,-67.5],[-51,-68.5],
+  [-52.5,-68.5],[-53,-68.9],[-54,-67.5],[-55.5,-67.5],
+  [-55,-70],[-52,-74.5],[-48,-75.5],[-44,-74],
+  [-40,-73.5],[-36,-73],[-31,-71.8],[-26,-71],
+  [-22,-70.3],[-18,-70.5],[-15,-75.5],[-10,-78],
+  [-5,-78],[0,-78],[4,-77.5],[7,-77],[9,-76.5],
+  [10,-74],[11,-73.5],[12,-71.5],[12,-63],
+];
+
+// Africa
+const AF=[
+  [15,25],[-34.5,25],[-35,22],[-34,18.4],[-33,17.5],[-31,17.5],
+  [-29,17],[-26.5,15.2],[-22.9,14.5],[-17,11.8],[-12,14],
+  [-8.5,13.3],[-5,12],[-1,9.8],[1,9.4],[3.5,9],
+  [4.5,8.5],[4,7],[6.5,3.5],[6.5,2],[5.6,0],[5.5,-1],
+  [4.8,-3.5],[4.5,-6.5],[5,-8.5],[6.5,-10.8],[8,-11.5],
+  [10,-15],[12,-15.3],[14,-16.8],[14.7,-17.5],
+  [15,-17],[15,25],
+];
+
+// Antarctica hint
+const ANT=[[-63,LON0],[-63,LON1],[-65,LON1],[-65,LON0]];
+
+function drawPoly(pts, fill, stroke) {
+  ctx.beginPath();
+  for(let i=0;i<pts.length;i++){
+    const [x,y]=xy(pts[i][0],pts[i][1]);
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+  if(fill){ctx.fillStyle=fill;ctx.fill();}
+  if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=.8;ctx.stroke();}
+}
+
+// --- DRAWING ---
+
+function drawBG() {
+  const gr=ctx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,Math.max(W,H)*.7);
+  gr.addColorStop(0,'#0a1830'); gr.addColorStop(.6,'#050e1e'); gr.addColorStop(1,C.bg);
+  ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
+}
+
+function drawOcean() {
+  ctx.fillStyle=C.ocean; ctx.fillRect(ML,MT,MW,MH);
+  // subtle depth gradient
+  const gr=ctx.createRadialGradient(ML+MW*.45,MT+MH*.4,0,ML+MW*.45,MT+MH*.4,MH*.8);
+  gr.addColorStop(0,'rgba(10,30,60,.3)'); gr.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=gr; ctx.fillRect(ML,MT,MW,MH);
+}
+
+function drawGrid() {
+  ctx.strokeStyle=C.grid; ctx.lineWidth=.5;
+  for(let la=-60;la<=10;la+=10){
+    const [,gy]=xy(la,LON0);
+    ctx.beginPath(); ctx.moveTo(ML,gy); ctx.lineTo(MR,gy); ctx.stroke();
+    if(la!==0){
+      ctx.fillStyle='rgba(0,100,160,.3)'; ctx.font='8px Courier New';
+      ctx.fillText(`${Math.abs(la)}°${la<0?'S':'N'}`,ML+3,gy-2);
+    }
+  }
+  for(let lo=-70;lo<=20;lo+=10){
+    const [gx]=xy(0,lo);
+    ctx.beginPath(); ctx.moveTo(gx,MT); ctx.lineTo(gx,MB); ctx.stroke();
+    ctx.fillStyle='rgba(0,100,160,.3)'; ctx.font='8px Courier New';
+    ctx.fillText(`${Math.abs(lo)}°${lo<0?'W':'E'}`,gx+2,MB-4);
+  }
+  // equator
+  ctx.strokeStyle='rgba(0,120,180,.2)'; ctx.lineWidth=1;
+  ctx.setLineDash([4,5]);
+  const [,ey]=xy(0,LON0);
+  ctx.beginPath(); ctx.moveTo(ML,ey); ctx.lineTo(MR,ey); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(0,140,200,.55)'; ctx.font='9px Courier New';
+  ctx.fillText('EQUATOR',ML+5,ey-3);
+}
+
+function drawCoasts() {
+  drawPoly(ANT,C.land,C.landBd);
+  drawPoly(SA, C.land,C.landBd);
+  drawPoly(AF, C.land,C.landBd);
+}
+
+function drawRoute(at) {
+  const [ax,ay]=xy(ASC.lat,ASC.lon);
+  const [sx,sy]=xy(STA.lat,STA.lon);
+  // planned route faint
+  ctx.save();
+  ctx.strokeStyle=C.route; ctx.lineWidth=1.2;
+  ctx.setLineDash([5,8]);
+  ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(sx,sy); ctx.stroke();
+  ctx.setLineDash([]);
+  // flown portion
+  if(at>=TL.DEPART){
+    const t=Math.min(1,outboundT(at));
+    const p=routePt(t);
+    const [ex,ey]=xy(p.lat,p.lon);
+    ctx.strokeStyle=C.flown; ctx.lineWidth=1.5;
+    ctx.shadowColor=C.flown; ctx.shadowBlur=5;
+    ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(ex,ey); ctx.stroke();
+    ctx.shadowBlur=0;
+  }
+  // return trace
+  if(at>=TL.RET){
+    const rT=Math.max(0,Math.min(1,mainT(at)));
+    const p=routePt(rT);
+    const [rx,ry]=xy(p.lat,p.lon);
+    ctx.strokeStyle=C.retRoute; ctx.lineWidth=1;
+    ctx.setLineDash([3,6]);
+    ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(rx,ry); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  ctx.restore();
+}
+
+function drawLocations(at) {
+  // Ascension
+  const [ax,ay]=xy(ASC.lat,ASC.lon);
+  ctx.save();
+  ctx.fillStyle=C.hud; ctx.shadowColor=C.hud; ctx.shadowBlur=12;
+  ctx.beginPath(); ctx.arc(ax,ay,5,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.font='bold 9px Courier New'; ctx.fillStyle=C.hud;
+  ctx.fillText('RAF WIDEAWAKE',ax+9,ay-6);
+  ctx.fillText('ASCENSION ISL.',ax+9,ay+5);
+  ctx.restore();
+
+  // Stanley
+  const [sx,sy]=xy(STA.lat,STA.lon);
+  const exploding=at>=TL.BOMB;
+  ctx.save();
+  ctx.strokeStyle=exploding?'#ff2200':'rgba(255,60,0,.7)';
+  ctx.fillStyle=exploding?'#ff2200':'rgba(255,60,0,.7)';
+  ctx.lineWidth=1.5;
+  ctx.shadowColor='#ff4400'; ctx.shadowBlur=exploding?20:8;
+  for(let i=0;i<4;i++){
+    const a=i*Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(sx+Math.cos(a)*4,sy+Math.sin(a)*4);
+    ctx.lineTo(sx+Math.cos(a)*11,sy+Math.sin(a)*11);
+    ctx.stroke();
+  }
+  ctx.beginPath(); ctx.arc(sx,sy,4,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.font='bold 9px Courier New'; ctx.fillStyle='#ff5500';
+  ctx.fillText('TARGET: STANLEY AIRPORT',sx+10,sy-5);
+  ctx.fillText('FALKLAND ISLANDS',sx+10,sy+6);
+  ctx.restore();
+
+  // UK label (off-map, top-right corner)
+  ctx.save();
+  ctx.font='9px Courier New'; ctx.fillStyle='rgba(0,160,80,.5)';
+  ctx.fillText('▲ RAF WADDINGTON',MR-130,MT+15);
+  ctx.fillText('UK  (3,500nm)',MR-130,MT+27);
+  ctx.restore();
+
+  // Scale bar
+  drawScale();
+  // North arrow
+  drawNorth();
+}
+
+function drawScale() {
+  const pxPer1Deg = MW/(LON1-LON0);
+  const nm500px = 500*1.852/111*pxPer1Deg; // 500nm in pixels (approx)
+  const bx=ML+15, by=MB-16;
+  ctx.save();
+  ctx.strokeStyle='rgba(0,200,100,.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx+nm500px,by); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx,by-4); ctx.lineTo(bx,by+4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx+nm500px,by-4); ctx.lineTo(bx+nm500px,by+4); ctx.stroke();
+  ctx.font='8px Courier New'; ctx.fillStyle='rgba(0,180,80,.5)';
+  ctx.fillText('500nm',bx+nm500px/2-14,by-5);
+  ctx.restore();
+}
+function drawNorth() {
+  const nx=ML+28,ny=MT+MH*.12;
+  ctx.save();
+  ctx.strokeStyle='rgba(0,200,100,.5)'; ctx.fillStyle='rgba(0,200,100,.5)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(nx,ny+10); ctx.lineTo(nx,ny-14); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(nx,ny-14); ctx.lineTo(nx-4,ny-6); ctx.lineTo(nx+4,ny-6); ctx.closePath(); ctx.fill();
+  ctx.font='9px Courier New'; ctx.fillText('N',nx-3,ny+22);
+  ctx.restore();
+}
+
+function drawBrackets(at) {
+  for(const b of BRKS){
+    const [bx,by]=xy(b.lat,b.lon);
+    const isAct=at>=b.tIn&&at<b.tOut;
+    const isPast=at>=b.tOut;
+    const alpha=isPast?.15:isAct?1:.45;
+
+    if(isAct){
+      const puls=(Math.sin(Date.now()/280)+1)/2;
+      for(let r=0;r<3;r++){
+        const rr=12+r*8+puls*6;
+        ctx.strokeStyle=`rgba(255,55,0,${(.5-r*.12)*puls})`;
+        ctx.lineWidth=1; ctx.beginPath(); ctx.arc(bx,by,rr,0,Math.PI*2); ctx.stroke();
+      }
+    }
+    ctx.globalAlpha=alpha;
+    ctx.fillStyle=isPast?'#442200':'#ff3300';
+    ctx.shadowColor='#ff3300'; ctx.shadowBlur=isAct?16:5;
+    ctx.beginPath(); ctx.arc(bx,by,4,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0; ctx.globalAlpha=1;
+
+    ctx.font=`${isAct?'bold ':''} 8px Courier New`;
+    ctx.fillStyle=`rgba(255,120,0,${alpha})`;
+    ctx.fillText(b.name,bx+8,by-4);
+    if(isAct){
+      ctx.font='7px Courier New'; ctx.fillStyle='rgba(255,170,0,.75)';
+      ctx.fillText(b.note,bx+8,by+7);
+    }
+  }
+}
+
+// Draw Vulcan delta-wing silhouette
+function drawVulcan(s, col, gl) {
+  ctx.shadowColor=gl; ctx.shadowBlur=14;
+  ctx.fillStyle=col;
+  ctx.beginPath();
+  ctx.moveTo(0,-s);
+  ctx.bezierCurveTo(.12*s,-.75*s,.95*s,.05*s,.95*s,.55*s);
+  ctx.lineTo(.48*s,.65*s);
+  ctx.lineTo(.1*s,.42*s);
+  ctx.lineTo(.07*s,.78*s);
+  ctx.lineTo(0,.7*s);
+  ctx.lineTo(-.07*s,.78*s);
+  ctx.lineTo(-.1*s,.42*s);
+  ctx.lineTo(-.48*s,.65*s);
+  ctx.bezierCurveTo(-.95*s,.05*s,-.12*s,-.75*s,0,-s);
+  ctx.closePath(); ctx.fill();
+  ctx.shadowBlur=0;
+  // engine glow dots
+  ctx.fillStyle=`rgba(80,120,255,.35)`;
+  for(const side of[-1,1]){
+    ctx.beginPath(); ctx.ellipse(side*.28*s,.52*s,.07*s,.1*s,0,0,Math.PI*2); ctx.fill();
+  }
+}
+
+// Draw Victor tanker silhouette
+function drawVictor(s, col, gl) {
+  ctx.shadowColor=gl; ctx.shadowBlur=10;
+  ctx.fillStyle=col;
+  // fuselage
+  ctx.beginPath();
+  ctx.moveTo(0,-s);
+  ctx.bezierCurveTo(.07*s,-.6*s,.09*s,.42*s,.08*s,.67*s);
+  ctx.lineTo(.07*s,.82*s); ctx.lineTo(-.07*s,.82*s);
+  ctx.lineTo(-.08*s,.67*s);
+  ctx.bezierCurveTo(-.09*s,.42*s,-.07*s,-.6*s,0,-s);
+  ctx.closePath(); ctx.fill();
+  // right crescent wing
+  ctx.beginPath();
+  ctx.moveTo(.07*s,-.08*s);
+  ctx.bezierCurveTo(.28*s,-.18*s,.72*s,.08*s,.86*s,.35*s);
+  ctx.lineTo(.82*s,.5*s);
+  ctx.bezierCurveTo(.48*s,.42*s,.1*s,.32*s,.08*s,.32*s);
+  ctx.closePath(); ctx.fill();
+  // left wing (mirror)
+  ctx.beginPath();
+  ctx.moveTo(-.07*s,-.08*s);
+  ctx.bezierCurveTo(-.28*s,-.18*s,-.72*s,.08*s,-.86*s,.35*s);
+  ctx.lineTo(-.82*s,.5*s);
+  ctx.bezierCurveTo(-.48*s,.42*s,-.1*s,.32*s,-.08*s,.32*s);
+  ctx.closePath(); ctx.fill();
+  // T-tail horizontal stabilizer
+  ctx.beginPath();
+  ctx.moveTo(-.28*s,.78*s); ctx.lineTo(.28*s,.78*s);
+  ctx.lineTo(.22*s,.87*s); ctx.lineTo(-.22*s,.87*s);
+  ctx.closePath(); ctx.fill();
+  ctx.shadowBlur=0;
+}
+
+const trails={};
+
+function drawAircraft(at) {
+  for(const ac of aircraft){
+    const st=acState(ac,at);
+    if(!st.vis) continue;
+    const bp=routePt(st.tPos);
+    const lat=bp.lat+ac.dlat, lon=bp.lon+ac.dlon;
+    const [cx,cy]=xy(lat,lon);
+
+    // trail
+    if(!trails[ac.id]) trails[ac.id]=[];
+    const tr=trails[ac.id];
+    if(tr.length===0||Math.abs(cx-tr[tr.length-1].x)>.5||Math.abs(cy-tr[tr.length-1].y)>.5)
+      tr.push({x:cx,y:cy,at});
+    while(tr.length>1&&at-tr[0].at>3500) tr.shift();
+    if(tr.length>1){
+      ctx.save();
+      for(let i=1;i<tr.length;i++){
+        const a=(i/tr.length)*.35;
+        ctx.strokeStyle=ac.type==='vulcan'?`rgba(80,160,255,${a})`:`rgba(255,140,0,${a})`;
+        ctx.lineWidth=1; ctx.beginPath();
+        ctx.moveTo(tr[i-1].x,tr[i-1].y); ctx.lineTo(tr[i].x,tr[i].y); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // silhouette
+    const sz=ac.type==='vulcan'?17:11;
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(st.hdg);
+    if(ac.type==='vulcan') drawVulcan(sz,ac.col,ac.gl);
+    else drawVictor(sz,ac.col,ac.gl);
+    ctx.restore();
+
+    // label for primary Vulcan and V11
+    if(ac.id==='XM607'||ac.id==='V11'||(st.stat==='refuel')){
+      ctx.font=`bold 8px Courier New`;
+      ctx.fillStyle=ac.type==='vulcan'?C.vulcan:ac.col;
+      ctx.shadowColor=ac.gl; ctx.shadowBlur=4;
+      ctx.fillText(ac.label,cx+13,cy-6);
+      ctx.shadowBlur=0;
+    }
+  }
+}
+
+function drawRefuelLines(at) {
+  for(const b of BRKS){
+    if(at<b.tIn||at>=b.tOut) continue;
+    const donorId=b.finalVictor||(b.rtb?b.rtb[0]:null);
+    if(!donorId) continue;
+    const donor=aircraft.find(a=>a.id===donorId);
+    const recv=aircraft.find(a=>a.id==='XM607');
+    if(!donor||!recv) continue;
+    const ds=acState(donor,at), rs=acState(recv,at);
+    const dp=routePt(ds.tPos), rp=routePt(rs.tPos);
+    const [dx,dy]=xy(dp.lat+donor.dlat,dp.lon+donor.dlon);
+    const [rx,ry]=xy(rp.lat+recv.dlat,rp.lon+recv.dlon);
+    const p=(at-b.tIn)/(b.tOut-b.tIn);
+    const alpha=Math.sin(p*Math.PI);
+    ctx.save();
+    ctx.strokeStyle=`rgba(255,100,0,${alpha*.9})`;
+    ctx.lineWidth=1.5; ctx.setLineDash([2,3]);
+    ctx.shadowColor='#ff5500'; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.moveTo(dx,dy); ctx.lineTo(rx,ry); ctx.stroke();
+    ctx.setLineDash([]); ctx.shadowBlur=0; ctx.restore();
+    if(Math.random()<.35) spawnFuel(dx,dy,rx,ry,2);
+  }
+  // return RV
+  if(at>=TL.RRV_IN&&at<TL.RRV_OUT){
+    const vul=aircraft.find(a=>a.id==='XM607');
+    const ret=aircraft.find(a=>a.isRet);
+    if(!vul||!ret) return;
+    const vs=acState(vul,at), rs2=acState(ret,at);
+    const vp=routePt(vs.tPos), rp2=routePt(rs2.tPos);
+    const [vx,vy]=xy(vp.lat,vp.lon);
+    const [rx2,ry2]=xy(rp2.lat+ret.dlat,rp2.lon+ret.dlon);
+    ctx.save();
+    ctx.strokeStyle='rgba(255,100,0,.9)'; ctx.lineWidth=1.5; ctx.setLineDash([2,3]);
+    ctx.shadowColor='#ff5500'; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.moveTo(rx2,ry2); ctx.lineTo(vx,vy); ctx.stroke();
+    ctx.setLineDash([]); ctx.shadowBlur=0; ctx.restore();
+    if(Math.random()<.35) spawnFuel(rx2,ry2,vx,vy,2);
+  }
+}
+
+function drawBombing(at) {
+  if(at<TL.BOMB) return;
+  const [sx,sy]=xy(STA.lat,STA.lon);
+  const age=at-TL.BOMB;
+  if(age<800){
+    const p=age/800;
+    ctx.save(); ctx.globalAlpha=(1-p)*.8;
+    ctx.fillStyle=C.explCore; ctx.shadowColor=C.expl; ctx.shadowBlur=50;
+    ctx.beginPath(); ctx.arc(sx,sy,p*25,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0; ctx.restore();
+  }
+  if(age>300){
+    const a=Math.min(1,(age-300)/500)*.7;
+    ctx.save(); ctx.globalAlpha=a;
+    ctx.fillStyle='#ff5500'; ctx.shadowColor='#ff3300'; ctx.shadowBlur=18;
+    ctx.beginPath(); ctx.arc(sx,sy,7,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
+    // bomb hit marks
+    ctx.font='bold 9px Courier New'; ctx.fillStyle='#ff4400';
+    ctx.fillText('◈ DIRECT HIT',sx+12,sy-9);
+    ctx.font='8px Courier New'; ctx.fillStyle='#cc3300';
+    ctx.fillText('1× 1,000lb HE on runway',sx+12,sy+3);
+    ctx.restore();
+  }
+}
+
+function drawScanlines() {
+  ctx.save();
+  for(let y=0;y<H;y+=3){
+    ctx.fillStyle='rgba(0,0,0,.035)';
+    ctx.fillRect(0,y,W,1);
+  }
+  ctx.restore();
+}
+
+function drawVignette() {
+  const gr=ctx.createRadialGradient(W/2,H/2,H*.28,W/2,H/2,H*.9);
+  gr.addColorStop(0,'rgba(0,0,0,0)'); gr.addColorStop(1,'rgba(0,0,15,.65)');
+  ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
+}
+
+function drawMapBorder() {
+  ctx.strokeStyle='rgba(0,255,68,.12)'; ctx.lineWidth=1;
+  ctx.strokeRect(ML,MT,MW,MH);
+}
+
+// --- FORMATION COUNT ---
+function formCount(at) {
+  if(at<TL.DEPART) return 13;
+  let n=0;
+  for(const ac of aircraft){
+    const st=acState(ac,at);
+    if(st.vis&&st.stat!=='dn') n++;
+  }
+  return n;
+}
+
+// --- VULCAN FUEL ---
+function vulcanFuel(at) {
+  const kf=[
+    [TL.DEPART,.95],[TL.A_IN,.76],[TL.A_OUT,1.0],
+    [TL.B_IN,.78],[TL.B_OUT,1.0],[TL.C_IN,.75],
+    [TL.C_OUT,1.0],[TL.D_IN,.71],[TL.D_OUT,1.0],
+    [TL.STA_T,.4],[TL.RET,.38],[TL.RRV_IN,.14],
+    [TL.RRV_OUT,.92],[TL.HOME,.22],
+  ];
+  if(at<kf[0][0]) return .95;
+  for(let i=0;i<kf.length-1;i++){
+    const [t0,v0]= kf[i], [t1,v1]=kf[i+1];
+    if(at>=t0&&at<t1) return v0+(v1-v0)*(at-t0)/(t1-t0);
+  }
+  return .22;
+}
+
+function distToTgt(at) {
+  if(at>TL.STA_T) return 0;
+  return Math.round(3860*(1-Math.min(1,outboundT(at))));
+}
+
+function missionTime(at) {
+  const scale=364;
+  const ms=at*scale;
+  const h=Math.floor(ms/3600000), m=Math.floor((ms%3600000)/60000);
+  return `T+${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+}
+
+function phaseName(at) {
+  if(at<TL.DEPART)   return 'BRIEFING';
+  if(at<TL.A_IN)     return 'FORMATION OUTBOUND — 13 AIRCRAFT';
+  if(at<TL.A_OUT)    return 'BRACKET ALPHA — FIRST OFFLOAD';
+  if(at<TL.B_IN)     return 'FORMATION OUTBOUND — 10 AIRCRAFT';
+  if(at<TL.B_OUT)    return 'BRACKET BRAVO — SECOND OFFLOAD';
+  if(at<TL.C_IN)     return 'FORMATION OUTBOUND — 7 AIRCRAFT';
+  if(at<TL.C_OUT)    return 'BRACKET CHARLIE — SPARE VULCAN RTB';
+  if(at<TL.D_IN)     return 'FLYING SOUTH — 4 AIRCRAFT REMAIN';
+  if(at<TL.D_OUT)    return 'BRACKET DELTA — FINAL HANDOFF';
+  if(at<TL.STA_T)    return 'XM607 SOLO — APPROACHING TARGET';
+  if(at<TL.BOMB)     return 'TARGET IN SIGHT — STANLEY AIRPORT';
+  if(at<TL.RET)      return '◈  BOMBS AWAY — DIRECT HIT ON RUNWAY';
+  if(at<TL.RRV_IN)   return 'XM607 RETURNING NORTH';
+  if(at<TL.RRV_OUT)  return 'RECOVERY BRACKET — RETURN REFUEL';
+  if(at<TL.HOME)     return 'XM607 FINAL LEG — RTB ASCENSION';
+  if(at<TL.END)      return 'MISSION COMPLETE — XM607 LANDING';
+  return '▸▸ OPERATION BLACK BUCK — MISSION DEBRIEFED';
+}
+
+// --- HUD UPDATE ---
+function updateHUD(at) {
+  document.getElementById('ph-name').textContent=phaseName(at);
+  document.getElementById('ph-time').textContent=missionTime(at);
+  document.getElementById('st-time').textContent=missionTime(at);
+
+  const fc=formCount(at);
+  document.getElementById('st-form').textContent=`${fc} ACFT`;
+
+  const f=vulcanFuel(at);
+  const fp=Math.round(f*100);
+  const fel=document.getElementById('st-fuel');
+  fel.textContent=`${fp}%`;
+  fel.className='sv'+(f<.2?' c':f<.45?' w':'');
+
+  const d=distToTgt(at);
+  document.getElementById('st-dist').textContent=at>TL.STA_T?'0 nm (RTB)':`${d.toLocaleString()} nm`;
+
+  let ss='OUTBOUND';
+  if(at<TL.DEPART) ss='STANDBY';
+  else if(at>=TL.BOMB&&at<TL.RET) ss='◈ TARGET HIT';
+  else if(at>=TL.RET) ss='RETURNING';
+  document.getElementById('st-stat').textContent=ss;
+
+  // timeline
+  const pct=Math.min(100,(at/TL.TOTAL)*100);
+  document.getElementById('tfill').style.width=pct+'%';
+  document.getElementById('tcursor').style.left=pct+'%';
+
+  updateACList(at);
+  checkPopup(at);
+}
+
+function updateACList(at) {
+  const list=document.getElementById('aclist');
+  let h='';
+  for(const ac of aircraft){
+    if(ac.isRet&&at<TL.RET) continue;
+    const st=acState(ac,at);
+    let lc,ss;
+    if(!st.vis||st.stat==='dn'){lc='dn';ss='RTB';}
+    else if(st.stat==='rtb'){lc='rtb';ss='↑ RTB';}
+    else if(st.stat==='refuel'){lc='fly';ss='⟷ FUL';}
+    else if(st.stat==='wait'){lc='w8';ss='WAIT';}
+    else{lc='fly';ss=at>=TL.RET&&ac.id==='XM607'?'↑ RTB':'↓ FLY';}
+
+    let af=1;
+    if(ac.id==='XM607') af=vulcanFuel(at);
+    else if(st.stat==='rtb') af=Math.max(.05,.15+st.tPos*.35);
+    else if(st.stat==='fly') af=Math.max(.1,1-st.tPos*.35);
+    else if(!st.vis) af=0;
+
+    const fp=Math.round(af*100);
+    const fc=fp<20?'c':fp<45?'w':'';
+    h+=`<div class="acr">
+      <span class="acl ${lc}">${ac.label}</span>
+      <span class="asts">${ss}</span>
+      <div class="fbb"><div class="fbf ${fc}" style="width:${fp}%"></div></div>
+    </div>`;
+  }
+  list.innerHTML=h;
+}
+
+let lastPopId='', popTimer=null;
+function checkPopup(at) {
+  const b=BRKS.find(b=>at>=b.tIn&&at<b.tOut);
+  const isRRV=at>=TL.RRV_IN&&at<TL.RRV_OUT;
+  const isBomb=at>=TL.BOMB&&at<TL.BOMB+2000;
+  const pop=document.getElementById('epop');
+
+  function showPop(id,title,note,detail,dur){
+    if(lastPopId===id) return;
+    lastPopId=id;
+    document.getElementById('ep-title').textContent=title;
+    document.getElementById('ep-note').textContent=note;
+    document.getElementById('ep-detail').textContent=detail;
+    pop.classList.add('show');
+    if(popTimer) clearTimeout(popTimer);
+    popTimer=setTimeout(()=>pop.classList.remove('show'), dur/playSpd);
+  }
+
+  if(b) showPop(b.id,b.name,b.note,b.detail,(b.tOut-b.tIn)*1.1);
+  else if(isRRV) showPop('rrv','RECOVERY BRACKET — RETURN REFUEL',
+    'XM607 meets recovery tanker — 1,400nm north of Stanley',
+    'A Victor K2 launched from Ascension Island meets the returning XM607. Fuel is transferred for the final leg home. XM607 has been airborne for over 14 hours — the longest bombing raid in aviation history. Sqn Ldr Withers begins the final descent toward Ascension.',
+    7000);
+  else if(isBomb) showPop('bomb','◈  BOMBS AWAY — STANLEY AIRPORT',
+    'XM607 · 21 × 1,000 lb HE · 02:46 LOCAL',
+    'Sqn Ldr Withers releases 21 × 1,000 lb bombs in a single stick across Stanley Airport. One bomb impacts the main runway, creating a crater and demonstrating British long-range strike capability. The raid delivers a powerful strategic signal to Argentina — no location is beyond reach.',
+    5500);
+}
+
+// --- TIMELINE MARKERS ---
+function setupTimeline() {
+  const track=document.getElementById('ttrack');
+  const marks=[
+    {t:TL.DEPART,l:'DEPART'},{t:TL.A_IN,l:'ALPHA'},{t:TL.B_IN,l:'BRAVO'},
+    {t:TL.C_IN,l:'CHARLIE'},{t:TL.D_IN,l:'DELTA'},{t:TL.STA_T,l:'TARGET'},
+    {t:TL.BOMB,l:'BOMBS'},{t:TL.RRV_IN,l:'RETRVV'},{t:TL.HOME,l:'HOME'},
+  ];
+  for(const m of marks){
+    const pct=(m.t/TL.TOTAL)*100;
+    const mk=document.createElement('div'); mk.className='tl-mark'; mk.style.left=pct+'%';
+    track.appendChild(mk);
+    const lb=document.createElement('div'); lb.className='tl-mlabel'; lb.style.left=pct+'%';
+    lb.textContent=m.l; track.appendChild(lb);
+  }
+}
+
+// --- ANIMATION LOOP ---
+let animT=0, lastTS=null, playing=true, playSpd=1, bombed=false;
+
+function animate(ts) {
+  if(playing){
+    if(lastTS!==null){ const dt=(ts-lastTS)*playSpd; animT=Math.min(animT+dt,TL.TOTAL); }
+    lastTS=ts;
+  } else { lastTS=null; }
+  if(animT>=TL.BOMB&&!bombed){
+    bombed=true;
+    const [sx,sy]=xy(STA.lat,STA.lon);
+    spawnExpl(sx,sy);
+  }
+  if(animT<TL.BOMB) bombed=false;
+  tickParts();
+  render(animT);
+  updateHUD(animT);
+  requestAnimationFrame(animate);
+}
+
+function render(at) {
+  ctx.clearRect(0,0,W,H);
+  drawBG();
+  drawOcean();
+  drawGrid();
+  drawCoasts();
+  drawRoute(at);
+  drawBrackets(at);
+  drawLocations(at);
+  drawRefuelLines(at);
+  drawBombing(at);
+  drawAircraft(at);
+  drawParts();
+  drawScanlines();
+  drawVignette();
+  drawMapBorder();
+}
+
+// --- CONTROLS ---
+function togglePlay(){
+  playing=!playing;
+  document.getElementById('btn-play').textContent=playing?'⏸ PAUSE':'▶ PLAY';
+  document.getElementById('btn-play').classList.toggle('on',playing);
+}
+function setSpd(s){
+  playSpd=s;
+  document.querySelectorAll('[id^=spd-]').forEach(b=>b.classList.remove('on'));
+  document.getElementById(`spd-${s}`).classList.add('on');
+  document.getElementById('spd-lbl').textContent=`SPEED: ${s}×`;
+}
+function restart(){
+  animT=0; lastTS=null; bombed=false; parts=[];
+  Object.keys(trails).forEach(k=>trails[k]=[]);
+  lastPopId=''; if(popTimer)clearTimeout(popTimer);
+  document.getElementById('epop').classList.remove('show');
+  playing=true;
+  document.getElementById('btn-play').textContent='⏸ PAUSE';
+  document.getElementById('btn-play').classList.add('on');
+}
+function seek(e){
+  const tr=document.getElementById('ttrack');
+  const r=tr.getBoundingClientRect();
+  const pct=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+  animT=pct*TL.TOTAL; lastTS=null;
+  bombed=animT>=TL.BOMB;
+  document.getElementById('epop').classList.remove('show');
+  lastPopId='';
+}
+
+// --- INTRO SEQUENCE ---
+function runIntro() {
+  let cnt=5;
+  const el=document.getElementById('icnt');
+  const iv=setInterval(()=>{
+    cnt--; if(cnt>0){el.textContent=`COMMENCING IN ${cnt}`;}
+    else{
+      clearInterval(iv);
+      const intro=document.getElementById('intro');
+      intro.style.opacity='0';
+      setTimeout(()=>{ intro.style.display='none'; playing=true; },1200);
+    }
+  },1000);
+}
+
+// --- INIT ---
+function init(){
+  setupCanvas();
+  computeHeadings();
+  initAircraft();
+  setupTimeline();
+  playing=false; // pause during intro
+  requestAnimationFrame(animate);
+  runIntro();
+}
+
+init();
+</script>
+</body>
+</html>

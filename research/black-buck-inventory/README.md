@@ -4,12 +4,22 @@ Gallery packaging note (7 September 2026): paths below and in `inventory.json` r
 
 Addition (23 September 2026): `opus55` (claude-opus-5-5) added from `Dev/vulcan-5.5`; copy in `../../raw/claude-opus-5-5/opus55/`, hash-verified. Project moved to `Dev/buck-bench` as the source of truth; `Dev/black-buck` is the superseded copy.
 
+Addition (30 September 2026): `sol61` added from `Dev/vulcan-6-1`, with the user-supplied model name **GPT-Sol 6.1**. The HTML and README are preserved in `../../raw/gpt-sol-6-1/sol61/`; the supplied `preview.png` is used as the gallery screenshot. Copies are hash-verified. The entry is placed immediately after Claude Fable 5.1 by request. Release date verified as 29 September 2026 using [OpenAI’s system card addendum](https://deploymentsafety.openai.com/gpt-6-1-sol/respecting-auto-review). Session-level model metadata has not been verified.
+
+Addition (19 November 2026, later): reruns `opus46-run2` and `sonnet46-run2` with the Artifact tool blocked; both saved to the run folder and checked their pages in Chrome, neither looked anything up online. The first runs stay as `Run 1` versions. Log review notes: `../../sessions/run-review.md`, `../../sessions/prompt-history.md`.
+
+Addition (19 November 2026): clean Claude Code runs `sonnet55`, `opus45`, `opus46`, `sonnet46`, `sonnet45` (from `Dev/buck`, one at a time) and `sol62` (gpt-6.2-sol, xhigh, Codex TUI in `Documents/Vulcan`). Fable 5.2 split into `fable52-v1` (original, reconstructed and verified) and `fable52` (v2, from the user's forked session). Run settings and per-run behaviour are in `inventory.json`; session logs are in the gitignored `../../sessions/` with a contamination report (all clean).
+
+Addition (18 November 2026): `fable52` (claude-fable-5-2, xhigh) from `Dev/vulcan-f52` and `astra62` (gpt-6.2-astra, high) from `Dev/vulcan-6-2`; copies in `../../raw/claude-fable-5-2/fable52/` and `../../raw/gpt-6-2-astra/astra62/`, hash-verified. Both were launched as T3 Code threads with the verbatim prompt. Screenshots taken with headless Chrome at 1440×900 on page load.
+
 Collected 5 September 2026. Information gathering only; existing benchmark files were not changed. Unknown/unconfirmed model entries, unfinished attempts, and conversions of externally created artifacts are excluded.
 
-17 eligible artifact entries. An entry can contain supporting files or identical copies; revisions are separate entries, not necessarily independent runs.
+27 eligible artifact entries. An entry can contain supporting files or identical copies; revisions are separate entries, not necessarily independent runs.
 
 | Entry | Model evidence | Primary artifact |
 |---|---|---|
+| astra62 | gpt-6.2-astra | [index.html](</Users/onesteppplusgmai.com/Dev/vulcan-6-2/index.html>) |
+| fable52 | claude-fable-5-2 | [black-buck-refuelling.html](</Users/onesteppplusgmai.com/Dev/vulcan-f52/black-buck-refuelling.html>) |
 | opus55 | claude-opus-5-5 | [black-buck-refuelling.html](</Users/onesteppplusgmai.com/Dev/vulcan-5.5/black-buck-refuelling.html>) |
 | vulcan-v1 | claude-fable-5 | [black-buck.html](</Users/onesteppplusgmai.com/Dev/Vulcan/black-buck.html>) |
 | vulcan-v2 | claude-fable-5 | [black-buck-v2.html](</Users/onesteppplusgmai.com/Dev/Vulcan/black-buck-v2.html>) |
@@ -17,6 +27,7 @@ Collected 5 September 2026. Information gathering only; existing benchmark files
 | opus5-v2 | claude-opus-5 | [black-buck-v2.html](</Users/onesteppplusgmai.com/Dev/vulcan-O5/black-buck-v2.html>) |
 | fable51-simulation | claude-fable-5-1 | [black-buck.html](</Users/onesteppplusgmai.com/Dev/vulcan-2/black-buck.html>) |
 | fable51-story | claude-fable-5-1 | [black-buck-story.html](</Users/onesteppplusgmai.com/Dev/vulcan-2/black-buck-story.html>) |
+| sol61 | GPT-Sol 6.1 (user-confirmed) | [index.html](../../raw/gpt-sol-6-1/sol61/index.html) |
 | sol-codex | gpt-5.6-sol | [index.html](</Users/onesteppplusgmai.com/Dev/vulcan-sol/index.html>) |
 | sol-claude-harness | gpt-5.6-sol | [index.html](</Users/onesteppplusgmai.com/Dev/vulcan-sol-c/index.html>) |
 | sonnet5 | claude-sonnet-5 | [black-buck-1-refuelling.html](</Users/onesteppplusgmai.com/Dev/vulcan-s-5/black-buck-1-refuelling.html>) |
@@ -37,6 +48,20 @@ Collected 5 September 2026. Information gathering only; existing benchmark files
 - Session summaries guided discovery; raw logs, transcript file operations and database message records were used for attribution. The transcript renderer sometimes omits early exchanges or mislabels Codex source type, so source format/model attribution comes from raw metadata.
 
 ## Provenance by entry
+
+### astra62
+
+Single-prompt build with the verbatim benchmark prompt, reasoning effort high, in a T3 Code thread (Codex harness). Only `exec` tool calls (web search and shell); no subagents or skills recorded. About 3 minutes and 6,281 output tokens. An earlier scheduled attempt in the same project ran on claude-opus-5-5 by mistake and was stopped before writing output; it is excluded. Release: OpenAI's [model release notes](https://help.openai.com/en/articles/9624314-model-release-notes) list GPT-6.2 Astra without its own date, above the 16 November entry; 17 November 2026 comes from launch coverage.
+
+- Source: [rollout-2026-11-18T09-45-58-01a1ebb0-3e8c-7770-b9c7-f40bba795796.jsonl](</Users/onesteppplusgmai.com/.codex/sessions/2026/11/18/rollout-2026-11-18T09-45-58-01a1ebb0-3e8c-7770-b9c7-f40bba795796.jsonl>).
+- `gpt-6.2-astra` at JSONL line 1.
+
+### fable52
+
+Single-prompt build with the verbatim benchmark prompt, effort xhigh, in a T3 Code thread (Claude Code harness). Tools: Bash, Read, Write, WebSearch, WebFetch, ToolSearch and T3 preview tools; no subagents or skills recorded. Release: 9 November 2026 per the [Claude Platform release notes](https://platform.claude.com/docs/en/release-notes/overview).
+
+- Source: [c565cbb5-afbd-40e9-98ec-aabef81f648e.jsonl](</Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-vulcan-f52/c565cbb5-afbd-40e9-98ec-aabef81f648e.jsonl>).
+- `claude-fable-5-2` at JSONL line 21.
 
 ### opus55
 
@@ -86,6 +111,13 @@ Separate narrative/story revision requested in the same session.
 
 - Source: [421c5d33-0976-4c68-819d-511ecec790bf.jsonl](</Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-vulcan-2/421c5d33-0976-4c68-819d-511ecec790bf.jsonl>).
 - `claude-fable-5-1` at JSONL line 24.
+
+### sol61
+
+Fact: the user supplied `Dev/vulcan-6-1/index.html` and identified the model as **GPT-Sol 6.1** on 30 September 2026. HTML, README and screenshot copies match the supplied files byte-for-byte. OpenAI’s official introduction is dated **29 September 2026 (Tuesday)**, verified on 30 September 2026 using the [system card addendum](https://deploymentsafety.openai.com/gpt-6-1-sol/respecting-auto-review) and [Enterprise/Edu release notes](https://help.openai.com/en/articles/10128477-chatgpt-enterprise-and-edu-release-notes). The release notes describe a rollout starting with Pro users and expanding to other plans. No inference about the harness, exact prompt or tooling is made; session metadata has not been checked.
+
+- Source: [index.html](</Users/onesteppplusgmai.com/Dev/vulcan-6-1/index.html>).
+- Archived output: [index.html](../../raw/gpt-sol-6-1/sol61/index.html).
 
 ### sol-codex
 
@@ -167,4 +199,4 @@ Search covered artifact filenames and content in Documents, Dev and Downloads; s
 
 Machine-readable details, hashes, original session paths, timestamps, archive manifests and supporting subagent model IDs are in [inventory.json](inventory.json).
 
-TL;DR: 17 in-session simulation artifacts retained; unknown-model entries and external-artifact conversions excluded.
+TL;DR: 18 simulation artifacts retained, including the user-confirmed GPT-Sol 6.1 entry.

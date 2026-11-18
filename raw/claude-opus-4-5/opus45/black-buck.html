@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operation Black Buck - Aerial Refueling Simulation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #0a1a2a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(90deg, transparent, rgba(100, 149, 237, 0.1), transparent);
+            border-bottom: 1px solid rgba(100, 149, 237, 0.3);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6495ED, transparent);
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: 300;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #6495ED, #87CEEB, #fff, #87CEEB, #6495ED);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to { background-position: 200% center; }
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            color: #888;
+            letter-spacing: 4px;
+        }
+
+        .date {
+            font-size: 1.1em;
+            color: #6495ED;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 20px;
+            min-height: 750px;
+        }
+
+        .panel {
+            background: rgba(15, 25, 45, 0.9);
+            border: 1px solid rgba(100, 149, 237, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel h2 {
+            font-size: 1.1em;
+            color: #6495ED;
+            border-bottom: 1px solid rgba(100, 149, 237, 0.3);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .map-container {
+            position: relative;
+            background: radial-gradient(ellipse at center, #0d2540 0%, #081525 50%, #050d15 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(100, 149, 237, 0.3);
+            box-shadow: inset 0 0 100px rgba(0, 50, 100, 0.2), 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        #map {
+            width: 100%;
+            height: 750px;
+        }
+
+        .aircraft-list {
+            max-height: 580px;
+            overflow-y: auto;
+        }
+
+        .aircraft-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(30, 45, 70, 0.6);
+            border-radius: 8px;
+            border-left: 4px solid #444;
+            transition: all 0.3s ease;
+            font-size: 0.85em;
+        }
+
+        .aircraft-item.active {
+            background: rgba(50, 80, 120, 0.7);
+            border-left-color: #6495ED;
+            box-shadow: 0 0 15px rgba(100, 149, 237, 0.2);
+        }
+
+        .aircraft-item.returned {
+            opacity: 0.35;
+            border-left-color: #2a5a2a;
+        }
+
+        .aircraft-item.vulcan {
+            border-left-color: #ff6b6b;
+            background: rgba(100, 50, 50, 0.5);
+        }
+
+        .aircraft-item.vulcan.active {
+            background: rgba(120, 60, 60, 0.7);
+            box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .aircraft-icon {
+            width: 28px;
+            height: 28px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .aircraft-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .aircraft-info {
+            flex: 1;
+        }
+
+        .aircraft-name {
+            font-weight: 600;
+            color: #ddd;
+            font-size: 0.95em;
+        }
+
+        .aircraft-status {
+            font-size: 0.75em;
+            color: #888;
+        }
+
+        .fuel-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(50, 50, 50, 0.8);
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .fuel-level {
+            height: 100%;
+            background: linear-gradient(90deg, #ff4444, #ffaa00, #44ff44);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, rgba(30, 50, 80, 0.7), rgba(20, 35, 60, 0.7));
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(100, 149, 237, 0.2);
+        }
+
+        .stat-value {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: #6495ED;
+            text-shadow: 0 0 10px rgba(100, 149, 237, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.7em;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .event-log {
+            max-height: 220px;
+            overflow-y: auto;
+            font-size: 0.8em;
+        }
+
+        .event-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(30, 45, 70, 0.4);
+            border-radius: 6px;
+            border-left: 3px solid #444;
+            animation: slideIn 0.4s ease;
+        }
+
+        .event-item.refuel {
+            border-left-color: #4CAF50;
+            background: rgba(40, 80, 50, 0.3);
+        }
+
+        .event-item.turnback {
+            border-left-color: #ff9800;
+            background: rgba(80, 60, 30, 0.3);
+        }
+
+        .event-item.emergency {
+            border-left-color: #f44336;
+            background: rgba(80, 40, 40, 0.3);
+        }
+
+        .event-item.attack {
+            border-left-color: #ff6b6b;
+            background: rgba(100, 50, 50, 0.4);
+            animation: attackPulse 0.5s ease;
+        }
+
+        @keyframes attackPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); box-shadow: 0 0 20px rgba(255, 107, 107, 0.5); }
+        }
+
+        .event-time {
+            color: #6495ED;
+            font-weight: 600;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-15px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 35px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6495ED, #4169E1);
+            color: white;
+            box-shadow: 0 4px 15px rgba(100, 149, 237, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #7BA3F0, #5178E8);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(100, 149, 237, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: rgba(50, 65, 90, 0.8);
+            color: #aaa;
+            border: 1px solid rgba(100, 149, 237, 0.3);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(60, 80, 110, 0.8);
+            color: #ddd;
+            transform: translateY(-2px);
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(30, 45, 70, 0.6);
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid rgba(100, 149, 237, 0.2);
+        }
+
+        .speed-control label {
+            color: #888;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .speed-control input {
+            width: 120px;
+            accent-color: #6495ED;
+        }
+
+        #speedValue {
+            color: #6495ED;
+            font-weight: 600;
+            min-width: 30px;
+        }
+
+        .timeline {
+            margin-top: 25px;
+            background: rgba(15, 25, 45, 0.9);
+            border: 1px solid rgba(100, 149, 237, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .timeline h2 {
+            color: #6495ED;
+            font-size: 1em;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .timeline-bar {
+            position: relative;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(30, 50, 80, 0.5), rgba(20, 35, 60, 0.5));
+            border-radius: 8px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(100, 149, 237, 0.2);
+        }
+
+        .timeline-progress {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(100, 149, 237, 0.4), rgba(100, 149, 237, 0.1));
+            border-right: 3px solid #6495ED;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 20px rgba(100, 149, 237, 0.3);
+        }
+
+        .timeline-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 15px;
+            pointer-events: none;
+        }
+
+        .timeline-marker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75em;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-marker.active {
+            color: #6495ED;
+        }
+
+        .timeline-marker .dot {
+            width: 10px;
+            height: 10px;
+            background: #444;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-marker.active .dot {
+            background: #6495ED;
+            box-shadow: 0 0 15px #6495ED, 0 0 30px rgba(100, 149, 237, 0.5);
+            transform: scale(1.2);
+        }
+
+        .cascade-diagram {
+            margin-top: 18px;
+            padding: 15px;
+            background: rgba(30, 50, 80, 0.3);
+            border-radius: 8px;
+            border: 1px solid rgba(100, 149, 237, 0.2);
+        }
+
+        .cascade-title {
+            font-size: 0.85em;
+            color: #6495ED;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cascade-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cascade-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75em;
+            flex-wrap: wrap;
+        }
+
+        .cascade-node {
+            padding: 5px 12px;
+            background: linear-gradient(135deg, rgba(50, 80, 120, 0.7), rgba(40, 60, 90, 0.7));
+            border-radius: 5px;
+            border: 1px solid rgba(100, 149, 237, 0.4);
+            font-weight: 500;
+        }
+
+        .cascade-node.vulcan {
+            background: linear-gradient(135deg, rgba(120, 60, 60, 0.7), rgba(80, 40, 40, 0.7));
+            border-color: rgba(255, 107, 107, 0.5);
+            color: #ff9999;
+        }
+
+        .cascade-arrow {
+            color: #6495ED;
+            font-size: 1.2em;
+        }
+
+        .info-section {
+            margin-top: 25px;
+            padding: 25px;
+            background: rgba(15, 25, 45, 0.9);
+            border: 1px solid rgba(100, 149, 237, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-section h3 {
+            color: #6495ED;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            letter-spacing: 2px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .info-card {
+            background: linear-gradient(135deg, rgba(30, 50, 80, 0.5), rgba(20, 35, 60, 0.5));
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid rgba(100, 149, 237, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .info-card h4 {
+            color: #6495ED;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-card p {
+            color: #bbb;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.8; }
+        }
+
+        @keyframes refuelGlow {
+            0%, 100% { filter: drop-shadow(0 0 5px #4CAF50); }
+            50% { filter: drop-shadow(0 0 15px #4CAF50) drop-shadow(0 0 25px #4CAF50); }
+        }
+
+        .aircraft-marker.refueling {
+            animation: refuelGlow 0.5s ease infinite;
+        }
+
+        @keyframes explosion {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(2); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        @keyframes contrail {
+            0% { opacity: 0.6; }
+            100% { opacity: 0; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(30, 45, 70, 0.4);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 149, 237, 0.4);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 149, 237, 0.6);
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="container">
+        <header>
+            <h1>Operation Black Buck</h1>
+            <div class="subtitle">The World's Longest Bombing Raid</div>
+            <div class="date">30 April - 1 May 1982 | Falklands War</div>
+        </header>
+
+        <div class="controls">
+            <button class="btn btn-primary" id="startBtn" onclick="startSimulation()">Start Simulation</button>
+            <button class="btn btn-secondary" id="pauseBtn" onclick="togglePause()" disabled>Pause</button>
+            <button class="btn btn-secondary" onclick="resetSimulation()">Reset</button>
+            <div class="speed-control">
+                <label>Speed:</label>
+                <input type="range" id="speedSlider" min="1" max="10" value="3" onchange="updateSpeed()">
+                <span id="speedValue">3x</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="panel">
+                <h2>Aircraft Status</h2>
+                <div class="aircraft-list" id="aircraftList"></div>
+            </div>
+
+            <div class="map-container">
+                <svg id="map" viewBox="0 0 800 750" preserveAspectRatio="xMidYMid meet">
+                    <defs>
+                        <linearGradient id="oceanGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0a1828"/>
+                            <stop offset="30%" style="stop-color:#0d2540"/>
+                            <stop offset="70%" style="stop-color:#081a30"/>
+                            <stop offset="100%" style="stop-color:#050d18"/>
+                        </linearGradient>
+                        <linearGradient id="routeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6495ED;stop-opacity:0.9"/>
+                            <stop offset="100%" style="stop-color:#ff6b6b;stop-opacity:0.9"/>
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <filter id="strongGlow">
+                            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#6495ED" opacity="0.7"/>
+                        </marker>
+                        <radialGradient id="explosionGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#fff;stop-opacity:1"/>
+                            <stop offset="30%" style="stop-color:#ff6b6b;stop-opacity:0.9"/>
+                            <stop offset="60%" style="stop-color:#ff4444;stop-opacity:0.6"/>
+                            <stop offset="100%" style="stop-color:#aa0000;stop-opacity:0"/>
+                        </radialGradient>
+                    </defs>
+
+                    <rect width="800" height="750" fill="url(#oceanGradient)"/>
+
+                    <g id="oceanTexture" opacity="0.03">
+                        <pattern id="waves" patternUnits="userSpaceOnUse" width="100" height="100">
+                            <path d="M0 50 Q25 30, 50 50 T100 50" stroke="#6495ED" fill="none" stroke-width="1"/>
+                        </pattern>
+                        <rect width="800" height="750" fill="url(#waves)"/>
+                    </g>
+
+                    <g id="gridLines" opacity="0.15">
+                        <line x1="0" y1="150" x2="800" y2="150" stroke="#6495ED" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="300" x2="800" y2="300" stroke="#6495ED" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="450" x2="800" y2="450" stroke="#6495ED" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="600" x2="800" y2="600" stroke="#6495ED" stroke-dasharray="5,5"/>
+                        <text x="12" y="145" fill="#6495ED" font-size="11" font-weight="500">Equator 0°</text>
+                        <text x="12" y="295" fill="#6495ED" font-size="11">15°S</text>
+                        <text x="12" y="445" fill="#6495ED" font-size="11">30°S</text>
+                        <text x="12" y="595" fill="#6495ED" font-size="11">45°S</text>
+                    </g>
+
+                    <path d="M680,80 Q730,110 750,200 Q770,320 730,400 Q700,460 680,480 Q640,520 620,560 Q600,600 640,650 Q690,700 740,730 L800,750 L800,0 L730,0 Q710,40 680,80"
+                          fill="#1a2a1a" stroke="#2a4a2a" stroke-width="2" opacity="0.5"/>
+                    <text x="750" y="320" fill="#3a6a3a" font-size="14" font-weight="500" transform="rotate(-75, 750, 320)">South America</text>
+
+                    <path d="M50,220 Q90,195 140,220 Q180,250 165,320 Q150,390 110,420 Q60,450 30,410 Q5,360 15,300 Q30,240 50,220"
+                          fill="#1a2a1a" stroke="#2a4a2a" stroke-width="2" opacity="0.4"/>
+                    <text x="70" y="310" fill="#3a6a3a" font-size="12">Africa</text>
+
+                    <g id="ascension" transform="translate(220, 145)">
+                        <circle r="12" fill="#4CAF50" filter="url(#strongGlow)"/>
+                        <circle r="18" fill="none" stroke="#4CAF50" stroke-width="2" opacity="0.6">
+                            <animate attributeName="r" values="18;30;18" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle r="25" fill="none" stroke="#4CAF50" stroke-width="1" opacity="0.3">
+                            <animate attributeName="r" values="25;40;25" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                            <animate attributeName="opacity" values="0.3;0;0.3" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                        </circle>
+                        <text x="20" y="5" fill="#4CAF50" font-size="13" font-weight="bold">Ascension Island</text>
+                        <text x="20" y="22" fill="#888" font-size="10">RAF Wideawake</text>
+                        <text x="20" y="36" fill="#666" font-size="9">7°56'S 14°22'W</text>
+                    </g>
+
+                    <g id="falklands" transform="translate(520, 680)">
+                        <circle r="12" fill="#ff6b6b" filter="url(#strongGlow)"/>
+                        <circle r="18" fill="none" stroke="#ff6b6b" stroke-width="2" opacity="0.6">
+                            <animate attributeName="r" values="18;30;18" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        <text x="20" y="5" fill="#ff6b6b" font-size="13" font-weight="bold">Falkland Islands</text>
+                        <text x="20" y="22" fill="#888" font-size="10">Port Stanley Airport</text>
+                        <text x="20" y="36" fill="#666" font-size="9">51°41'S 57°46'W</text>
+                    </g>
+
+                    <g id="rio" transform="translate(710, 440)">
+                        <circle r="7" fill="#ffaa00" opacity="0.8" filter="url(#glow)"/>
+                        <text x="-75" y="4" fill="#ffaa00" font-size="10" font-weight="500">Rio de Janeiro</text>
+                        <text x="-75" y="17" fill="#888" font-size="8">Return RV Point</text>
+                    </g>
+
+                    <path id="mainRoute" d="M220,145 Q370,220 420,380 Q470,540 520,680"
+                          fill="none" stroke="url(#routeGradient)" stroke-width="4"
+                          stroke-dasharray="15,8" opacity="0.7" marker-end="url(#arrowhead)"/>
+
+                    <path id="returnRoute" d="M520,680 Q580,550 710,440 Q620,320 220,145"
+                          fill="none" stroke="#ffaa00" stroke-width="2"
+                          stroke-dasharray="8,5" opacity="0.35"/>
+
+                    <g id="refuelBrackets">
+                        <g class="bracket" transform="translate(265, 200)">
+                            <circle r="25" fill="none" stroke="#4CAF50" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+                            <circle r="4" fill="#4CAF50" opacity="0.7"/>
+                            <text x="30" y="0" fill="#4CAF50" font-size="10" font-weight="500" opacity="0.8">RV1</text>
+                            <text x="30" y="12" fill="#666" font-size="8">+1h 45m</text>
+                        </g>
+                        <g class="bracket" transform="translate(315, 265)">
+                            <circle r="25" fill="none" stroke="#4CAF50" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+                            <circle r="4" fill="#4CAF50" opacity="0.7"/>
+                            <text x="30" y="0" fill="#4CAF50" font-size="10" font-weight="500" opacity="0.8">RV2</text>
+                            <text x="30" y="12" fill="#666" font-size="8">800 nm</text>
+                        </g>
+                        <g class="bracket" transform="translate(365, 340)">
+                            <circle r="25" fill="none" stroke="#4CAF50" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+                            <circle r="4" fill="#4CAF50" opacity="0.7"/>
+                            <text x="30" y="0" fill="#4CAF50" font-size="10" font-weight="500" opacity="0.8">RV3</text>
+                        </g>
+                        <g class="bracket" transform="translate(400, 410)">
+                            <circle r="25" fill="none" stroke="#4CAF50" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+                            <circle r="4" fill="#4CAF50" opacity="0.7"/>
+                            <text x="30" y="0" fill="#4CAF50" font-size="10" font-weight="500" opacity="0.8">RV4</text>
+                            <text x="30" y="12" fill="#666" font-size="8">1600 nm</text>
+                        </g>
+                        <g class="bracket" transform="translate(435, 480)">
+                            <circle r="25" fill="none" stroke="#ff9800" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+                            <circle r="4" fill="#ff9800" opacity="0.7"/>
+                            <text x="30" y="0" fill="#ff9800" font-size="10" font-weight="500" opacity="0.8">RV5</text>
+                            <text x="30" y="12" fill="#ff9800" font-size="8">STORM</text>
+                        </g>
+                        <g class="bracket" transform="translate(465, 545)">
+                            <circle r="25" fill="none" stroke="#4CAF50" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+                            <circle r="4" fill="#4CAF50" opacity="0.7"/>
+                            <text x="30" y="0" fill="#4CAF50" font-size="10" font-weight="500" opacity="0.8">RV6</text>
+                            <text x="30" y="12" fill="#666" font-size="8">2400 nm</text>
+                        </g>
+                        <g class="bracket" transform="translate(495, 615)">
+                            <circle r="25" fill="none" stroke="#4CAF50" stroke-width="2" stroke-dasharray="4,4" opacity="0.5"/>
+                            <circle r="4" fill="#4CAF50" opacity="0.7"/>
+                            <text x="30" y="0" fill="#4CAF50" font-size="10" font-weight="500" opacity="0.8">RV7</text>
+                            <text x="30" y="12" fill="#666" font-size="8">FINAL</text>
+                        </g>
+                    </g>
+
+                    <g id="contrails"></g>
+                    <g id="aircraft"></g>
+                    <g id="refuelAnimations"></g>
+                    <g id="explosionContainer"></g>
+
+                    <g id="legend" transform="translate(20, 690)">
+                        <rect x="0" y="0" width="200" height="55" fill="rgba(15,25,45,0.9)" rx="6" stroke="rgba(100,149,237,0.3)" stroke-width="1"/>
+                        <circle cx="18" cy="18" r="6" fill="#6495ED"/>
+                        <text x="30" y="22" fill="#bbb" font-size="10">Victor K2 Tanker</text>
+                        <circle cx="18" cy="40" r="6" fill="#ff6b6b"/>
+                        <text x="30" y="44" fill="#bbb" font-size="10">Vulcan B.2 Bomber</text>
+                        <circle cx="120" cy="18" r="5" fill="#4CAF50"/>
+                        <text x="132" y="22" fill="#bbb" font-size="10">Refuel Point</text>
+                    </g>
+
+                    <g id="scaleBar" transform="translate(620, 720)">
+                        <line x1="0" y1="0" x2="100" y2="0" stroke="#888" stroke-width="2"/>
+                        <line x1="0" y1="-5" x2="0" y2="5" stroke="#888" stroke-width="2"/>
+                        <line x1="100" y1="-5" x2="100" y2="5" stroke="#888" stroke-width="2"/>
+                        <text x="50" y="18" fill="#888" font-size="10" text-anchor="middle">~500 nm</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="panel">
+                <h2>Mission Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value" id="elapsedTime">00:00</div>
+                        <div class="stat-label">Elapsed Time</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="distance">0</div>
+                        <div class="stat-label">Distance (nm)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="activeAircraft">13</div>
+                        <div class="stat-label">Active Aircraft</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="refuelCount">0</div>
+                        <div class="stat-label">Refuelings</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="fuelTransferred">0</div>
+                        <div class="stat-label">Fuel (gal)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="phase">Takeoff</div>
+                        <div class="stat-label">Phase</div>
+                    </div>
+                </div>
+
+                <h2>Event Log</h2>
+                <div class="event-log" id="eventLog"></div>
+
+                <div class="cascade-diagram">
+                    <div class="cascade-title">Fuel Cascade Flow</div>
+                    <div class="cascade-visual" id="cascadeVisual">
+                        <div class="cascade-row">
+                            <span class="cascade-node">V1</span>
+                            <span class="cascade-arrow">→</span>
+                            <span class="cascade-node">V2</span>
+                            <span class="cascade-arrow">→</span>
+                            <span class="cascade-node">V3</span>
+                            <span class="cascade-arrow">→</span>
+                            <span class="cascade-node">V4</span>
+                            <span class="cascade-arrow">→</span>
+                            <span class="cascade-node">V5</span>
+                            <span class="cascade-arrow">→</span>
+                            <span class="cascade-node vulcan">Vulcan</span>
+                        </div>
+                        <div style="font-size: 0.75em; color: #888; margin-top: 8px;">
+                            Fuel passed through up to 5 tankers before reaching the bomber
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline">
+            <h2>MISSION TIMELINE</h2>
+            <div class="timeline-bar">
+                <div class="timeline-progress" id="timelineProgress"></div>
+                <div class="timeline-markers">
+                    <div class="timeline-marker active" id="marker-takeoff">
+                        <div class="dot"></div>
+                        <span>Takeoff</span>
+                        <span style="font-size:0.85em">23:50Z</span>
+                    </div>
+                    <div class="timeline-marker" id="marker-rv1">
+                        <div class="dot"></div>
+                        <span>RV1-2</span>
+                        <span style="font-size:0.85em">01:35Z</span>
+                    </div>
+                    <div class="timeline-marker" id="marker-rv3">
+                        <div class="dot"></div>
+                        <span>RV3-4</span>
+                        <span style="font-size:0.85em">03:20Z</span>
+                    </div>
+                    <div class="timeline-marker" id="marker-storm">
+                        <div class="dot"></div>
+                        <span>Storm</span>
+                        <span style="font-size:0.85em">04:30Z</span>
+                    </div>
+                    <div class="timeline-marker" id="marker-final">
+                        <div class="dot"></div>
+                        <span>Final RV</span>
+                        <span style="font-size:0.85em">06:00Z</span>
+                    </div>
+                    <div class="timeline-marker" id="marker-attack">
+                        <div class="dot"></div>
+                        <span>Attack</span>
+                        <span style="font-size:0.85em">07:46Z</span>
+                    </div>
+                    <div class="timeline-marker" id="marker-return">
+                        <div class="dot"></div>
+                        <span>Return RV</span>
+                        <span style="font-size:0.85em">10:30Z</span>
+                    </div>
+                    <div class="timeline-marker" id="marker-landing">
+                        <div class="dot"></div>
+                        <span>Landing</span>
+                        <span style="font-size:0.85em">14:52Z</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>OPERATION BLACK BUCK - KEY FACTS</h3>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>Total Distance</h4>
+                    <p>6,600 nautical miles round trip (12,200 km) - the longest bombing raid in history at that time, surpassing even the USAAF's Tokyo raids.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Mission Duration</h4>
+                    <p>15 hours 45 minutes flight time for the Vulcan, with over 105 hours of combined Victor tanker flight time supporting the mission.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Fuel Consumed</h4>
+                    <p>244,000 imperial gallons (1.1 million litres) of aviation fuel uplifted by all aircraft combined during the operation.</p>
+                </div>
+                <div class="info-card">
+                    <h4>The Challenge</h4>
+                    <p>The Vulcan's combat radius was only 2,500 miles - far short of the 3,300 mile one-way distance from Ascension to Stanley.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Tanker Cascade</h4>
+                    <p>In an extraordinary logistical feat, fuel passed through up to 5 different tanker aircraft before finally reaching the Vulcan bomber.</p>
+                </div>
+                <div class="info-card">
+                    <h4>Three Sections</h4>
+                    <p>Victor tankers were organized into Red, White, and Blue sections, plus five return tankers, performing an intricate aerial ballet in darkness.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const aircraft = [
+            { id: 'vulcan1', name: 'Vulcan XM598', callsign: 'Primary', type: 'vulcan', fuel: 100, status: 'active', section: 'Blue' },
+            { id: 'vulcan2', name: 'Vulcan XM607', callsign: 'Reserve (Withers)', type: 'vulcan', fuel: 100, status: 'active', section: 'Blue' },
+            { id: 'victor1', name: 'Victor K2', callsign: 'Red-1', type: 'victor', fuel: 100, status: 'active', section: 'Red' },
+            { id: 'victor2', name: 'Victor K2', callsign: 'Red-2', type: 'victor', fuel: 100, status: 'active', section: 'Red' },
+            { id: 'victor3', name: 'Victor K2', callsign: 'Red-3', type: 'victor', fuel: 100, status: 'active', section: 'Red' },
+            { id: 'victor4', name: 'Victor K2', callsign: 'White-1', type: 'victor', fuel: 100, status: 'active', section: 'White' },
+            { id: 'victor5', name: 'Victor K2', callsign: 'White-2 (Tuxford)', type: 'victor', fuel: 100, status: 'active', section: 'White' },
+            { id: 'victor6', name: 'Victor K2', callsign: 'White-3', type: 'victor', fuel: 100, status: 'active', section: 'White' },
+            { id: 'victor7', name: 'Victor K2', callsign: 'White-4 (Biglands)', type: 'victor', fuel: 100, status: 'active', section: 'White' },
+            { id: 'victor8', name: 'Victor K2', callsign: 'Blue-1', type: 'victor', fuel: 100, status: 'active', section: 'Blue' },
+            { id: 'victor9', name: 'Victor K2', callsign: 'Blue-2', type: 'victor', fuel: 100, status: 'active', section: 'Blue' },
+            { id: 'victor10', name: 'Victor K2', callsign: 'Blue-3 (Reserve)', type: 'victor', fuel: 100, status: 'active', section: 'Blue' },
+            { id: 'victor11', name: 'Victor K2', callsign: 'Blue-4', type: 'victor', fuel: 100, status: 'active', section: 'Blue' },
+        ];
+
+        const routePoints = [
+            { x: 220, y: 145 },
+            { x: 265, y: 200 },
+            { x: 315, y: 265 },
+            { x: 365, y: 340 },
+            { x: 400, y: 410 },
+            { x: 435, y: 480 },
+            { x: 465, y: 545 },
+            { x: 495, y: 615 },
+            { x: 520, y: 680 },
+        ];
+
+        const events = [
+            { time: 0, type: 'takeoff', message: 'All aircraft depart Wideawake airfield at 103% engine power', marker: 'takeoff' },
+            { time: 20, type: 'emergency', message: 'EMERGENCY: Vulcan XM598 cabin pressurization failure - returns to base' },
+            { time: 25, type: 'info', message: 'Flight Lieutenant Withers in XM607 becomes primary bomber' },
+            { time: 35, type: 'emergency', message: 'White-4 (Biglands) hose system failure - Blue-3 takes its place' },
+            { time: 105, type: 'refuel', message: 'First refueling bracket - Red & White sections exchange fuel', bracket: 1, marker: 'rv1' },
+            { time: 140, type: 'refuel', message: 'Second refueling - Vulcan topped up, force reducing', bracket: 2 },
+            { time: 160, type: 'turnback', message: 'Red-1, Red-2 peel off and return to Ascension Island' },
+            { time: 200, type: 'refuel', message: 'Third refueling bracket complete', bracket: 3, marker: 'rv3' },
+            { time: 220, type: 'turnback', message: 'Red-3, White-1 return to Ascension - 7 aircraft continue south' },
+            { time: 260, type: 'refuel', message: 'Fourth refueling - entering severe weather zone', bracket: 4 },
+            { time: 270, type: 'emergency', message: 'SEVERE THUNDERSTORM at 40°S - Biglands probe BREAKS on contact', marker: 'storm' },
+            { time: 280, type: 'info', message: 'Sqn Ldr Bob Tuxford takes Biglands place for final transfer - critical decision' },
+            { time: 290, type: 'turnback', message: 'White-3, Blue-1 return to Ascension' },
+            { time: 320, type: 'refuel', message: 'Fifth refueling bracket - only 4 aircraft remain', bracket: 5 },
+            { time: 350, type: 'turnback', message: 'Blue-2 returns to Ascension - Vulcan now with final escort' },
+            { time: 380, type: 'refuel', message: 'Sixth refueling - approaching point of no return', bracket: 6, marker: 'final' },
+            { time: 400, type: 'refuel', message: 'FINAL OUTBOUND TRANSFER - Tuxford gives everything he can spare' },
+            { time: 410, type: 'emergency', message: 'CRITICAL: Tuxford transfers 7,000 lb LESS than planned - Vulcan fuel critically low' },
+            { time: 420, type: 'turnback', message: 'Tuxford (White-2) must return immediately - dangerously low on fuel' },
+            { time: 450, type: 'info', message: 'Vulcan XM607 continues ALONE into the darkness - 400 miles to target' },
+            { time: 465, type: 'info', message: 'Vulcan descends to 300ft for final approach - radar silent' },
+            { time: 475, type: 'info', message: 'Climbing to attack altitude - 10,000ft, 330 knots' },
+            { time: 480, type: 'attack', message: 'BOMBS AWAY! 21 x 1,000lb bombs released on Stanley runway', marker: 'attack' },
+            { time: 485, type: 'attack', message: 'Direct hit on runway centerline - mission accomplished' },
+            { time: 490, type: 'info', message: '"SUPERFUSE" signal transmitted to Task Force - attack successful' },
+            { time: 550, type: 'info', message: 'Vulcan heading north - only 7,000 lb fuel remaining for 3,300 mile journey' },
+            { time: 650, type: 'refuel', message: 'Return refueling near Rio - Nimrod guides rendezvous with Victor', marker: 'return' },
+            { time: 750, type: 'info', message: 'Vulcan on final approach to Ascension Island' },
+            { time: 900, type: 'info', message: 'XM607 touches down at Wideawake - 15 hours 45 minutes airborne', marker: 'landing' },
+        ];
+
+        let simulationTime = 0;
+        let isRunning = false;
+        let isPaused = false;
+        let speed = 3;
+        let animationFrame = null;
+        let refuelCount = 0;
+        let fuelTransferred = 0;
+        let lastContrailTime = 0;
+
+        function createStars() {
+            const container = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 2 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 3 + 's';
+                container.appendChild(star);
+            }
+        }
+
+        function createAircraftSVG(type) {
+            if (type === 'vulcan') {
+                return `
+                    <g filter="url(#strongGlow)">
+                        <polygon points="0,-12 -15,12 -5,8 0,14 5,8 15,12" fill="#ff6b6b" stroke="#ffaaaa" stroke-width="1.5"/>
+                        <polygon points="0,-8 -4,4 0,2 4,4" fill="#ff9999"/>
+                    </g>
+                `;
+            } else {
+                return `
+                    <g filter="url(#glow)">
+                        <polygon points="0,-10 -12,10 -4,6 0,12 4,6 12,10" fill="#6495ED" stroke="#87CEEB" stroke-width="1"/>
+                        <polygon points="0,-6 -3,3 0,1 3,3" fill="#87CEEB"/>
+                    </g>
+                `;
+            }
+        }
+
+        function initAircraftList() {
+            const list = document.getElementById('aircraftList');
+            list.innerHTML = aircraft.map(ac => `
+                <div class="aircraft-item ${ac.type} ${ac.status}" id="item-${ac.id}">
+                    <div class="aircraft-icon">
+                        <svg viewBox="-18 -18 36 36">${createAircraftSVG(ac.type)}</svg>
+                    </div>
+                    <div class="aircraft-info">
+                        <div class="aircraft-name">${ac.callsign}</div>
+                        <div class="aircraft-status">${ac.name} - ${ac.section} Section</div>
+                        <div class="fuel-bar">
+                            <div class="fuel-level" style="width: ${ac.fuel}%" id="fuel-${ac.id}"></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initAircraftMarkers() {
+            const container = document.getElementById('aircraft');
+            container.innerHTML = aircraft.map((ac, i) => {
+                const offset = (i - 6) * 4;
+                return `
+                    <g id="marker-${ac.id}" class="aircraft-marker" transform="translate(${220 + offset}, ${145 + Math.abs(offset)})" style="display: none;">
+                        ${createAircraftSVG(ac.type)}
+                    </g>
+                `;
+            }).join('');
+        }
+
+        function getPositionOnRoute(progress) {
+            const totalSegments = routePoints.length - 1;
+            const segmentProgress = progress * totalSegments;
+            const segmentIndex = Math.min(Math.floor(segmentProgress), totalSegments - 1);
+            const segmentT = segmentProgress - segmentIndex;
+
+            const p1 = routePoints[segmentIndex];
+            const p2 = routePoints[segmentIndex + 1];
+
+            return {
+                x: p1.x + (p2.x - p1.x) * segmentT,
+                y: p1.y + (p2.y - p1.y) * segmentT
+            };
+        }
+
+        function addContrail(x, y, isVulcan) {
+            const container = document.getElementById('contrails');
+            const contrail = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            contrail.setAttribute('cx', x);
+            contrail.setAttribute('cy', y);
+            contrail.setAttribute('r', isVulcan ? '3' : '2');
+            contrail.setAttribute('fill', isVulcan ? 'rgba(255,150,150,0.4)' : 'rgba(150,180,255,0.3)');
+            contrail.style.animation = 'contrail 3s ease-out forwards';
+            container.appendChild(contrail);
+
+            setTimeout(() => contrail.remove(), 3000);
+        }
+
+        function updateAircraftPositions() {
+            const totalMissionTime = 900;
+            const outboundTime = 480;
+            const returnTime = 420;
+
+            aircraft.forEach((ac, i) => {
+                const marker = document.getElementById(`marker-${ac.id}`);
+                const item = document.getElementById(`item-${ac.id}`);
+                const fuelBar = document.getElementById(`fuel-${ac.id}`);
+
+                if (ac.status === 'returned' || ac.status === 'withdrawn') {
+                    marker.style.display = 'none';
+                    item.classList.add('returned');
+                    item.classList.remove('active');
+                    return;
+                }
+
+                marker.style.display = 'block';
+                item.classList.add('active');
+
+                let progress;
+                const offset = (i - 6) * 4;
+
+                if (ac.type === 'vulcan' && ac.id === 'vulcan2') {
+                    if (simulationTime < outboundTime) {
+                        progress = simulationTime / outboundTime;
+                    } else if (simulationTime < outboundTime + returnTime) {
+                        progress = 1 - ((simulationTime - outboundTime) / returnTime);
+                    } else {
+                        progress = 0;
+                    }
+                } else {
+                    const turnbackTime = ac.turnbackTime || outboundTime;
+                    if (simulationTime < turnbackTime) {
+                        progress = simulationTime / outboundTime;
+                    } else {
+                        progress = Math.max(0, turnbackTime / outboundTime - (simulationTime - turnbackTime) / (turnbackTime * 1.2));
+                        if (progress <= 0) {
+                            ac.status = 'returned';
+                        }
+                    }
+                }
+
+                const pos = getPositionOnRoute(Math.min(progress, 1));
+                marker.setAttribute('transform', `translate(${pos.x + offset}, ${pos.y + Math.abs(offset) * 0.5})`);
+
+                if (simulationTime - lastContrailTime > 2 && ac.status === 'active' && progress > 0.01 && progress < 0.99) {
+                    addContrail(pos.x + offset, pos.y + Math.abs(offset) * 0.5 + 10, ac.type === 'vulcan');
+                }
+
+                ac.fuel = Math.max(8, 100 - (progress * 85) + (ac.type === 'vulcan' ? 15 : 0));
+                fuelBar.style.width = `${ac.fuel}%`;
+            });
+
+            if (simulationTime - lastContrailTime > 2) {
+                lastContrailTime = simulationTime;
+            }
+        }
+
+        function addEvent(event) {
+            const log = document.getElementById('eventLog');
+            const time = formatTime(event.time);
+            const eventClass = event.type;
+
+            const eventEl = document.createElement('div');
+            eventEl.className = `event-item ${eventClass}`;
+            eventEl.innerHTML = `<span class="event-time">${time}</span> ${event.message}`;
+
+            log.insertBefore(eventEl, log.firstChild);
+
+            if (log.children.length > 15) {
+                log.removeChild(log.lastChild);
+            }
+
+            if (event.marker) {
+                const marker = document.getElementById(`marker-${event.marker}`);
+                if (marker) {
+                    marker.classList.add('active');
+                }
+            }
+
+            if (event.type === 'refuel') {
+                refuelCount++;
+                fuelTransferred += 12000 + Math.random() * 8000;
+                document.getElementById('refuelCount').textContent = refuelCount;
+                document.getElementById('fuelTransferred').textContent = Math.round(fuelTransferred).toLocaleString();
+                showRefuelAnimation(event.bracket || 1);
+            }
+
+            if (event.type === 'attack' && event.message.includes('BOMBS AWAY')) {
+                showExplosion();
+            }
+        }
+
+        function showExplosion() {
+            const container = document.getElementById('explosionContainer');
+            const targetX = 520;
+            const targetY = 680;
+
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const explosion = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    const offsetX = (Math.random() - 0.5) * 40;
+                    const offsetY = (Math.random() - 0.5) * 20;
+
+                    explosion.innerHTML = `
+                        <circle cx="${targetX + offsetX}" cy="${targetY + offsetY}" r="5" fill="url(#explosionGradient)">
+                            <animate attributeName="r" values="5;40;60" dur="1s" fill="freeze"/>
+                            <animate attributeName="opacity" values="1;0.8;0" dur="1s" fill="freeze"/>
+                        </circle>
+                        <circle cx="${targetX + offsetX}" cy="${targetY + offsetY}" r="3" fill="#fff">
+                            <animate attributeName="r" values="3;20;30" dur="0.8s" fill="freeze"/>
+                            <animate attributeName="opacity" values="1;0.5;0" dur="0.8s" fill="freeze"/>
+                        </circle>
+                    `;
+                    container.appendChild(explosion);
+
+                    setTimeout(() => explosion.remove(), 1500);
+                }, i * 150);
+            }
+        }
+
+        function showRefuelAnimation(bracket) {
+            const container = document.getElementById('refuelAnimations');
+            const bracketPos = routePoints[bracket] || routePoints[1];
+
+            const anim = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            anim.innerHTML = `
+                <circle cx="${bracketPos.x}" cy="${bracketPos.y}" r="30" fill="none" stroke="#4CAF50" stroke-width="3" opacity="0.9">
+                    <animate attributeName="r" values="25;50;25" dur="1.5s" repeatCount="2"/>
+                    <animate attributeName="opacity" values="0.9;0.2;0.9" dur="1.5s" repeatCount="2"/>
+                </circle>
+                <circle cx="${bracketPos.x}" cy="${bracketPos.y}" r="15" fill="rgba(76,175,80,0.3)">
+                    <animate attributeName="r" values="15;35;15" dur="1s" repeatCount="3"/>
+                    <animate attributeName="opacity" values="0.5;0;0.5" dur="1s" repeatCount="3"/>
+                </circle>
+                <line x1="${bracketPos.x - 20}" y1="${bracketPos.y}" x2="${bracketPos.x + 20}" y2="${bracketPos.y}"
+                      stroke="#4CAF50" stroke-width="2" stroke-dasharray="4,2">
+                    <animate attributeName="stroke-dashoffset" values="0;-12" dur="0.3s" repeatCount="indefinite"/>
+                </line>
+            `;
+            container.appendChild(anim);
+
+            setTimeout(() => anim.remove(), 3500);
+        }
+
+        function formatTime(minutes) {
+            const baseHour = 23;
+            const baseMinute = 50;
+
+            let totalMinutes = baseMinute + Math.floor(minutes);
+            let hours = baseHour + Math.floor(totalMinutes / 60);
+            let mins = totalMinutes % 60;
+
+            hours = hours % 24;
+
+            return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}Z`;
+        }
+
+        function updateStats() {
+            document.getElementById('elapsedTime').textContent = formatTime(simulationTime);
+
+            const progress = Math.min(simulationTime / 480, 1);
+            const distance = Math.round(progress * 3300);
+            document.getElementById('distance').textContent = distance.toLocaleString();
+
+            const active = aircraft.filter(a => a.status === 'active').length;
+            document.getElementById('activeAircraft').textContent = active;
+
+            let phase = 'Takeoff';
+            if (simulationTime >= 900) phase = 'Complete';
+            else if (simulationTime > 550) phase = 'Return';
+            else if (simulationTime > 480) phase = 'Egress';
+            else if (simulationTime > 475) phase = 'ATTACK';
+            else if (simulationTime > 450) phase = 'Final Run';
+            else if (simulationTime > 350) phase = 'Solo Flight';
+            else if (simulationTime > 100) phase = 'Outbound';
+            document.getElementById('phase').textContent = phase;
+
+            if (phase === 'ATTACK') {
+                document.getElementById('phase').style.color = '#ff6b6b';
+                document.getElementById('phase').style.textShadow = '0 0 10px rgba(255,107,107,0.5)';
+            } else {
+                document.getElementById('phase').style.color = '#6495ED';
+                document.getElementById('phase').style.textShadow = 'none';
+            }
+
+            const timelineProgress = (simulationTime / 900) * 100;
+            document.getElementById('timelineProgress').style.width = `${timelineProgress}%`;
+        }
+
+        function processEvents() {
+            events.forEach(event => {
+                if (event.time <= simulationTime && !event.processed) {
+                    event.processed = true;
+                    addEvent(event);
+
+                    if (event.message.includes('XM598')) {
+                        const vulcan1 = aircraft.find(a => a.id === 'vulcan1');
+                        if (vulcan1) vulcan1.status = 'withdrawn';
+                    }
+
+                    if (event.message.includes('White-4') && event.message.includes('hose')) {
+                        const victor7 = aircraft.find(a => a.id === 'victor7');
+                        if (victor7) victor7.turnbackTime = 45;
+                    }
+
+                    if (event.type === 'turnback') {
+                        if (event.message.includes('Red-1')) {
+                            aircraft.find(a => a.id === 'victor1').turnbackTime = 160;
+                            aircraft.find(a => a.id === 'victor2').turnbackTime = 165;
+                        }
+                        if (event.message.includes('Red-3')) {
+                            aircraft.find(a => a.id === 'victor3').turnbackTime = 220;
+                            aircraft.find(a => a.id === 'victor4').turnbackTime = 225;
+                        }
+                        if (event.message.includes('White-3')) {
+                            aircraft.find(a => a.id === 'victor6').turnbackTime = 290;
+                            aircraft.find(a => a.id === 'victor8').turnbackTime = 295;
+                        }
+                        if (event.message.includes('Blue-2')) {
+                            aircraft.find(a => a.id === 'victor9').turnbackTime = 350;
+                        }
+                        if (event.message.includes('Tuxford (White-2)')) {
+                            aircraft.find(a => a.id === 'victor5').turnbackTime = 420;
+                        }
+                    }
+                }
+            });
+        }
+
+        function animate() {
+            if (!isRunning || isPaused) return;
+
+            simulationTime += 0.4 * speed;
+
+            updateAircraftPositions();
+            processEvents();
+            updateStats();
+
+            if (simulationTime >= 920) {
+                isRunning = false;
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                document.getElementById('phase').textContent = 'Complete';
+                document.getElementById('phase').style.color = '#4CAF50';
+                return;
+            }
+
+            animationFrame = requestAnimationFrame(animate);
+        }
+
+        function startSimulation() {
+            if (isRunning) return;
+
+            isRunning = true;
+            isPaused = false;
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+
+            aircraft.forEach(ac => {
+                const marker = document.getElementById(`marker-${ac.id}`);
+                if (marker) marker.style.display = 'block';
+            });
+
+            animate();
+        }
+
+        function togglePause() {
+            isPaused = !isPaused;
+            document.getElementById('pauseBtn').textContent = isPaused ? 'Resume' : 'Pause';
+
+            if (!isPaused) {
+                animate();
+            }
+        }
+
+        function resetSimulation() {
+            isRunning = false;
+            isPaused = false;
+            simulationTime = 0;
+            refuelCount = 0;
+            fuelTransferred = 0;
+            lastContrailTime = 0;
+
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+
+            aircraft.forEach(ac => {
+                ac.status = 'active';
+                ac.fuel = 100;
+                ac.turnbackTime = undefined;
+            });
+
+            events.forEach(e => e.processed = false);
+
+            document.getElementById('eventLog').innerHTML = '';
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            document.getElementById('pauseBtn').textContent = 'Pause';
+            document.getElementById('refuelCount').textContent = '0';
+            document.getElementById('fuelTransferred').textContent = '0';
+
+            document.querySelectorAll('.timeline-marker').forEach(m => m.classList.remove('active'));
+            document.getElementById('marker-takeoff').classList.add('active');
+            document.getElementById('timelineProgress').style.width = '0%';
+
+            document.getElementById('contrails').innerHTML = '';
+            document.getElementById('explosionContainer').innerHTML = '';
+
+            initAircraftList();
+            initAircraftMarkers();
+            updateStats();
+        }
+
+        function updateSpeed() {
+            speed = parseInt(document.getElementById('speedSlider').value);
+            document.getElementById('speedValue').textContent = `${speed}x`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            initAircraftList();
+            initAircraftMarkers();
+            updateStats();
+        });
+    </script>
+</body>
+</html>

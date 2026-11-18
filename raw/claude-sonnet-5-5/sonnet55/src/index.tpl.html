@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Operation Black Buck — The Refuelling Chain</title>
+<meta name="description" content="An animated simulation of the air-to-air refuelling chain behind Operation Black Buck, the 1982 Vulcan raid on Port Stanley: 11 Victor tankers, 15 fuel transfers, one bomber.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23070d19%27/%3E%3Cpath d=%27M16 4L28 27 16 23 4 27z%27 fill=%27%2374e6ff%27/%3E%3Ccircle cx=%2716%27 cy=%2727%27 r=%272.4%27 fill=%27%23ffb454%27/%3E%3C/svg%3E">
+<style>
+/*__CSS__*/
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="top">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8aeaff"/><stop offset="1" stop-color="#2a8fbf"/></linearGradient></defs><path d="M16 2 L29 28 L16 23.5 L3 28 Z" fill="url(#lg1)"/><path d="M16 2 L16 23.5" stroke="#06121f" stroke-width="1.2"/><circle cx="16" cy="27" r="2.4" fill="#ffb454"/></svg>
+      <div><b>OPERATION BLACK BUCK</b><span>The refuelling chain · Ascension → Port Stanley · 30 Apr – 1 May 1982</span></div>
+    </div>
+    <div class="sp"></div>
+    <div class="seg" id="segScn" title="Scenario"><button data-v="flown" class="on">As flown · BB1</button><button data-v="plan">As planned</button></div>
+    <div class="seg" id="segCam" title="Camera"><button data-v="auto" class="on">Cinematic</button><button data-v="over">Overview</button><button data-v="vulcan">Follow Vulcan</button><button data-v="free">Free</button></div>
+    <div class="tg" id="tgOpts"><button data-o="labels" class="on">Labels</button><button data-o="trails" class="on">Trails</button><button data-o="night" class="on">Night</button><button data-o="narrate" class="on">Narration</button></div>
+    <button class="btn" id="btnAbout">Sources &amp; method</button>
+  </header>
+
+  <main id="stage">
+    <div id="mapwrap">
+      <canvas id="map"></canvas>
+      <div id="hud">
+        <div class="glass clock"><div class="z" id="clk">23:00<small>Z</small></div><div class="meta"><b id="clkDay">30 APR 1982</b><span id="clkLoc">STANLEY 20:00 · ASCENSION 23:00</span></div></div>
+        <div class="glass phase"><i id="phDot"></i><span id="phase">Standing by at Wideawake</span></div>
+        <div class="glass stats" id="stats">
+          <div class="stat good"><label>Vulcan fuel</label><b id="stFuel">74.0<em>klb</em></b></div>
+          <div class="stat"><label>Altitude</label><b id="stAlt">—</b></div>
+          <div class="stat"><label>Range from Asc.</label><b id="stRng">0<em>nm</em></b></div>
+          <div class="stat"><label>Transfers</label><b id="stX">0<em>/15</em></b></div>
+          <div class="stat"><label>Airborne</label><b id="stAir">0</b></div>
+        </div>
+      </div>
+      <div id="zoomctl"><button id="zIn" title="Zoom in">+</button><button id="zOut" title="Zoom out">−</button><button id="zHome" title="Reset view (double-click map)">⌂</button></div>
+      <div id="mapnote"><div class="sb"><div class="bar" id="sbBar"></div><span id="sbTxt">500 nm</span></div><div class="ex" id="exTxt"></div></div>
+      <div id="legend" class="glass">
+        <span><i style="background:#ffb454"></i>Victor K2 tanker</span><span><i style="background:#74e6ff"></i>Vulcan B2</span>
+        <span><i style="background:#46d9c6"></i>Recovery tanker</span><span><i style="background:#b995ff"></i>Nimrod</span>
+        <span><i style="background:#5af0a4"></i>Fuel flowing</span><span><i style="background:#ff5d6c"></i>Low fuel / failure</span>
+      </div>
+      <div id="caption" class="glass"><div class="k"></div><h3></h3><p></p></div>
+      <div id="hover" class="glass"></div>
+    </div>
+
+    <aside id="side">
+      <section class="card" id="contactCard">
+        <div class="cardhead"><b id="cardTitle">Contact view</b><span id="cvBr">—</span><span class="sp"></span><span class="lamp" title="HDU signal lamps — red: not ready / emergency · amber: tanker ready · green: fuel flowing"><i class="r" id="lr"></i><i class="a" id="la"></i><i class="g" id="lg"></i></span></div>
+        <canvas id="contact"></canvas>
+        <div id="contactInfo"><div class="ttl" id="cvTtl">—</div><div class="amt" id="cvAmt"></div><div class="pbar" id="cvBar"><i></i></div><div class="sub" id="cvSub"></div></div>
+      </section>
+      <section class="card" id="tabsCard">
+        <div class="tabs" id="tabs"><button data-p="fuel" class="on">Fuel board</button><button data-p="chain">Transfers</button><button data-p="crew">Crews</button></div>
+        <div id="tabBody">
+          <div class="pane on" id="pFuel"></div>
+          <div class="pane" id="pChain"></div>
+          <div class="pane" id="pCrew"></div>
+        </div>
+      </section>
+    </aside>
+  </main>
+
+  <section id="transport">
+    <button class="tb" id="bRestart" title="Restart (Home)"><svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg></button>
+    <button class="tb" id="bBack" title="Back 5 min (←)"><svg viewBox="0 0 16 16"><path d="M8 3v10L1 8zM15 3v10L8 8z"/></svg></button>
+    <button class="tb play" id="bPlay" title="Play / pause (Space)"><svg viewBox="0 0 16 16" id="icPlay"><path d="M4 2l10 6-10 6z"/></svg></button>
+    <button class="tb" id="bFwd" title="Forward 5 min (→)"><svg viewBox="0 0 16 16"><path d="M1 3v10l7-5zM8 3v10l7-5z"/></svg></button>
+    <button class="tb" id="bNext" title="Next key event (N)"><svg viewBox="0 0 16 16"><path d="M2 2v12l8-6zM11 2h3v12h-3z"/></svg></button>
+    <div class="spd" id="spd"><button data-m="0.5">½×</button><button data-m="1" class="on">1×</button><button data-m="2">2×</button><button data-m="4">4×</button></div>
+    <button id="smart" class="on" title="Speeds up between contacts and slows right down for refuelling, incidents and the attack">Smart pace</button>
+    <div id="scrubWrap"><div id="ticks"></div><input id="scrub" type="range" min="0" max="100" step="0.05" value="0" aria-label="Mission time"></div>
+    <div id="tread">23:00Z<small>T+00:00</small></div>
+  </section>
+
+  <section id="dock">
+    <div id="charts">
+      <div class="tabs" id="ctabs"><button data-c="range" class="on">Range–time (the “spaghetti”)</button><button data-c="fuel">Vulcan fuel &amp; altitude</button><button data-c="relay">Fuel relay</button></div>
+      <div id="chartBox"><canvas id="chartCv"></canvas></div>
+    </div>
+    <div id="log"><div class="lghead"><span>Mission log</span><span id="logN">0 events</span></div><div id="logBody"></div></div>
+  </section>
+</div>
+
+<div class="modal on" id="intro">
+  <div class="sheet">
+    <div class="kicker">30 April 1982 · Wideawake, Ascension Island</div>
+    <h1>OPERATION <em>BLACK BUCK</em></h1>
+    <p>Britain’s long-range answer to Port Stanley’s runway was a 1950s V-bomber flying from the middle of the Atlantic — some 3,400 nautical miles each way, with nowhere to land and nowhere to refuel but in the air. The Vulcan could only get there because eleven <b>Victor tankers</b> passed fuel to each other, and to it, in a bucket-brigade that peeled away one tanker at a time. If any link broke, the chain unravelled.</p>
+    <p>This is that chain, animated on a real map: every bracket, every transfer, every fuel state — plus the things that went wrong.</p>
+    <div class="tiles">
+      <div class="tile"><b>13</b><span>aircraft launched in 12 minutes</span></div>
+      <div class="tile"><b>15</b><span>fuel transfers to reach Stanley</span></div>
+      <div class="tile"><b>~3,400</b><span>nautical miles, one way</span></div>
+      <div class="tile"><b>≈16 h</b><span>for the Vulcan, take-off to landing</span></div>
+    </div>
+    <h2>How to watch</h2>
+    <ul>
+      <li><b>Cinematic</b> camera follows the action and zooms into each refuelling bracket; <b>Smart pace</b> slows for contacts and incidents. Drag the map or scroll to take over.</li>
+      <li>Icons and spacing are <b>exaggerated for readability</b> (shown at the bottom-left of the map). Position, timing and fuel figures are not.</li>
+      <li>Scrub the timeline, click a transfer, click an aircraft — or switch to <b>As planned</b> to see the RAF’s plan with nothing going wrong.</li>
+    </ul>
+    <div class="row"><button class="btn primary" id="btnGo" style="padding:11px 22px;font-size:14px">▶ Launch the mission</button><button class="btn" id="btnGoAbout">Sources &amp; method</button><div class="keys" style="margin:0 0 0 auto"><span><kbd>Space</kbd>play/pause</span><span><kbd>N</kbd>next event</span></div></div>
+  </div>
+</div>
+
+<div class="modal" id="about">
+  <div class="sheet">
+    <div class="kicker">Sources &amp; method</div>
+    <h1 style="font-size:22px">What is real, and what is modelled</h1>
+    <h2>The refuelling plan</h2>
+    <p><span class="tag d">DOCUMENTED</span>The bracket latitudes/longitudes, the 15 transfers (7 into the Vulcan, 8 tanker-to-tanker), the quantities passed and the tanker roles come from the RAF’s own refuelling “spaghetti diagram” (the Black Buck II version, which refined Black Buck 1’s plan) published in <a href="https://www.rafmuseum.org.uk/documents/Research/RAF-Historical-Society-Journals/Journal-30-Seminar-The-Falklands-Campaign.pdf" target="_blank" rel="noopener">RAF Historical Society Journal 30</a>. The RAF’s own summary — 11 tankers and 15 transfers to bring Vulcan XM607 to striking distance — matches it exactly.</p>
+    <h2>Black Buck 1 as flown</h2>
+    <p><span class="tag d">DOCUMENTED</span>Primary Vulcan XM598 (Reeve) loses cabin pressure and returns; XM607 (Withers) takes over · Victor XL163’s hose fault, replaced by reserve XH669 (Biglands) · unforecast thunderstorms near 40°S; Biglands’ probe breaks during the last tanker-to-tanker transfer · Tuxford (XL189) presses on below fuel minima and passes ~7,000 lb less than planned · Withers reaches the Rio rendezvous about an hour late with ~7,000 lb · Seymour is launched at 07:30Z to meet Tuxford “over a thousand miles” out · bombs at 04:38 local (07:38Z), landing 14:52Z. Sources: <a href="https://en.wikipedia.org/wiki/Operation_Black_Buck" target="_blank" rel="noopener">Wikipedia</a>, the <a href="https://www.collectair.co.uk/pdf/bb-signatures.pdf" target="_blank" rel="noopener">Collectair “Longest Night” account</a> (Tuxford, Biglands, Brooks, Neal, Seymour), the <a href="https://www.raf.mod.uk/news/articles/40th-anniversary-of-op-black-buck/" target="_blank" rel="noopener">RAF</a> and <a href="https://vulcantothesky.org/articles/falklands-war-1982-operation-black-buck/" target="_blank" rel="noopener">Vulcan to the Sky</a>.</p>
+    <h2>Modelled — treat as illustrative</h2>
+    <ul>
+      <li><span class="tag m">MODELLED</span> Speeds, climb profiles, exact join-ups, holding patterns, the fuel burn between contacts (calibrated so the Vulcan’s ledger reproduces the plan’s transfer amounts and the “~7,000 lb at the RV” figure) and the Rio RV timeline.</li>
+      <li><span class="tag i">INFERRED</span> Which tanker occupied which slot for named crews (Brooks, Neal, Tuxford, Biglands) is inferred from the accounts; the plan labels (R1…B7) are the RAF diagram’s, not Black Buck 1’s own RED/WHITE/BLUE call-signs.</li>
+      <li><span class="tag m">MODELLED</span> The fuel Biglands hands back is solved so that Tuxford meets Seymour with about 30 minutes of fuel, as reported. Sources disagree on several distances and times; where they conflict the model picks the figure that keeps the whole timeline consistent.</li>
+      <li>Coastlines: Natural Earth. Day/night shading computed for 1 May 1982. Task Force and Nimrod positions are approximate.</li>
+    </ul>
+    <h2>Scale</h2>
+    <p>A Vulcan is 31 m long; a bracket is tens of miles. Icons, trails, formation spacing and hoses are drawn at an exaggerated size so the chain is legible — the exaggeration factor is shown live at the bottom-left of the map. Everything else (where, when, how much fuel) is to scale.</p>
+    <div class="row"><button class="btn primary" id="btnAboutClose">Close</button></div>
+  </div>
+</div>
+
+<div class="modal" id="endm">
+  <div class="sheet" style="max-width:720px">
+    <div class="kicker">Mission complete · 14:52Z</div>
+    <h1 style="font-size:24px">The longest bombing raid in history</h1>
+    <p id="endTxt"></p>
+    <div class="sum" id="endSum"></div>
+    <p style="font-size:12px;color:var(--mut)">RAF Historical Society figures for the whole operation: 1,955,000 lb (244,000 imp. gal) of fuel uplifted by the Victors; the Vulcan received 7% of it and 20% was transferred between Victors; the fuel passed at the last outbound transfer had passed through five different tankers. The model’s own totals are shown above.</p>
+    <div class="row"><button class="btn primary" id="btnReplay">↺ Replay</button><button class="btn" id="btnEndClose">Keep exploring</button></div>
+  </div>
+</div>
+
+<script>
+/*__COAST__*/
+</script>
+<script>
+/*__ENGINE__*/
+</script>
+<script>
+/*__APP__*/
+</script>
+</body>
+</html>

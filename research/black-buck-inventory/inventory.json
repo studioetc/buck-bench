@@ -4,6 +4,393 @@
   "scope": "Local inventory of simulations created in-session with recorded model evidence. Excludes unfinished attempts, unknown or inferred-only model assignments, and conversions of externally created artifacts. Original files are unchanged.",
   "artifacts": [
     {
+      "id": "gpt55",
+      "files": [
+        {
+          "path": "raw/gpt-5.5/gpt55/index.html",
+          "bytes": 244159,
+          "sha256": "2e8daed9328be94e4f69cf77bc2a8bb604945e765dd987635589a9821d0df546"
+        },
+        {
+          "path": "raw/gpt-5.5/gpt55/source-arena.zip",
+          "bytes": 131862,
+          "sha256": "51c2ac8b54ac222ae486599dd7c58b3ea10032b1cf2d821bb9ec296bbc5ac53e"
+        }
+      ],
+      "model": "gpt-5.5-xhigh",
+      "attribution": "user_confirmed",
+      "evidence": [
+        {
+          "source": "User read the Arena chat on 2026-11-19",
+          "arena_chat": "https://arena.ai/c/019f712b-996f-75ad-9c33-b880e6e2e485",
+          "download": "~/Downloads/black-buck-refueling-simulation (1).zip",
+          "note": "Battle side shown first; the other side ((2).zip) was skipped by the user."
+        }
+      ],
+      "notes": "Added 2026-11-19. Arena battle, chat created 2026-07-17 (from the chat id). Source zip downloaded 18 Jul; index.html is a local `vite build` of it (vite-plugin-singlefile). The exact prompt used on Arena is not recorded locally.",
+      "release": {
+        "date": "2026-04-23",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev only; not checked against OpenAI."
+      }
+    },
+    {
+      "id": "gemini31pro",
+      "files": [
+        {
+          "path": "raw/gemini-3.1-pro/gemini31pro/index.html",
+          "bytes": 250331,
+          "sha256": "53713cd9a3e2914c65dd4bf6882f0e9b2e3990946e2d7c73c9d7b7e862f44136"
+        },
+        {
+          "path": "raw/gemini-3.1-pro/gemini31pro/source-arena.zip",
+          "bytes": 118866,
+          "sha256": "da69e9844c9f329145cb3f088c42ddfdf5b059116f834d91481858a2d36eab3c"
+        }
+      ],
+      "model": "gemini-3.1-pro",
+      "attribution": "user_confirmed",
+      "evidence": [
+        {
+          "source": "User read the Arena chat on 2026-11-19",
+          "arena_chat": "https://arena.ai/c/019f7000-953e-7408-bed2-ca098bc9c75b",
+          "download": "~/Downloads/black-buck-refueling-simulation (4).zip (downloaded 2026-11-19)"
+        }
+      ],
+      "notes": "Added 2026-11-19. Arena chat created 2026-07-17 (from the chat id). index.html is a local `vite build` of the downloaded source. The exact prompt used on Arena is not recorded locally.",
+      "release": {
+        "date": "2026-02-19",
+        "source": "https://www.theregister.com/2026/02/19/google_germinates_gemini_31_pro/",
+        "verified_on": "2026-11-19",
+        "note": "Preview launch date; models.dev agrees."
+      }
+    },
+    {
+      "id": "sonnet55",
+      "files": [
+        {
+          "path": "raw/claude-sonnet-5-5/sonnet55/black-buck.html",
+          "bytes": 323906,
+          "sha256": "22d7facac76920c68cbb4c114ae9d3444fafe8f1112585499f51e037860bef97"
+        }
+      ],
+      "model": "claude-sonnet-5-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/272ea445-edf9-41bb-8a7b-23fdfe25e0c7.jsonl",
+          "session_id": "272ea445-edf9-41bb-8a7b-23fdfe25e0c7",
+          "effort_recorded": "xhigh"
+        }
+      ],
+      "notes": "Added 2026-11-19. Clean run via ~/Dev/buck-runs/run-sequence*.sh: claude -p --safe-mode --chrome --disable-slash-commands --dangerously-skip-permissions, CLAUDE_CODE_DISABLE_FEATURE_FLAGS=1, run folder served at localhost:8607 with one appended system-prompt line saying so. About 60 min, 97 turns, ~$11.63 list price. Effort xhigh. Researched the web, built from src/ with build.js (included), checked the page in Chrome (screenshots, console, JS) via localhost:8607.",
+      "release": {
+        "date": "2026-09-28",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date; Anthropic's deprecations page gives retirement 'not sooner than Sep 28, 2027' (release + 1 year)."
+      }
+    },
+    {
+      "id": "opus45",
+      "files": [
+        {
+          "path": "raw/claude-opus-4-5/opus45/black-buck.html",
+          "bytes": 60872,
+          "sha256": "5dfd9af1d914b0bec6116c30c46bc16ab2a28791c5807be57870e2afeb47f2b1"
+        }
+      ],
+      "model": "claude-opus-4-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/d3c88095-7c12-415a-b7c8-8cecbf497eaa.jsonl",
+          "session_id": "d3c88095-7c12-415a-b7c8-8cecbf497eaa",
+          "effort_recorded": "high"
+        }
+      ],
+      "notes": "Added 2026-11-19. Clean run via ~/Dev/buck-runs/run-sequence*.sh: claude -p --safe-mode --chrome --disable-slash-commands --dangerously-skip-permissions, CLAUDE_CODE_DISABLE_FEATURE_FLAGS=1, run folder served at localhost:8607 with one appended system-prompt line saying so. About 11 min, 40 turns, ~$3.97 list price. Asked for xhigh; log records high. Output cap 64,000. Researched, then checked the page in Chrome (21 screenshot/scroll/click actions).",
+      "release": {
+        "date": "2025-11-24",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date; Anthropic's deprecations page gives retirement 'not sooner than Nov 24, 2026'."
+      }
+    },
+    {
+      "id": "opus46-run2",
+      "files": [
+        {
+          "path": "raw/claude-opus-4-6/opus46-run2/index.html",
+          "bytes": 45016,
+          "sha256": "595f60d67dea2b71087014e5bb237fe030f282f9fa7adcb4f6544622725074d8"
+        }
+      ],
+      "model": "claude-opus-4-6",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/6e24edb2-5d99-4d1a-a23b-31f398409b06.jsonl",
+          "session_id": "6e24edb2-5d99-4d1a-a23b-31f398409b06",
+          "effort_recorded": "high"
+        }
+      ],
+      "notes": "Rerun 2026-11-19, same clean setup plus --disallowed-tools Artifact. About 26 min, 68 turns, ~$7.87 list price. Effort high, output cap 128,000. Long first think, then wrote index.html in the run folder and checked it in Chrome (screenshots/clicks), with two edits. No web lookups.",
+      "release": {
+        "date": "2026-02-05",
+        "source": "https://www.anthropic.com/news/claude-opus-4-6",
+        "verified_on": "2026-11-19",
+        "note": "Anthropic announcement, 5 February 2026. models.dev says 2026-02-04."
+      }
+    },
+    {
+      "id": "opus46",
+      "files": [
+        {
+          "path": "raw/claude-opus-4-6/opus46/operation-black-buck.html",
+          "bytes": 35868,
+          "sha256": "43537e56f6363e67596e32e1e6ecd4d99fa670fdf503b4889d150730beac0563"
+        }
+      ],
+      "model": "claude-opus-4-6",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/7fa6367d-b0ec-4fbc-a2a2-ab31e86eb7b5.jsonl",
+          "session_id": "7fa6367d-b0ec-4fbc-a2a2-ab31e86eb7b5",
+          "effort_recorded": "high"
+        }
+      ],
+      "notes": "Added 2026-11-19. Clean run via ~/Dev/buck-runs/run-sequence*.sh: claude -p --safe-mode --chrome --disable-slash-commands --dangerously-skip-permissions, CLAUDE_CODE_DISABLE_FEATURE_FLAGS=1, run folder served at localhost:8607 with one appended system-prompt line saying so. About 21 min, 4 turns, ~$3.17 list price. Asked for xhigh; log records high. Output cap 128,000. One 72,677-token Write to its scratchpad, then used the built-in Artifact tool to publish privately to claude.ai (tool not blocked in this run). No web research, no browser check. Superseded as the default version by opus46-run2 (rerun 2026-11-19 with the Artifact tool blocked).",
+      "release": {
+        "date": "2026-02-05",
+        "source": "https://www.anthropic.com/news/claude-opus-4-6",
+        "verified_on": "2026-11-19",
+        "note": "Anthropic announcement, 5 February 2026. models.dev says 2026-02-04."
+      }
+    },
+    {
+      "id": "sonnet46-run2",
+      "files": [
+        {
+          "path": "raw/claude-sonnet-4-6/sonnet46-run2/black_buck.html",
+          "bytes": 42920,
+          "sha256": "cf33d2d46c080e700aed1e7b124d4a46ae1f5eb59af864c2e980fd0f2b188620"
+        }
+      ],
+      "model": "claude-sonnet-4-6",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/a8713888-4629-4868-95da-e555cc4841e1.jsonl",
+          "session_id": "a8713888-4629-4868-95da-e555cc4841e1",
+          "effort_recorded": "high"
+        }
+      ],
+      "notes": "Rerun 2026-11-19, same clean setup plus --disallowed-tools Artifact. About 25 min, 21 turns, ~$3.81 list price. Effort high, output cap 128,000. Long first think, then wrote black_buck.html in the run folder and checked it in Chrome. No web lookups.",
+      "release": {
+        "date": "2026-02-17",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date; Anthropic's deprecations page gives retirement 'not sooner than Feb 17, 2027'."
+      }
+    },
+    {
+      "id": "sonnet46",
+      "files": [
+        {
+          "path": "raw/claude-sonnet-4-6/sonnet46/black_buck.html",
+          "bytes": 45887,
+          "sha256": "22d9a4998738760cb28b3b23749b50477b5742323babca27e32116d6ccf36f22"
+        }
+      ],
+      "model": "claude-sonnet-4-6",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/b44e7011-5b24-4fec-8452-162a6b0dbe3b.jsonl",
+          "session_id": "b44e7011-5b24-4fec-8452-162a6b0dbe3b",
+          "effort_recorded": "high"
+        }
+      ],
+      "notes": "Added 2026-11-19. Clean run via ~/Dev/buck-runs/run-sequence*.sh: claude -p --safe-mode --chrome --disable-slash-commands --dangerously-skip-permissions, CLAUDE_CODE_DISABLE_FEATURE_FLAGS=1, run folder served at localhost:8607 with one appended system-prompt line saying so. About 14 min, 5 turns, ~$1.81 list price. Asked for xhigh; log records high. Output cap raised to 128,000: a first attempt at the 32,000 default looped on thinking-only replies and wrote nothing (discarded; Claude Code issue #102429). First reply was ~49k tokens. Wrote to its scratchpad, published privately with the Artifact tool. No web research, no browser check. Superseded as the default version by sonnet46-run2 (rerun 2026-11-19 with the Artifact tool blocked).",
+      "release": {
+        "date": "2026-02-17",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date; Anthropic's deprecations page gives retirement 'not sooner than Feb 17, 2027'."
+      }
+    },
+    {
+      "id": "sonnet45",
+      "files": [
+        {
+          "path": "raw/claude-sonnet-4-5/sonnet45/black_buck_simulation.html",
+          "bytes": 31392,
+          "sha256": "f3ae9e7a92f6d3f8cf2fab39592e24a52a38f0567e7995e54566276de46bd9f6"
+        }
+      ],
+      "model": "claude-sonnet-4-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/bcee7454-9532-42ee-8fa7-5aac0bfc9bc5.jsonl",
+          "session_id": "bcee7454-9532-42ee-8fa7-5aac0bfc9bc5",
+          "effort_recorded": "none"
+        }
+      ],
+      "notes": "Added 2026-11-19. Clean run via ~/Dev/buck-runs/run-sequence*.sh: claude -p --safe-mode --chrome --disable-slash-commands --dangerously-skip-permissions, CLAUDE_CODE_DISABLE_FEATURE_FLAGS=1, run folder served at localhost:8607 with one appended system-prompt line saying so. About 2 min, 2 turns, ~$0.26 list price. No effort setting applied. A single Write; no web research, no browser check. An earlier attempt without the local server (researched, but Chrome refused file://) was discarded.",
+      "release": {
+        "date": "2025-09-29",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date."
+      }
+    },
+    {
+      "id": "sol62",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Documents/Vulcan/operation-black-buck.html",
+          "bytes": 517228,
+          "sha256": "9b338a57e830e4085219c2c1723b38a2f3bf4f66beb85aa8d772defa87c120dc"
+        }
+      ],
+      "model": "gpt-6.2-sol",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.codex/sessions/2026/11/19/rollout-2026-11-19T02-00-07-01a1ef2c-1bb4-7ae1-a749-e7ffdd3409c0.jsonl",
+          "models": {
+            "gpt-6.2-sol": 7
+          },
+          "effort": "xhigh"
+        }
+      ],
+      "notes": "Added 2026-11-19. Verbatim benchmark prompt in the Codex TUI (tmux), YOLO mode, in ~/Documents/Vulcan, with the user's normal Codex config. About 17 minutes, 35,770 output tokens. Tested its page with Playwright and screenshots.",
+      "release": {
+        "date": "2026-11-17",
+        "source": "https://help.openai.com/en/articles/9624314-model-release-notes",
+        "verified_on": "2026-11-19",
+        "note": "Same release as GPT-6.2 Astra; date from launch coverage."
+      }
+    },
+    {
+      "id": "astra62",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-6-2/index.html",
+          "bytes": 291672,
+          "sha256": "18981f11098ff81a35878aeed69a846837ce04245cbaab9841032ba21b2aaccf",
+          "modified_utc": "2026-11-17T22:48:51+00:00"
+        }
+      ],
+      "model": "gpt-6.2-astra",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.codex/sessions/2026/11/18/rollout-2026-11-18T09-45-58-01a1ebb0-3e8c-7770-b9c7-f40bba795796.jsonl",
+          "models": {
+            "gpt-6.2-astra": 7
+          },
+          "model_evidence": [
+            {
+              "line": 1,
+              "model": "gpt-6.2-astra"
+            }
+          ],
+          "first": "2026-11-17T22:45:58.961Z",
+          "last": "2026-11-17T22:49:08.276Z"
+        }
+      ],
+      "notes": "Added 18 November 2026. Verbatim benchmark prompt, reasoning effort high, launched as a T3 Code thread (Codex harness) in Dev/vulcan-6-2. Tools: exec only (web search and shell); no subagents or skills recorded. 6,281 output tokens. An earlier scheduled attempt in the same project ran on claude-opus-5-5 by mistake and was stopped before writing output; it is excluded.",
+      "release": {
+        "date": "2026-11-17",
+        "source": "https://help.openai.com/en/articles/9624314-model-release-notes",
+        "verified_on": "2026-11-18",
+        "note": "First-party release notes list GPT-6.2 Astra without its own date, above the 16 November entry. 17 November is from launch coverage (SiliconANGLE, 9to5Google)."
+      }
+    },
+    {
+      "id": "fable52-v1",
+      "files": [
+        {
+          "path": "raw/claude-fable-5-2/fable52-v1/black-buck-refuelling.html",
+          "bytes": 156899,
+          "sha256": "e317b79afb063f922a6d4751dcb95c51533ece2b422830af422db2d4bf15aa06"
+        }
+      ],
+      "model": "claude-fable-5-2",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-vulcan-f52/c565cbb5-afbd-40e9-98ec-aabef81f648e.jsonl",
+          "models": {
+            "claude-fable-5-2": 220
+          },
+          "model_evidence": [
+            {
+              "line": 21,
+              "model": "claude-fable-5-2"
+            }
+          ],
+          "first": "2026-11-17T20:19:15.551Z",
+          "last": "2026-11-17T21:37:32.740Z"
+        }
+      ],
+      "notes": "Original single-prompt output (v1), reconstructed on 2026-11-19. The original bytes were overwritten by the fork. The session's build sources (scratchpad/build) were unchanged after its last build at 21:02Z except by the fork's three ui.js string replacements; reversing those and running its build.py gives this file. Check: re-applying the fork's three edits to it and rebuilding reproduces the v2 sha256 a9f23fa2... exactly. The edit scripts are in reconstruction/.",
+      "release": {
+        "date": "2026-11-09",
+        "source": "https://platform.claude.com/docs/en/release-notes/overview",
+        "verified_on": "2026-11-18",
+        "note": "Claude Platform release notes, 9 November 2026 entry."
+      }
+    },
+    {
+      "id": "fable52",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-f52/black-buck-refuelling.html",
+          "bytes": 157074,
+          "sha256": "a9f23fa2f07538e43e62bd8fbce79bdeda4ee4f3ce35f6cc132503aa6ee54733",
+          "modified_utc": "2026-11-17T21:37:22+00:00"
+        }
+      ],
+      "model": "claude-fable-5-2",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-vulcan-f52/c565cbb5-afbd-40e9-98ec-aabef81f648e.jsonl",
+          "models": {
+            "claude-fable-5-2": 220
+          },
+          "model_evidence": [
+            {
+              "line": 21,
+              "model": "claude-fable-5-2"
+            }
+          ],
+          "first": "2026-11-17T20:19:15.551Z",
+          "last": "2026-11-17T21:37:32.740Z"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-vulcan-f52/823ff9ae-b562-4472-9f92-a13061914414.jsonl",
+          "models": {
+            "claude-fable-5-2": "recorded"
+          },
+          "note": "fork that wrote the final bytes"
+        }
+      ],
+      "notes": "Revision (v2). Final bytes were written by a fork of the original session, 823ff9ae-b562-4472-9f92-a13061914414, at 21:37Z on 2026-11-17. In the fork the user said they had not been clear and allowed browser checking; the model checked the page with agent-browser and made small layout/timing fixes in ui.js. The original single-prompt run (c565cbb5, effort xhigh) last built the file at 21:02Z; that version is entry fable52-v1.",
+      "release": {
+        "date": "2026-11-09",
+        "source": "https://platform.claude.com/docs/en/release-notes/overview",
+        "verified_on": "2026-11-18",
+        "note": "Claude Platform release notes, 9 November 2026 entry."
+      }
+    },
+    {
       "id": "opus55",
       "files": [
         {
@@ -230,6 +617,53 @@
       "notes": "Separate narrative/story revision requested in the same session."
     },
     {
+      "id": "sol61",
+      "files": [
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-6-1/index.html",
+          "bytes": 429584,
+          "sha256": "09e3af99c58a476e43eb71f438de970d7d4de924d966e9713c212edf893f9e31",
+          "modified_utc": "2026-09-30T04:11:54.283450+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-6-1/README.md",
+          "bytes": 1681,
+          "sha256": "e3ab37243c93de6ba3bfa518a835044148005f2f5367110e8b1a3954619f9c13",
+          "modified_utc": "2026-09-30T04:07:12.718909+00:00"
+        },
+        {
+          "path": "/Users/onesteppplusgmai.com/Dev/vulcan-6-1/preview.png",
+          "bytes": 602543,
+          "sha256": "fd7e45adad5b146d1e90033310378fbaf03b270e8e551be0c0e699e09af55387",
+          "modified_utc": "2026-09-30T04:11:54.682141+00:00"
+        }
+      ],
+      "model": "gpt-6.1-sol",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.codex/sessions/2026/09/30/ (rollout ...01a0f056-b928-7042-89e5-cf56b2569741)",
+          "session_id": "01a0f056-b928-7042-89e5-cf56b2569741",
+          "models": {
+            "gpt-6.1-sol": "recorded"
+          },
+          "effort": "xhigh",
+          "note": "session wrote index.html, README.md and preview.png; matched 2026-11-19"
+        },
+        {
+          "source": "User request on 30 September 2026",
+          "model": "GPT-Sol 6.1"
+        }
+      ],
+      "notes": "Added 30 September 2026 from Dev/vulcan-6-1. Model name supplied by the user; session metadata, exact prompt and tooling have not been verified. Release date verified as 29 September 2026 from official OpenAI sources. Archived HTML and README unchanged; supplied preview.png used as the screenshot. Update 2026-11-19: the Codex session log was found; it records gpt-6.1-sol at effort xhigh and writes all three files.",
+      "release": {
+        "date": "2026-09-29",
+        "source": "https://deploymentsafety.openai.com/gpt-6-1-sol/respecting-auto-review",
+        "verified_on": "2026-09-30",
+        "note": "Official introduction; Work and Codex rollout starting with Pro users and expanding to other plans."
+      }
+    },
+    {
       "id": "sol-codex",
       "files": [
         {
@@ -433,7 +867,7 @@
           "last": "2026-06-20T15:08:54.511Z"
         }
       ],
-      "notes": "Session wrote bb-visualisation/index.html; current folder is renamed. Matching content is supported by subject, size and recorded implementation, but exact rename history was not established. Build delegated to same-model subagent ab1ad4185dff24125; subsequent parent changes."
+      "notes": "Session wrote bb-visualisation/index.html; current folder is renamed. Matching content is supported by subject, size and recorded implementation, but exact rename history was not established. Build delegated to same-model subagent ab1ad4185dff24125; subsequent parent changes. Correction 2026-11-19: replaying the subagent's own writes reproduces the final file byte for byte, so the parent session did not change the file afterwards."
     },
     {
       "id": "kimi3",

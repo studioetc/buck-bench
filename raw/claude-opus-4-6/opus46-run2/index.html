@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operation Black Buck — Aerial Refuelling Simulation</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#060b14;color:#8ab4d6;font-family:'Courier New','Consolas',monospace;overflow:hidden;height:100vh;width:100vw}
+#intro{position:fixed;inset:0;z-index:1000;background:radial-gradient(ellipse at 50% 40%,#0c1a2e 0%,#060b14 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s ease}
+#intro.hidden{opacity:0;pointer-events:none}
+#intro .badge{width:80px;height:80px;border:2px solid rgba(0,160,220,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:30px;animation:fadeSlide 1s ease-out 0.3s both}
+#intro .badge-inner{width:40px;height:40px;border:2px solid rgba(0,160,220,0.5);border-radius:50%;position:relative}
+#intro .badge-inner::after{content:'';position:absolute;inset:8px;background:rgba(0,160,220,0.15);border-radius:50%}
+.intro-title{font-size:clamp(24px,4vw,42px);font-weight:400;letter-spacing:clamp(4px,1vw,12px);color:#cce0f0;text-transform:uppercase;text-align:center;animation:fadeSlide 1s ease-out 0.6s both}
+.intro-date{font-size:clamp(12px,1.5vw,16px);color:#ff8800;letter-spacing:4px;margin-top:12px;animation:fadeSlide 1s ease-out 1s both}
+.intro-sub{font-size:clamp(11px,1.2vw,14px);color:#5a8aaa;letter-spacing:2px;margin-top:6px;animation:fadeSlide 1s ease-out 1.2s both}
+.intro-desc{max-width:640px;font-size:clamp(11px,1.1vw,13px);color:#6a94b0;line-height:1.8;text-align:center;margin-top:30px;padding:0 20px;animation:fadeSlide 1s ease-out 1.5s both}
+.start-btn{margin-top:40px;padding:14px 48px;background:transparent;border:1px solid rgba(255,136,0,0.4);color:#ff8800;font-family:inherit;font-size:13px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;transition:all 0.3s;animation:fadeSlide 1s ease-out 2s both;position:relative;overflow:hidden}
+.start-btn:hover{background:rgba(255,136,0,0.1);border-color:rgba(255,136,0,0.7);box-shadow:0 0 30px rgba(255,136,0,0.15)}
+.start-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,136,0,0.1),transparent);transform:translateX(-100%);transition:transform 0.6s}
+.start-btn:hover::before{transform:translateX(100%)}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
+
+#app{display:grid;grid-template-columns:1fr 300px;grid-template-rows:50px 1fr 80px;height:100vh;width:100vw;opacity:0;transition:opacity 0.8s ease 0.3s}
+#app.visible{opacity:1}
+
+header{grid-column:1/-1;background:linear-gradient(180deg,rgba(10,20,40,0.95),rgba(10,20,40,0.7));border-bottom:1px solid rgba(0,140,200,0.15);display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+header h1{font-size:clamp(11px,1.3vw,15px);font-weight:400;letter-spacing:clamp(2px,0.5vw,5px);text-transform:uppercase;color:#99c0d8}
+header .hdr-right{display:flex;gap:16px;align-items:center;font-size:11px;color:#5a8aaa}
+.hdr-stat{display:flex;gap:6px;align-items:center}
+.hdr-stat .val{color:#cce0f0}
+
+#map-container{position:relative;overflow:hidden;background:#060b14}
+canvas{display:block;width:100%;height:100%}
+
+#sidebar{background:rgba(8,16,30,0.95);border-left:1px solid rgba(0,140,200,0.12);padding:12px;overflow-y:auto;font-size:11px}
+.panel{margin-bottom:12px;padding:10px;background:rgba(0,20,40,0.4);border:1px solid rgba(0,140,200,0.08);border-radius:3px}
+.panel-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#4a7a9a;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid rgba(0,140,200,0.08)}
+.stat-row{display:flex;justify-content:space-between;margin-bottom:3px}
+.stat-label{color:#4a7a9a;font-size:10px}
+.stat-value{color:#bbddee;font-size:11px}
+.ac-list{max-height:360px;overflow-y:auto}
+.ac-item{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:10px;border-bottom:1px solid rgba(0,140,200,0.04);transition:opacity 0.5s}
+.ac-item.returned{opacity:0.3}
+.ac-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ac-dot.vulcan{background:#ff4444;box-shadow:0 0 5px rgba(255,68,68,0.6)}
+.ac-dot.victor{background:#44aaff;box-shadow:0 0 5px rgba(68,170,255,0.6)}
+.ac-name{flex:1;color:#88aabb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fuel-wrap{width:50px;height:3px;background:rgba(0,20,40,0.8);border-radius:2px;overflow:hidden}
+.fuel-fill{height:100%;border-radius:2px;transition:width 1s ease,background 0.5s}
+.fuel-pct{width:28px;text-align:right;font-size:9px}
+
+#bottom{grid-column:1/-1;background:rgba(8,16,30,0.95);border-top:1px solid rgba(0,140,200,0.15);display:flex;align-items:center;padding:0 16px;gap:12px}
+.ctrl-group{display:flex;align-items:center;gap:4px}
+.ctrl-btn{background:rgba(0,40,80,0.4);border:1px solid rgba(0,140,200,0.2);color:#77aabb;padding:5px 10px;border-radius:2px;cursor:pointer;font-family:inherit;font-size:11px;transition:all 0.2s;line-height:1}
+.ctrl-btn:hover{background:rgba(0,60,120,0.4);color:#aaddff;border-color:rgba(0,180,255,0.4)}
+.ctrl-btn.active{background:rgba(0,100,180,0.3);color:#cceeFF;border-color:rgba(0,200,255,0.4)}
+.speed-lbl{font-size:10px;color:#4a7a9a;min-width:44px;text-align:center}
+#timeline-wrap{flex:1;position:relative;height:40px;cursor:pointer}
+#tl-track{position:absolute;top:18px;left:0;right:0;height:4px;background:rgba(0,40,80,0.4);border-radius:2px}
+#tl-progress{height:100%;background:linear-gradient(90deg,#ff8800,#ffaa33);border-radius:2px;width:0%;pointer-events:none}
+.tl-marker{position:absolute;top:14px;width:10px;height:10px;border:1px solid rgba(0,200,255,0.3);background:rgba(0,30,60,0.6);transform:translateX(-5px) rotate(45deg);pointer-events:none;transition:background 0.3s,border-color 0.3s}
+.tl-marker.past{background:rgba(0,200,255,0.15);border-color:rgba(0,200,255,0.5)}
+#event-box{min-width:280px;max-width:340px;padding:6px 10px;background:rgba(0,40,30,0.15);border:1px solid rgba(0,200,150,0.08);border-radius:2px;font-size:10px;color:#66aa88;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5}
+#event-box .ev-title{color:#88ddaa;font-size:11px}
+
+#notif{position:fixed;top:0;left:0;right:300px;bottom:80px;top:50px;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:50}
+#notif-inner{background:rgba(4,10,20,0.92);border:1px solid rgba(0,180,255,0.2);padding:24px 48px;border-radius:3px;text-align:center;opacity:0;transform:scale(0.95);transition:opacity 0.5s,transform 0.5s}
+#notif-inner.show{opacity:1;transform:scale(1)}
+#notif-inner h2{font-size:clamp(14px,1.5vw,20px);color:#ffaa00;letter-spacing:3px;font-weight:400;margin-bottom:6px}
+#notif-inner p{font-size:clamp(10px,1vw,13px);color:#77aabb;letter-spacing:1px;max-width:500px;line-height:1.6}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:rgba(0,10,20,0.3)}
+::-webkit-scrollbar-thumb{background:rgba(0,80,120,0.3);border-radius:3px}
+
+@media(max-width:900px){
+  #app{grid-template-columns:1fr;grid-template-rows:40px 1fr auto 70px}
+  #sidebar{max-height:200px;border-left:none;border-top:1px solid rgba(0,140,200,0.12)}
+  #notif{right:0}
+  header h1{font-size:11px;letter-spacing:2px}
+}
+</style>
+</head>
+<body>
+
+<div id="intro">
+  <div class="badge"><div class="badge-inner"></div></div>
+  <div class="intro-title">Operation Black Buck</div>
+  <div class="intro-date">1 May 1982</div>
+  <div class="intro-sub">The Longest Bombing Raid in History</div>
+  <div class="intro-desc">
+    Vulcan bombers of No. 101 Squadron RAF launched from Ascension Island to attack
+    the Argentine-held runway at Port Stanley — a round trip of nearly 8,000 miles across
+    the South Atlantic. The mission required an extraordinarily complex aerial refuelling
+    plan: eleven Victor K2 tankers refuelling each other and the lone Vulcan in a cascading
+    relay, peeling off one by one until a single bomber pressed on alone to the target.
+  </div>
+  <button class="start-btn" id="startBtn">Begin Simulation</button>
+</div>
+
+<div id="app">
+  <header>
+    <h1>Operation Black Buck — Refuelling Simulation</h1>
+    <div class="hdr-right">
+      <div class="hdr-stat"><span class="stat-label">TIME</span><span class="val" id="hTime">00:00</span></div>
+      <div class="hdr-stat"><span class="stat-label">DIST</span><span class="val" id="hDist">0 nm</span></div>
+      <div class="hdr-stat"><span class="stat-label">A/C</span><span class="val" id="hAC">13</span></div>
+    </div>
+  </header>
+
+  <div id="map-container"><canvas id="map"></canvas></div>
+
+  <div id="sidebar">
+    <div class="panel">
+      <div class="panel-title">Mission Status</div>
+      <div class="stat-row"><span class="stat-label">Phase</span><span class="stat-value" id="sPhase">Pre-flight</span></div>
+      <div class="stat-row"><span class="stat-label">Elapsed</span><span class="stat-value" id="sTime">00h 00m</span></div>
+      <div class="stat-row"><span class="stat-label">Distance</span><span class="stat-value" id="sDist">0 nm</span></div>
+      <div class="stat-row"><span class="stat-label">Remaining</span><span class="stat-value" id="sRem">3,886 nm</span></div>
+      <div class="stat-row"><span class="stat-label">Active A/C</span><span class="stat-value" id="sAC">13</span></div>
+      <div class="stat-row"><span class="stat-label">Returned</span><span class="stat-value" id="sRet">0</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Aircraft</div>
+      <div class="ac-list" id="acList"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Event Log</div>
+      <div id="eventLog" style="max-height:160px;overflow-y:auto;font-size:10px;line-height:1.6"></div>
+    </div>
+  </div>
+
+  <div id="bottom">
+    <div class="ctrl-group">
+      <button class="ctrl-btn" id="btnPlay" title="Play/Pause">&#9654;</button>
+      <button class="ctrl-btn" id="btnReset" title="Reset">&#8634;</button>
+    </div>
+    <div class="ctrl-group">
+      <button class="ctrl-btn spd" data-speed="0.5">&#189;x</button>
+      <button class="ctrl-btn spd active" data-speed="1">1x</button>
+      <button class="ctrl-btn spd" data-speed="2">2x</button>
+      <button class="ctrl-btn spd" data-speed="4">4x</button>
+      <button class="ctrl-btn spd" data-speed="8">8x</button>
+    </div>
+    <div id="timeline-wrap">
+      <div id="tl-track"><div id="tl-progress"></div></div>
+    </div>
+    <div id="event-box"><span class="ev-title">STANDBY</span></div>
+  </div>
+</div>
+
+<div id="notif"><div id="notif-inner"><h2 id="nTitle"></h2><p id="nDesc"></p></div></div>
+
+<script>
+// ============================= DATA =============================
+const ASCENSION = { lat: -7.95, lon: -14.37 };
+const STANLEY = { lat: -51.70, lon: -57.85 };
+const TOTAL_NM = 3886;
+const TOTAL_MINUTES = 640;
+
+const SOUTH_AMERICA = [
+  [12,-70],[11.5,-67],[11,-62],[9,-60],[7,-56],[5,-52],[3,-51],[1,-49],
+  [-1,-47],[-3,-42],[-5,-35.5],[-7,-34.8],[-9,-35.5],[-11,-37],[-13,-39],
+  [-15,-39],[-17,-39.5],[-19,-40],[-21,-41],[-23,-42],[-24,-45],[-25,-47.5],
+  [-27,-48.5],[-29,-49.5],[-31,-51],[-33,-53.5],[-34.5,-54.5],[-35.5,-56.5],
+  [-36.5,-57],[-37.5,-57],[-38.5,-58],[-39,-61],[-40,-62],[-41.5,-63],
+  [-43,-65],[-45,-66],[-46.5,-67],[-48,-66],[-49.5,-67.5],[-51,-69],
+  [-52,-69.5],[-53,-70],[-54,-69],[-54.5,-65],[-55.5,-64],[-54,-63.5]
+];
+const AFRICA = [
+  [36,-6],[35,-3],[34,-2],[33,-8],[31,-10],[28,-13],[25,-15.5],[21,-17],
+  [18,-16.5],[15,-17],[13,-16.5],[10,-14],[7,-11],[5,-5],[4,2],[3,7],
+  [1,10],[0,10],[-2,10],[-5,12],[-8,13],[-11,14],[-14,12.5],[-17,12],
+  [-20,13],[-23,14.5],[-26,15],[-29,16.5],[-32,18],[-34.5,20]
+];
+const FALKLANDS_E = [[-51.2,-59.5],[-51.5,-58.8],[-51.8,-58.5],[-52.2,-59],[-52.4,-59.8],[-52,-60.2],[-51.5,-60]];
+const FALKLANDS_W = [[-51.1,-60.8],[-51.3,-60.2],[-51.7,-60],[-52,-60.5],[-52.2,-61.2],[-51.7,-61.5],[-51.3,-61.3]];
+
+const AIRCRAFT_DEF = [
+  { id:'vulcan1', type:'vulcan', name:'XM607 — Vulcan 607', short:'Vulcan 607', perp:0, along:0 },
+  { id:'vulcan2', type:'vulcan', name:'XM598 — Vulcan (Reserve)', short:'Vulcan Rsv', perp:0.6, along:0.4 },
+  { id:'victor1',  type:'victor', name:'Victor K2 — White 1', short:'White 1',  perp:-1,  along:0.9 },
+  { id:'victor2',  type:'victor', name:'Victor K2 — White 2', short:'White 2',  perp:1,   along:0.9 },
+  { id:'victor3',  type:'victor', name:'Victor K2 — White 3', short:'White 3',  perp:-1.9, along:1.6 },
+  { id:'victor4',  type:'victor', name:'Victor K2 — White 4', short:'White 4',  perp:1.9,  along:1.6 },
+  { id:'victor5',  type:'victor', name:'Victor K2 — Red 1',   short:'Red 1',   perp:-2.8, along:2.3 },
+  { id:'victor6',  type:'victor', name:'Victor K2 — Red 2',   short:'Red 2',   perp:2.8,  along:2.3 },
+  { id:'victor7',  type:'victor', name:'Victor K2 — Red 3',   short:'Red 3',   perp:-3.7, along:3.0 },
+  { id:'victor8',  type:'victor', name:'Victor K2 — Red 4',   short:'Red 4',   perp:3.7,  along:3.0 },
+  { id:'victor9',  type:'victor', name:'Victor K2 — Blue 1',  short:'Blue 1',  perp:-4.6, along:3.7 },
+  { id:'victor10', type:'victor', name:'Victor K2 — Blue 2',  short:'Blue 2',  perp:4.6,  along:3.7 },
+  { id:'victor11', type:'victor', name:'Victor K2 — Blue 3',  short:'Blue 3',  perp:-5.5, along:4.4 },
+];
+
+const BRACKETS = [
+  { progress:0.139, nm:540, name:'BRACKET 1', time:100, dur:14,
+    pairs:[['victor1','victor5'],['victor2','victor6'],['victor3','vulcan1'],['victor4','victor7']],
+    turnbacks:['victor1','victor2','victor3','victor4','vulcan2'] },
+  { progress:0.296, nm:1150, name:'BRACKET 2', time:200, dur:14,
+    pairs:[['victor5','victor8'],['victor6','victor9'],['victor7','vulcan1']],
+    turnbacks:['victor5','victor6','victor7'] },
+  { progress:0.489, nm:1900, name:'BRACKET 3', time:330, dur:14,
+    pairs:[['victor8','victor10'],['victor9','vulcan1']],
+    turnbacks:['victor8','victor9'] },
+  { progress:0.669, nm:2600, name:'BRACKET 4', time:450, dur:14,
+    pairs:[['victor10','victor11'],['victor10','vulcan1']],
+    turnbacks:['victor10'] },
+  { progress:0.798, nm:3100, name:'FINAL REFUELLING', time:540, dur:14,
+    pairs:[['victor11','vulcan1']],
+    turnbacks:['victor11'] },
+];
+
+const EVENTS = [
+  { t:0,   title:'FORMATION DEPARTS',    desc:'11 Victor K2 tankers and 2 Vulcan B2 bombers depart Wideawake Airfield, Ascension Island.', phase:'Outbound — Full Formation' },
+  { t:100, title:'BRACKET 1 — 540 nm',   desc:'First refuelling point. Four Victor tankers transfer fuel to receivers.', phase:'Bracket 1 — Refuelling' },
+  { t:114, title:'FORMATION REDUCES',     desc:'4 Victors and the reserve Vulcan return to Ascension. 7 Victors + Vulcan 607 continue south.', phase:'Outbound — 8 Aircraft' },
+  { t:200, title:'BRACKET 2 — 1,150 nm', desc:'Second refuelling. Three Victors transfer their fuel loads.', phase:'Bracket 2 — Refuelling' },
+  { t:214, title:'FORMATION REDUCES',     desc:'3 Victors peel off and return. 4 Victors + Vulcan continue.', phase:'Outbound — 5 Aircraft' },
+  { t:330, title:'BRACKET 3 — 1,900 nm', desc:'Third refuelling deep in the South Atlantic.', phase:'Bracket 3 — Refuelling' },
+  { t:344, title:'FORMATION REDUCES',     desc:'2 Victors turn back. Only 2 Victors remain with the Vulcan.', phase:'Outbound — 3 Aircraft' },
+  { t:450, title:'BRACKET 4 — 2,600 nm', desc:'Fourth refuelling. Victor tops up the last tanker and the Vulcan.', phase:'Bracket 4 — Refuelling' },
+  { t:464, title:'FORMATION REDUCES',     desc:'1 Victor turns back. Last tanker and Vulcan press on alone.', phase:'Outbound — 2 Aircraft' },
+  { t:540, title:'FINAL REFUELLING — 3,100 nm', desc:'Last Victor gives every drop of spare fuel to Vulcan 607.', phase:'Final Refuelling' },
+  { t:554, title:'VULCAN ALONE',          desc:'Victor turns back with critically low fuel. Vulcan 607 continues alone — 786 nm to target.', phase:'Solo Run to Target' },
+  { t:630, title:'TARGET REACHED',        desc:'Vulcan 607 arrives over Port Stanley airfield, Falkland Islands.', phase:'Over Target' },
+  { t:633, title:'BOMBS RELEASED',        desc:'21 x 1,000 lb bombs dropped in a diagonal stick across the runway. Direct hit confirmed.', phase:'Bombs Away' },
+];
+
+// ============================= STATE =============================
+let canvas, ctx, W, H, dpr;
+let missionTime = 0;
+let speedMult = 1;
+let baseSpeed = 2.5;
+let playing = false;
+let aircraft = [];
+let bracketState = [];
+let lastEventIdx = -1;
+let notifTimeout = null;
+let animTime = 0;
+let lastFrame = 0;
+
+const cam = { lat:-26, lon:-36, span:66, tLat:-26, tLon:-36, tSpan:66 };
+let routeDirX = 0, routeDirY = 0, routePerpX = 0, routePerpY = 0;
+
+// ============================= INIT =============================
+function init() {
+  canvas = document.getElementById('map');
+  ctx = canvas.getContext('2d');
+  resize();
+  window.addEventListener('resize', resize);
+  initAircraft();
+  initBrackets();
+  buildACList();
+  setupControls();
+  lastFrame = performance.now();
+  requestAnimationFrame(loop);
+}
+
+function resize() {
+  const container = document.getElementById('map-container');
+  dpr = window.devicePixelRatio || 1;
+  W = container.clientWidth;
+  H = container.clientHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function initAircraft() {
+  aircraft = AIRCRAFT_DEF.map(d => ({
+    ...d,
+    fuel: 100,
+    fuelBoost: 0,
+    state: 'outbound',
+    progress: 0,
+    returnStart: 0,
+    trail: [],
+    sx: 0, sy: 0
+  }));
+}
+
+function initBrackets() {
+  bracketState = BRACKETS.map(b => ({ ...b, activated: false, completed: false }));
+  lastEventIdx = -1;
+}
+
+// ============================= PROJECTION =============================
+function w2s(lat, lon) {
+  const aspect = W / H;
+  const latSpan = cam.span;
+  const lonSpan = cam.span * aspect;
+  return {
+    x: ((lon - cam.lon) / lonSpan + 0.5) * W,
+    y: ((cam.lat - lat) / latSpan + 0.5) * H
+  };
+}
+
+function s2w(sx, sy) {
+  const aspect = W / H;
+  const latSpan = cam.span;
+  const lonSpan = cam.span * aspect;
+  return {
+    lat: cam.lat - (sy / H - 0.5) * latSpan,
+    lon: (sx / W - 0.5) * lonSpan + cam.lon
+  };
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function routePos(progress) {
+  return {
+    lat: lerp(ASCENSION.lat, STANLEY.lat, progress),
+    lon: lerp(ASCENSION.lon, STANLEY.lon, progress)
+  };
+}
+
+function updateRouteVectors() {
+  const p1 = w2s(ASCENSION.lat, ASCENSION.lon);
+  const p2 = w2s(STANLEY.lat, STANLEY.lon);
+  const dx = p2.x - p1.x, dy = p2.y - p1.y;
+  const len = Math.sqrt(dx * dx + dy * dy) || 1;
+  routeDirX = dx / len; routeDirY = dy / len;
+  routePerpX = -routeDirY; routePerpY = routeDirX;
+}
+
+function formationScreen(ac) {
+  const pos = routePos(ac.progress);
+  const base = w2s(pos.lat, pos.lon);
+  const scale = 12;
+  const dx = ac.perp * scale * routePerpX + ac.along * scale * (-routeDirX);
+  const dy = ac.perp * scale * routePerpY + ac.along * scale * (-routeDirY);
+  return { x: base.x + dx, y: base.y + dy };
+}
+
+// ============================= SIMULATION =============================
+function getFormationProgress() {
+  return Math.min(missionTime / TOTAL_MINUTES, 1);
+}
+
+function update(dt) {
+  if (!playing) return;
+  const simDt = dt * baseSpeed * speedMult;
+  missionTime = Math.min(missionTime + simDt, TOTAL_MINUTES + 5);
+  animTime += dt;
+
+  const fp = getFormationProgress();
+
+  // Update brackets
+  for (const b of bracketState) {
+    if (missionTime >= b.time && !b.activated) {
+      b.activated = true;
+    }
+    if (missionTime >= b.time + b.dur && !b.completed) {
+      b.completed = true;
+      // Boost fuel for all continuing aircraft
+      for (const ac of aircraft) {
+        if (ac.state === 'outbound' && !b.turnbacks.includes(ac.id)) {
+          ac.fuelBoost += 22;
+        }
+      }
+      for (const id of b.turnbacks) {
+        const ac = aircraft.find(a => a.id === id);
+        if (ac && ac.state === 'outbound') {
+          ac.state = 'returning';
+          ac.returnStart = ac.progress;
+        }
+      }
+    }
+  }
+
+  // Update aircraft
+  for (const ac of aircraft) {
+    if (ac.state === 'outbound') {
+      ac.progress = fp;
+      ac.fuel = Math.max(0, Math.min(100, 100 - fp * 170 + ac.fuelBoost));
+    } else if (ac.state === 'returning') {
+      ac.progress -= simDt / TOTAL_MINUTES * 1.1;
+      ac.fuel = Math.max(0, ac.fuel - simDt * 0.15);
+      if (ac.progress <= 0) {
+        ac.state = 'arrived';
+        ac.progress = 0;
+      }
+    }
+    // Screen position
+    const sp = formationScreen(ac);
+    ac.sx = sp.x; ac.sy = sp.y;
+    if (ac.state !== 'arrived') {
+      ac.trail.push({ x: sp.x, y: sp.y, t: animTime });
+      if (ac.trail.length > 35) ac.trail.shift();
+    }
+  }
+
+  // Camera
+  const activeBracket = bracketState.find(b => b.activated && !b.completed && missionTime >= b.time && missionTime < b.time + b.dur);
+  if (activeBracket) {
+    const bp = routePos(activeBracket.progress);
+    cam.tLat = bp.lat;
+    cam.tLon = bp.lon;
+    cam.tSpan = 16;
+  } else if (missionTime > 554 && missionTime < 640) {
+    const vp = routePos(fp);
+    cam.tLat = vp.lat - 1;
+    cam.tLon = vp.lon - 1;
+    cam.tSpan = 18;
+  } else if (missionTime >= 630) {
+    cam.tLat = STANLEY.lat + 2;
+    cam.tLon = STANLEY.lon;
+    cam.tSpan = 12;
+  } else {
+    const vp = routePos(fp);
+    cam.tLat = vp.lat - 3;
+    cam.tLon = vp.lon - 2;
+    cam.tSpan = 38;
+  }
+
+  const camSpeed = activeBracket ? 0.025 : 0.02;
+  cam.lat += (cam.tLat - cam.lat) * camSpeed;
+  cam.lon += (cam.tLon - cam.lon) * camSpeed;
+  cam.span += (cam.tSpan - cam.span) * camSpeed;
+
+  // Events
+  for (let i = 0; i < EVENTS.length; i++) {
+    if (i > lastEventIdx && missionTime >= EVENTS[i].t) {
+      lastEventIdx = i;
+      fireEvent(EVENTS[i]);
+    }
+  }
+
+  updateUI();
+}
+
+// ============================= EVENTS =============================
+function fireEvent(ev) {
+  showNotif(ev.title, ev.desc);
+  addLogEntry(ev);
+  document.getElementById('event-box').innerHTML = `<span class="ev-title">${ev.title}</span>`;
+}
+
+function showNotif(title, desc) {
+  document.getElementById('nTitle').textContent = title;
+  document.getElementById('nDesc').textContent = desc;
+  const inner = document.getElementById('notif-inner');
+  inner.classList.add('show');
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => inner.classList.remove('show'), 4500);
+}
+
+function addLogEntry(ev) {
+  const log = document.getElementById('eventLog');
+  const h = Math.floor(ev.t / 60), m = Math.floor(ev.t % 60);
+  const ts = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  log.innerHTML += `<div style="margin-bottom:4px"><span style="color:#ff8800">${ts}</span> <span style="color:#77aabb">${ev.title}</span></div>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+// ============================= RENDERING =============================
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  updateRouteVectors();
+  drawOcean();
+  drawGrid();
+  drawCoastlines();
+  drawRoute();
+  drawBracketMarkers();
+  drawTrails();
+  drawRefuellingLines();
+  drawAircraft();
+  drawLocLabels();
+  drawMinimap();
+  drawLegend();
+}
+
+function drawOcean() {
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#0a1628');
+  grad.addColorStop(0.5, '#081220');
+  grad.addColorStop(1, '#050d18');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function drawGrid() {
+  ctx.strokeStyle = 'rgba(0,120,180,0.06)';
+  ctx.lineWidth = 0.5;
+  ctx.font = '9px Courier New';
+  ctx.fillStyle = 'rgba(0,120,180,0.15)';
+
+  for (let lat = -60; lat <= 20; lat += 10) {
+    const p1 = w2s(lat, -80), p2 = w2s(lat, 30);
+    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    if (lat === 0) {
+      ctx.strokeStyle = 'rgba(0,160,220,0.12)';
+      ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+      ctx.strokeStyle = 'rgba(0,120,180,0.06)';
+      const lp = w2s(lat, -65);
+      ctx.fillStyle = 'rgba(0,180,220,0.25)';
+      ctx.fillText('EQUATOR', lp.x + 4, lp.y - 3);
+      ctx.fillStyle = 'rgba(0,120,180,0.15)';
+    }
+    const lp = w2s(lat, -65);
+    if (lat !== 0) ctx.fillText(`${Math.abs(lat)}°${lat >= 0 ? 'N' : 'S'}`, lp.x + 4, lp.y - 3);
+  }
+  for (let lon = -70; lon <= 20; lon += 10) {
+    const p1 = w2s(20, lon), p2 = w2s(-60, lon);
+    ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+    const lp = w2s(6, lon);
+    ctx.fillText(`${Math.abs(lon)}°${lon >= 0 ? 'E' : 'W'}`, lp.x + 3, lp.y + 10);
+  }
+}
+
+function drawCoastPoly(pts, fill) {
+  if (pts.length < 2) return;
+  ctx.beginPath();
+  let first = w2s(pts[0][0], pts[0][1]);
+  ctx.moveTo(first.x, first.y);
+  for (let i = 1; i < pts.length; i++) {
+    const p = w2s(pts[i][0], pts[i][1]);
+    ctx.lineTo(p.x, p.y);
+  }
+  if (fill) {
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(10,30,50,0.6)';
+    ctx.fill();
+  }
+  // Glow
+  ctx.strokeStyle = 'rgba(0,140,200,0.12)';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  // Core
+  ctx.strokeStyle = 'rgba(0,160,220,0.3)';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+}
+
+function drawCoastlines() {
+  drawCoastPoly(SOUTH_AMERICA, false);
+  drawCoastPoly(AFRICA, false);
+  drawCoastPoly(FALKLANDS_E, true);
+  drawCoastPoly(FALKLANDS_W, true);
+}
+
+function drawRoute() {
+  const p1 = w2s(ASCENSION.lat, ASCENSION.lon);
+  const p2 = w2s(STANLEY.lat, STANLEY.lon);
+
+  // Glow
+  ctx.strokeStyle = 'rgba(255,136,0,0.08)';
+  ctx.lineWidth = 8;
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+
+  // Dashed line
+  ctx.strokeStyle = 'rgba(255,136,0,0.35)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([8, 6]);
+  ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Distance markers
+  ctx.font = '8px Courier New';
+  for (let nm = 500; nm < TOTAL_NM; nm += 500) {
+    const prog = nm / TOTAL_NM;
+    const pos = routePos(prog);
+    const sp = w2s(pos.lat, pos.lon);
+    const px = sp.x + routePerpX * 12;
+    const py = sp.y + routePerpY * 12;
+    ctx.fillStyle = 'rgba(255,136,0,0.2)';
+    ctx.beginPath(); ctx.arc(sp.x, sp.y, 2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,136,0,0.25)';
+    ctx.fillText(`${nm}nm`, px, py + 3);
+  }
+}
+
+function drawBracketMarkers() {
+  for (let i = 0; i < bracketState.length; i++) {
+    const b = bracketState[i];
+    const pos = routePos(b.progress);
+    const sp = w2s(pos.lat, pos.lon);
+    const isActive = b.activated && !b.completed && missionTime >= b.time && missionTime < b.time + b.dur;
+    const isPast = b.completed;
+
+    ctx.save();
+    ctx.translate(sp.x, sp.y);
+    ctx.rotate(Math.PI / 4);
+
+    if (isActive) {
+      // Pulsing glow
+      const pulse = 0.5 + 0.5 * Math.sin(animTime * 4);
+      ctx.fillStyle = `rgba(0,255,180,${0.1 + pulse * 0.15})`;
+      ctx.fillRect(-10, -10, 20, 20);
+      ctx.strokeStyle = `rgba(0,255,180,${0.4 + pulse * 0.4})`;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-8, -8, 16, 16);
+    } else if (isPast) {
+      ctx.fillStyle = 'rgba(0,200,255,0.1)';
+      ctx.fillRect(-6, -6, 12, 12);
+      ctx.strokeStyle = 'rgba(0,200,255,0.3)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(-6, -6, 12, 12);
+    } else {
+      ctx.strokeStyle = 'rgba(0,160,220,0.15)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(-5, -5, 10, 10);
+    }
+    ctx.restore();
+
+    // Label
+    if (isActive || cam.span < 50) {
+      ctx.font = '9px Courier New';
+      ctx.fillStyle = isActive ? 'rgba(0,255,180,0.7)' : 'rgba(0,180,220,0.3)';
+      ctx.fillText(b.name, sp.x + 14, sp.y - 8);
+      ctx.fillStyle = isActive ? 'rgba(0,255,180,0.5)' : 'rgba(0,180,220,0.2)';
+      ctx.fillText(`${b.nm} nm`, sp.x + 14, sp.y + 3);
+    }
+
+    // Timeline marker
+    const tlEl = document.querySelector(`.tl-marker[data-idx="${i}"]`);
+    if (!tlEl) {
+      const m = document.createElement('div');
+      m.className = 'tl-marker';
+      m.dataset.idx = i;
+      m.style.left = (b.time / TOTAL_MINUTES * 100) + '%';
+      document.getElementById('tl-track').appendChild(m);
+    } else {
+      tlEl.classList.toggle('past', isPast || isActive);
+    }
+  }
+}
+
+function drawTrails() {
+  for (const ac of aircraft) {
+    if (ac.state === 'arrived' || ac.trail.length < 2) continue;
+    const color = ac.type === 'vulcan' ? '255,68,68' : '68,170,255';
+    const isReturning = ac.state === 'returning';
+    for (let i = 1; i < ac.trail.length; i++) {
+      const alpha = (i / ac.trail.length) * (isReturning ? 0.15 : 0.3);
+      const lw = (i / ac.trail.length) * 2;
+      ctx.strokeStyle = `rgba(${color},${alpha})`;
+      ctx.lineWidth = lw;
+      ctx.beginPath();
+      ctx.moveTo(ac.trail[i - 1].x, ac.trail[i - 1].y);
+      ctx.lineTo(ac.trail[i].x, ac.trail[i].y);
+      ctx.stroke();
+    }
+  }
+}
+
+function drawRefuellingLines() {
+  for (const b of bracketState) {
+    if (!b.activated || b.completed) continue;
+    if (missionTime < b.time || missionTime >= b.time + b.dur) continue;
+
+    const elapsed = missionTime - b.time;
+    const fuelFlow = Math.min(elapsed / 2, 1);
+
+    for (const pair of b.pairs) {
+      const from = aircraft.find(a => a.id === pair[0]);
+      const to = aircraft.find(a => a.id === pair[1]);
+      if (!from || !to || from.state === 'arrived' || to.state === 'arrived') continue;
+
+      const fx = from.sx, fy = from.sy, tx = to.sx, ty = to.sy;
+
+      // Outer glow
+      ctx.strokeStyle = `rgba(50,255,130,${0.12 * fuelFlow})`;
+      ctx.lineWidth = 10;
+      ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(tx, ty); ctx.stroke();
+
+      // Inner glow
+      ctx.strokeStyle = `rgba(50,255,130,${0.2 * fuelFlow})`;
+      ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(tx, ty); ctx.stroke();
+
+      // Dashed core line
+      ctx.strokeStyle = `rgba(50,255,130,${0.7 * fuelFlow})`;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 3]);
+      ctx.lineDashOffset = -animTime * 40;
+      ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(tx, ty); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.lineDashOffset = 0;
+
+      // Fuel particles
+      const nPart = 8;
+      for (let i = 0; i < nPart; i++) {
+        const p = ((animTime * 1.8 + i / nPart) % 1) * fuelFlow;
+        const px = fx + (tx - fx) * p;
+        const py = fy + (ty - fy) * p;
+        const a = (1 - p) * 0.9 * fuelFlow;
+        ctx.fillStyle = `rgba(50,255,130,${a})`;
+        ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(100,255,180,${a * 0.5})`;
+        ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+}
+
+function drawAircraftIcon(x, y, type, heading, glow, alpha) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(heading);
+  ctx.globalAlpha = alpha;
+
+  if (glow) {
+    const color = type === 'vulcan' ? 'rgba(255,68,68,0.25)' : 'rgba(68,170,255,0.25)';
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(0, 0, 10, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  if (type === 'vulcan') {
+    ctx.fillStyle = `rgba(255,80,80,${0.9 * alpha})`;
+    ctx.beginPath();
+    ctx.moveTo(0, -7);
+    ctx.lineTo(-8, 5);
+    ctx.lineTo(-2, 3);
+    ctx.lineTo(0, 7);
+    ctx.lineTo(2, 3);
+    ctx.lineTo(8, 5);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = `rgba(255,120,120,${0.6 * alpha})`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  } else {
+    ctx.fillStyle = `rgba(80,180,255,${0.85 * alpha})`;
+    ctx.beginPath();
+    ctx.moveTo(0, -6);
+    ctx.lineTo(-7, 4);
+    ctx.lineTo(-2, 3);
+    ctx.lineTo(-1, 6);
+    ctx.lineTo(1, 6);
+    ctx.lineTo(2, 3);
+    ctx.lineTo(7, 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = `rgba(100,200,255,${0.5 * alpha})`;
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+
+  // Engine glow
+  const egColor = type === 'vulcan' ? '255,160,60' : '140,200,255';
+  const egA = 0.4 + 0.2 * Math.sin(animTime * 12 + x);
+  ctx.fillStyle = `rgba(${egColor},${egA * alpha})`;
+  ctx.beginPath();
+  ctx.arc(0, type === 'vulcan' ? 7 : 6, 2, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+function drawAircraft() {
+  const heading = Math.atan2(routeDirX, -routeDirY);
+  const retHeading = heading + Math.PI;
+
+  for (const ac of aircraft) {
+    if (ac.state === 'arrived') continue;
+    const h = ac.state === 'returning' ? retHeading : heading;
+    const alpha = ac.state === 'returning' ? 0.5 : 1;
+    const glow = ac.state === 'outbound';
+    drawAircraftIcon(ac.sx, ac.sy, ac.type, h, glow, alpha);
+  }
+
+  // Vulcan label when solo
+  if (missionTime > 554) {
+    const v = aircraft.find(a => a.id === 'vulcan1');
+    if (v && v.state === 'outbound') {
+      const remaining = Math.max(0, TOTAL_NM - Math.floor(v.progress * TOTAL_NM));
+      const urgency = remaining < 200 ? 0.5 + 0.5 * Math.sin(animTime * 6) : 1;
+      ctx.font = 'bold 11px Courier New';
+      ctx.fillStyle = `rgba(255,100,100,${0.85 * urgency})`;
+      ctx.fillText('VULCAN 607', v.sx + 16, v.sy - 10);
+      ctx.font = '10px Courier New';
+      ctx.fillStyle = remaining < 400 ? `rgba(255,180,80,${0.7 * urgency})` : 'rgba(255,100,100,0.5)';
+      ctx.fillText(`${remaining} nm to target`, v.sx + 16, v.sy + 4);
+      const f = Math.round(v.fuel);
+      ctx.fillStyle = f < 30 ? 'rgba(255,80,80,0.6)' : 'rgba(100,200,100,0.5)';
+      ctx.fillText(`FUEL ${f}%`, v.sx + 16, v.sy + 16);
+    }
+  }
+}
+
+function drawLocLabels() {
+  // Ascension
+  const asc = w2s(ASCENSION.lat, ASCENSION.lon);
+  ctx.fillStyle = 'rgba(255,200,100,0.6)';
+  ctx.beginPath(); ctx.arc(asc.x, asc.y, 4, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,200,100,0.3)';
+  ctx.beginPath(); ctx.arc(asc.x, asc.y, 7, 0, Math.PI * 2); ctx.fill();
+  ctx.font = 'bold 10px Courier New';
+  ctx.fillStyle = 'rgba(255,200,100,0.8)';
+  ctx.fillText('ASCENSION ISLAND', asc.x + 12, asc.y - 6);
+  ctx.font = '9px Courier New';
+  ctx.fillStyle = 'rgba(255,200,100,0.4)';
+  ctx.fillText('Wideawake Airfield', asc.x + 12, asc.y + 6);
+
+  // Stanley
+  const stl = w2s(STANLEY.lat, STANLEY.lon);
+  const targetPulse = missionTime >= 630 ? 0.6 + 0.4 * Math.sin(animTime * 6) : 0.5;
+  ctx.fillStyle = `rgba(255,60,60,${targetPulse * 0.6})`;
+  ctx.beginPath(); ctx.arc(stl.x, stl.y, 5, 0, Math.PI * 2); ctx.fill();
+  if (missionTime >= 630) {
+    ctx.strokeStyle = `rgba(255,60,60,${targetPulse * 0.4})`;
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(stl.x, stl.y, 10 + Math.sin(animTime * 3) * 3, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.font = 'bold 10px Courier New';
+  ctx.fillStyle = 'rgba(255,100,100,0.7)';
+  ctx.fillText('PORT STANLEY', stl.x + 12, stl.y - 6);
+  ctx.font = '9px Courier New';
+  ctx.fillStyle = 'rgba(255,100,100,0.4)';
+  ctx.fillText('TARGET', stl.x + 12, stl.y + 6);
+
+  // Bomb impact
+  if (missionTime >= 633 && missionTime < 650) {
+    const t = (missionTime - 633) / 17;
+
+    // Initial flash
+    if (t < 0.15) {
+      const flashA = (1 - t / 0.15) * 0.4;
+      ctx.fillStyle = `rgba(255,240,200,${flashA})`;
+      ctx.fillRect(stl.x - 100, stl.y - 80, 200, 160);
+    }
+
+    // Multiple expanding rings
+    for (let ring = 0; ring < 3; ring++) {
+      const rt = Math.max(0, t - ring * 0.08);
+      if (rt <= 0) continue;
+      const r = 5 + rt * 60;
+      const a = Math.max(0, 1 - rt * 1.2);
+      ctx.strokeStyle = `rgba(255,${180 + ring * 30},50,${a * 0.5})`;
+      ctx.lineWidth = (3 - ring) * a;
+      ctx.beginPath(); ctx.arc(stl.x, stl.y, r, 0, Math.PI * 2); ctx.stroke();
+    }
+
+    // Core glow
+    const coreA = Math.max(0, 1 - t * 2) * 0.6;
+    const grad = ctx.createRadialGradient(stl.x, stl.y, 0, stl.x, stl.y, 20);
+    grad.addColorStop(0, `rgba(255,200,100,${coreA})`);
+    grad.addColorStop(1, `rgba(255,100,30,0)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(stl.x, stl.y, 20, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+function drawMinimap() {
+  const mx = 12, my = H - 158, mw = 85, mh = 140;
+
+  ctx.fillStyle = 'rgba(4,10,22,0.8)';
+  ctx.fillRect(mx, my, mw, mh);
+  ctx.strokeStyle = 'rgba(0,120,180,0.25)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(mx, my, mw, mh);
+
+  function mp(lat, lon) {
+    const nx = (lon - (-68)) / (22 - (-68));
+    const ny = (8 - lat) / (8 - (-56));
+    return { x: mx + nx * mw, y: my + ny * mh };
+  }
+
+  // Coastlines (simplified)
+  ctx.strokeStyle = 'rgba(0,140,200,0.2)';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  for (let i = 0; i < SOUTH_AMERICA.length; i++) {
+    const p = mp(SOUTH_AMERICA[i][0], SOUTH_AMERICA[i][1]);
+    i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+  }
+  ctx.stroke();
+  ctx.beginPath();
+  for (let i = 0; i < AFRICA.length; i++) {
+    const p = mp(AFRICA[i][0], AFRICA[i][1]);
+    i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+  }
+  ctx.stroke();
+
+  // Route
+  const r1 = mp(ASCENSION.lat, ASCENSION.lon);
+  const r2 = mp(STANLEY.lat, STANLEY.lon);
+  ctx.strokeStyle = 'rgba(255,136,0,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(r1.x, r1.y); ctx.lineTo(r2.x, r2.y); ctx.stroke();
+
+  // Formation dot
+  const fp = routePos(getFormationProgress());
+  const fd = mp(fp.lat, fp.lon);
+  ctx.fillStyle = '#ff4444';
+  ctx.beginPath(); ctx.arc(fd.x, fd.y, 2.5, 0, Math.PI * 2); ctx.fill();
+
+  // View rectangle
+  const tl = s2w(0, 0), br = s2w(W, H);
+  const vtl = mp(tl.lat, tl.lon), vbr = mp(br.lat, br.lon);
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(vtl.x, vtl.y, vbr.x - vtl.x, vbr.y - vtl.y);
+
+  // Label
+  ctx.font = '7px Courier New';
+  ctx.fillStyle = 'rgba(0,160,220,0.4)';
+  ctx.fillText('SOUTH ATLANTIC', mx + 4, my + 10);
+}
+
+function drawLegend() {
+  const lx = W - 160, ly = 10;
+  ctx.fillStyle = 'rgba(4,10,22,0.7)';
+  ctx.fillRect(lx, ly, 150, 52);
+  ctx.strokeStyle = 'rgba(0,120,180,0.15)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(lx, ly, 150, 52);
+
+  ctx.font = '8px Courier New';
+  ctx.fillStyle = 'rgba(0,160,220,0.4)';
+  ctx.fillText('LEGEND', lx + 8, ly + 12);
+
+  // Vulcan icon
+  drawAircraftIcon(lx + 16, ly + 28, 'vulcan', 0, false, 0.8);
+  ctx.font = '9px Courier New';
+  ctx.fillStyle = 'rgba(255,100,100,0.7)';
+  ctx.fillText('Avro Vulcan B2', lx + 30, ly + 31);
+
+  // Victor icon
+  drawAircraftIcon(lx + 16, ly + 43, 'victor', 0, false, 0.8);
+  ctx.fillStyle = 'rgba(100,200,255,0.7)';
+  ctx.fillText('Handley Page Victor K2', lx + 30, ly + 46);
+}
+
+// ============================= UI =============================
+function buildACList() {
+  const list = document.getElementById('acList');
+  list.innerHTML = '';
+  for (const ac of aircraft) {
+    const div = document.createElement('div');
+    div.className = 'ac-item';
+    div.id = 'ac-' + ac.id;
+    div.innerHTML = `
+      <div class="ac-dot ${ac.type}"></div>
+      <div class="ac-name">${ac.short}</div>
+      <div class="fuel-wrap"><div class="fuel-fill" id="fuel-${ac.id}" style="width:100%;background:#33cc66"></div></div>
+      <div class="fuel-pct" id="fpct-${ac.id}" style="color:#66aa77">100%</div>
+    `;
+    list.appendChild(div);
+  }
+}
+
+function updateUI() {
+  const fp = getFormationProgress();
+  const dist = Math.floor(fp * TOTAL_NM);
+  const h = Math.floor(missionTime / 60), m = Math.floor(missionTime % 60);
+  const ts = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+
+  document.getElementById('hTime').textContent = ts;
+  document.getElementById('hDist').textContent = dist + ' nm';
+
+  const activeCount = aircraft.filter(a => a.state === 'outbound').length;
+  const retCount = aircraft.filter(a => a.state === 'returning' || a.state === 'arrived').length;
+  document.getElementById('hAC').textContent = activeCount;
+  document.getElementById('sTime').textContent = `${String(h).padStart(2,'0')}h ${String(m).padStart(2,'0')}m`;
+  document.getElementById('sDist').textContent = `${dist.toLocaleString()} nm`;
+  document.getElementById('sRem').textContent = `${Math.max(0, TOTAL_NM - dist).toLocaleString()} nm`;
+  document.getElementById('sAC').textContent = activeCount;
+  document.getElementById('sRet').textContent = retCount;
+
+  // Phase
+  const ev = EVENTS.filter(e => e.t <= missionTime).pop();
+  if (ev) document.getElementById('sPhase').textContent = ev.phase;
+
+  // Timeline progress
+  document.getElementById('tl-progress').style.width = (missionTime / TOTAL_MINUTES * 100) + '%';
+
+  // Aircraft list
+  for (const ac of aircraft) {
+    const item = document.getElementById('ac-' + ac.id);
+    const fuelBar = document.getElementById('fuel-' + ac.id);
+    const fuelPct = document.getElementById('fpct-' + ac.id);
+    if (!item) continue;
+
+    item.classList.toggle('returned', ac.state === 'returning' || ac.state === 'arrived');
+
+    const f = Math.max(0, Math.min(100, Math.round(ac.fuel)));
+    fuelBar.style.width = f + '%';
+    fuelPct.textContent = f + '%';
+
+    if (f > 50) {
+      fuelBar.style.background = '#33cc66';
+      fuelPct.style.color = '#66aa77';
+    } else if (f > 25) {
+      fuelBar.style.background = '#ccaa33';
+      fuelPct.style.color = '#aa9944';
+    } else {
+      fuelBar.style.background = '#cc3333';
+      fuelPct.style.color = '#aa5544';
+    }
+
+    if (ac.state === 'arrived') {
+      fuelPct.textContent = 'RTB';
+      fuelPct.style.color = '#445566';
+    } else if (ac.state === 'returning') {
+      fuelPct.textContent = f + '% ↑';
+    }
+  }
+}
+
+// ============================= CONTROLS =============================
+function setupControls() {
+  document.getElementById('startBtn').addEventListener('click', () => {
+    document.getElementById('intro').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    setTimeout(() => {
+      playing = true;
+      document.getElementById('btnPlay').innerHTML = '&#9646;&#9646;';
+      document.getElementById('btnPlay').classList.add('active');
+    }, 800);
+  });
+
+  document.getElementById('btnPlay').addEventListener('click', () => {
+    playing = !playing;
+    const btn = document.getElementById('btnPlay');
+    btn.innerHTML = playing ? '&#9646;&#9646;' : '&#9654;';
+    btn.classList.toggle('active', playing);
+  });
+
+  document.getElementById('btnReset').addEventListener('click', () => {
+    missionTime = 0;
+    playing = false;
+    initAircraft();
+    initBrackets();
+    cam.lat = cam.tLat = -26;
+    cam.lon = cam.tLon = -36;
+    cam.span = cam.tSpan = 66;
+    lastEventIdx = -1;
+    document.getElementById('btnPlay').innerHTML = '&#9654;';
+    document.getElementById('btnPlay').classList.remove('active');
+    document.getElementById('eventLog').innerHTML = '';
+    document.getElementById('event-box').innerHTML = '<span class="ev-title">STANDBY</span>';
+    document.getElementById('notif-inner').classList.remove('show');
+    document.querySelectorAll('.tl-marker').forEach(m => m.classList.remove('past'));
+    buildACList();
+    updateUI();
+  });
+
+  document.querySelectorAll('.spd').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.spd').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      speedMult = parseFloat(btn.dataset.speed);
+    });
+  });
+
+  document.getElementById('timeline-wrap').addEventListener('click', (e) => {
+    const rect = document.getElementById('tl-track').getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    seekTo(pct * TOTAL_MINUTES);
+  });
+}
+
+function seekTo(targetTime) {
+  missionTime = targetTime;
+  initAircraft();
+  bracketState = BRACKETS.map(b => ({ ...b, activated: false, completed: false }));
+
+  for (const b of bracketState) {
+    if (missionTime >= b.time + b.dur) {
+      b.activated = true;
+      b.completed = true;
+      // Apply fuel boosts to continuing aircraft
+      for (const ac of aircraft) {
+        if (ac.state === 'outbound' && !b.turnbacks.includes(ac.id)) {
+          ac.fuelBoost += 22;
+        }
+      }
+      for (const id of b.turnbacks) {
+        const ac = aircraft.find(a => a.id === id);
+        if (ac) {
+          ac.state = 'arrived';
+          ac.progress = 0;
+        }
+      }
+    } else if (missionTime >= b.time) {
+      b.activated = true;
+    }
+  }
+
+  // Set progress for remaining outbound aircraft
+  const fp = getFormationProgress();
+  for (const ac of aircraft) {
+    if (ac.state === 'outbound') {
+      ac.progress = fp;
+      ac.fuel = Math.max(0, Math.min(100, 100 - fp * 170 + ac.fuelBoost));
+    }
+  }
+
+  // Update events
+  lastEventIdx = -1;
+  document.getElementById('eventLog').innerHTML = '';
+  for (let i = 0; i < EVENTS.length; i++) {
+    if (missionTime >= EVENTS[i].t) {
+      lastEventIdx = i;
+      addLogEntry(EVENTS[i]);
+    }
+  }
+
+  cam.lat = cam.tLat;
+  cam.lon = cam.tLon;
+  cam.span = cam.tSpan;
+
+  updateUI();
+}
+
+// ============================= MAIN LOOP =============================
+function loop(ts) {
+  const dt = Math.min((ts - lastFrame) / 1000, 0.1);
+  lastFrame = ts;
+  update(dt);
+  render();
+  requestAnimationFrame(loop);
+}
+
+// Boot
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,849 @@
+<title>Operation Black Buck</title>
+<style>
+:root { color-scheme: dark; padding: 0 !important; }
+body { background: #080c14; color: #c0d8f0; overflow: hidden; cursor: default; user-select: none;
+  font-family: 'Courier New', Courier, monospace; margin: 0; padding: 0; }
+canvas { display: block; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; }
+
+#intro { position: fixed; inset: 0; z-index: 100; background: #000; display: flex;
+  align-items: center; justify-content: center; transition: opacity 1.5s ease-in; }
+#intro.fade-out { opacity: 0; pointer-events: none; }
+.intro-content { text-align: center; max-width: 90vw; }
+.intro-line { opacity: 0; transform: translateY(12px); transition: opacity 1.2s ease-out, transform 1.2s ease-out; }
+.intro-line.show { opacity: 1; transform: translateY(0); }
+#intro-title { font-size: clamp(22px, 5vw, 56px); font-weight: bold; color: #fff;
+  letter-spacing: 0.18em; margin-bottom: 16px; text-shadow: 0 0 40px rgba(0,180,140,0.3); }
+#intro-date { font-size: clamp(13px, 2.5vw, 22px); color: #ffa726; margin-bottom: 10px; }
+#intro-tagline { font-size: clamp(12px, 2vw, 18px); color: #00d4a0; font-style: italic; margin-bottom: 28px; }
+#intro-detail { font-size: clamp(11px, 1.5vw, 15px); color: #8899aa; margin-bottom: 6px; }
+#intro-distance { font-size: clamp(11px, 1.5vw, 15px); color: #8899aa; margin-bottom: 36px; }
+#btn-start { background: transparent; border: 1px solid #00d4a0; color: #00d4a0; padding: 12px 36px;
+  font-family: inherit; font-size: clamp(12px, 1.5vw, 15px); letter-spacing: 0.12em; cursor: pointer;
+  transition: background 0.3s, opacity 1.2s, transform 1.2s; opacity: 0; transform: translateY(12px); }
+#btn-start.show { opacity: 1; transform: translateY(0); }
+#btn-start:hover { background: rgba(0,212,160,0.12); }
+
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+#hud > * { pointer-events: auto; }
+.hud-tl { position: absolute; top: 12px; left: 16px; }
+.hud-tl .title { font-size: clamp(11px, 1.3vw, 15px); font-weight: bold; color: #fff; letter-spacing: 0.1em; }
+.hud-tl .subtitle { font-size: clamp(9px, 1vw, 11px); color: #ffa726; margin-top: 2px; }
+.hud-tr { position: absolute; top: 12px; right: 16px; text-align: right; }
+.hud-tr .clock { font-size: clamp(16px, 2.2vw, 24px); color: #00d4a0; font-weight: bold; }
+.hud-tr .spd { font-size: 11px; color: #6688aa; margin-top: 2px; }
+
+#panel-right { position: absolute; top: 56px; right: 10px; width: clamp(180px, 18vw, 230px);
+  max-height: calc(100vh - 170px); background: rgba(5,15,30,0.88); border: 1px solid rgba(80,160,255,0.15);
+  border-radius: 4px; overflow-y: auto; padding: 8px 10px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.panel-hdr { font-size: 10px; color: #ffa726; letter-spacing: 0.08em; margin-bottom: 6px;
+  padding-bottom: 4px; border-bottom: 1px solid rgba(80,160,255,0.12); }
+.ac-row { display: flex; align-items: center; gap: 5px; padding: 2px 0; font-size: 10px; transition: opacity 0.4s; }
+.ac-row.ret { opacity: 0.4; }
+.ac-row.landed { opacity: 0.2; }
+.ac-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.ac-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fuel-bg { width: 44px; height: 5px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+.fuel-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+.ac-st { font-size: 8px; width: 42px; text-align: right; flex-shrink: 0; letter-spacing: 0.03em; }
+
+#panel-bl { position: absolute; bottom: 70px; left: 14px; background: rgba(5,15,30,0.88);
+  border: 1px solid rgba(80,160,255,0.15); border-radius: 4px; padding: 10px 14px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); min-width: 180px; max-width: 260px; }
+.info-label { font-size: 9px; color: #ffa726; letter-spacing: 0.05em; margin-bottom: 2px; }
+.info-val { font-size: 12px; color: #e0ecf8; margin-bottom: 7px; }
+.info-val:last-child { margin-bottom: 0; }
+
+#toasts { position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%); display: flex;
+  flex-direction: column; align-items: center; gap: 5px; z-index: 15; pointer-events: none; }
+.toast { background: rgba(0,20,50,0.92); border: 1px solid rgba(0,212,160,0.5); color: #b0e8d0;
+  padding: 6px 22px; border-radius: 4px; font-size: 11px; letter-spacing: 0.03em; white-space: nowrap;
+  animation: ti 0.5s ease-out, to 0.6s 4.5s ease-in forwards;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+@keyframes ti { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes to { from { opacity:1; } to { opacity:0; } }
+
+#controls { position: fixed; bottom: 0; left: 0; right: 0; height: 50px; z-index: 20;
+  background: rgba(5,15,30,0.92); border-top: 1px solid rgba(80,160,255,0.12);
+  display: flex; align-items: center; padding: 0 14px; gap: 10px;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+#controls::before { content:''; position:absolute; top:-1px; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(0,212,160,0.25), transparent); }
+#btn-play { background: none; border: 1px solid #00d4a0; color: #00d4a0; width: 32px; height: 32px;
+  border-radius: 4px; cursor: pointer; font-size: 13px; display: flex; align-items: center;
+  justify-content: center; flex-shrink: 0; transition: background 0.2s; }
+#btn-play:hover { background: rgba(0,212,160,0.12); }
+#tl-wrap { flex: 1; position: relative; height: 32px; display: flex; align-items: center; }
+#timeline { -webkit-appearance: none; appearance: none; width: 100%; height: 4px;
+  background: rgba(255,255,255,0.08); border-radius: 2px; outline: none; cursor: pointer; }
+#timeline::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: #00d4a0; cursor: pointer; border: 2px solid #0a1628; }
+#timeline::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%;
+  background: #00d4a0; cursor: pointer; border: 2px solid #0a1628; }
+#tl-marks { position: absolute; top: 50%; left: 0; right: 0; height: 0; pointer-events: none; }
+.tl-mk { position: absolute; width: 5px; height: 5px; background: #ffa726; border-radius: 50%;
+  transform: translate(-50%,-50%); opacity: 0.6; }
+#phase-lbl { position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; color: #8899aa; white-space: nowrap; pointer-events: none; }
+.sp-btn { background: none; border: 1px solid rgba(80,160,255,0.2); color: #6688aa; padding: 3px 10px;
+  border-radius: 3px; cursor: pointer; font-family: inherit; font-size: 11px; transition: all 0.2s; }
+.sp-btn.active { border-color: #00d4a0; color: #00d4a0; }
+.sp-btn:hover { background: rgba(0,212,160,0.08); }
+
+#legend { position: absolute; bottom: 62px; right: 10px; background: rgba(5,15,30,0.85);
+  border: 1px solid rgba(80,160,255,0.12); border-radius: 4px; padding: 6px 12px;
+  font-size: 9px; display: flex; gap: 12px; z-index: 11; }
+.lg-item { display: flex; align-items: center; gap: 4px; }
+.lg-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+@media (max-width: 700px) {
+  #panel-right, #legend { display: none; }
+  #panel-bl { bottom: 58px; left: 8px; padding: 6px 10px; }
+  #controls { height: 44px; padding: 0 8px; }
+}
+#panel-right::-webkit-scrollbar { width: 3px; }
+#panel-right::-webkit-scrollbar-track { background: transparent; }
+#panel-right::-webkit-scrollbar-thumb { background: rgba(80,160,255,0.2); border-radius: 2px; }
+</style>
+
+<!-- Intro -->
+<div id="intro">
+  <div class="intro-content">
+    <div id="intro-title" class="intro-line">OPERATION BLACK BUCK</div>
+    <div id="intro-date" class="intro-line">30 April – 1 May 1982</div>
+    <div id="intro-tagline" class="intro-line">The Longest Bombing Raid in History</div>
+    <div id="intro-detail" class="intro-line">Ascension Island → Port Stanley · Falkland Islands</div>
+    <div id="intro-distance" class="intro-line">3,886 miles · 11 Tankers · 1 Vulcan Bomber</div>
+    <button id="btn-start" class="intro-line">BEGIN SIMULATION</button>
+  </div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<!-- HUD -->
+<div id="hud">
+  <div class="hud-tl">
+    <div class="title">OPERATION BLACK BUCK</div>
+    <div class="subtitle">Outbound Refuelling Cascade</div>
+  </div>
+  <div class="hud-tr">
+    <div class="clock" id="clock">T+00:00</div>
+    <div class="spd" id="spd-lbl">×1</div>
+  </div>
+  <div id="panel-right">
+    <div class="panel-hdr">▾ FORMATION STATUS</div>
+    <div id="ac-list"></div>
+  </div>
+  <div id="panel-bl">
+    <div class="info-label">PHASE</div>
+    <div class="info-val" id="i-phase">Pre-flight</div>
+    <div class="info-label">FROM ASCENSION</div>
+    <div class="info-val" id="i-dist">0 nm</div>
+    <div class="info-label">TO TARGET</div>
+    <div class="info-val" id="i-tgt">3,400 nm</div>
+    <div class="info-label">ACTIVE AIRCRAFT</div>
+    <div class="info-val" id="i-count">12 of 12</div>
+  </div>
+  <div id="toasts"></div>
+  <div id="legend">
+    <div class="lg-item"><div class="lg-dot" style="background:#ff5252"></div>Vulcan B.2</div>
+    <div class="lg-item"><div class="lg-dot" style="background:#42a5f5"></div>Victor K.2</div>
+    <div class="lg-item"><div class="lg-dot" style="background:#546e7a"></div>Returning</div>
+    <div class="lg-item"><div class="lg-dot" style="background:#ffd54f"></div>Refuel Point</div>
+  </div>
+</div>
+
+<!-- Controls -->
+<div id="controls">
+  <button id="btn-play">▶</button>
+  <div id="tl-wrap">
+    <div id="phase-lbl"></div>
+    <input type="range" id="timeline" min="0" max="1000" value="0" step="1">
+    <div id="tl-marks"></div>
+  </div>
+  <button class="sp-btn active" data-s="1">1×</button>
+  <button class="sp-btn" data-s="2">2×</button>
+  <button class="sp-btn" data-s="4">4×</button>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+// ===================== CONFIG =====================
+var SIM_DUR = 158;
+var MAP = {latMin:-57, latMax:13, lonMin:-73, lonMax:23};
+var ASC = {lat:-7.9467, lon:-14.3559};
+var STN = {lat:-51.6853, lon:-57.8575};
+
+// ===================== GEODATA =====================
+var SA=[
+  [13,-73],[13,-60],[10,-58],[8,-60],[6,-57],[5,-54],[4,-52],
+  [2,-50],[1,-49],[0,-49],[-1,-47],[-2,-44],[-3,-40],[-5,-35],
+  [-7,-35],[-8,-35],[-10,-37],[-12,-38],[-14,-39],[-16,-39],
+  [-18,-40],[-20,-40],[-22,-41],[-23,-43],[-24,-46],[-26,-48],
+  [-28,-49],[-30,-51],[-32,-52],[-33,-53],[-34,-54],[-35,-56],
+  [-36,-57],[-38,-57],[-39,-58],[-40,-62],[-41,-63],[-43,-64],
+  [-45,-66],[-47,-66],[-49,-67],[-51,-69],[-52,-69],[-54,-68],
+  [-55,-67],[-57,-73],[13,-73]
+];
+var AF=[
+  [13,-17],[10,-17],[8,-16],[6,-16],[5,-17],[4,-16],[4,-10],
+  [5,-8],[5,-4],[5,0],[4,3],[4,6],[3,9],[2,10],[0,10],
+  [-1,9],[-3,10],[-5,12],[-8,13],[-10,14],[-13,13],[-15,12],
+  [-17,12],[-19,13],[-22,14],[-25,15],[-28,16],[-30,17],
+  [-33,18],[-35,20],[13,23],[13,-17]
+];
+var FK=[
+  [-51.0,-61.5],[-51.2,-60.0],[-51.5,-59.0],[-51.7,-58.0],
+  [-52.0,-58.5],[-52.3,-59.5],[-52.0,-60.5],[-51.3,-61.5],[-51.0,-61.5]
+];
+
+// ===================== MISSION DATA =====================
+var FP=[ // [simTime, routeProgress]
+  [0,0],[18,0.20],[22,0.22],[29,0.22],[43,0.37],[46,0.38],[53,0.38],
+  [66,0.54],[69,0.55],[76,0.55],[88,0.71],[91,0.72],[98,0.72],
+  [109,0.84],[112,0.85],[119,0.85],[125,0.91],[127,0.91],[132,0.91],
+  [148,1.0],[SIM_DUR,1.0]
+];
+
+var BK=[ // brackets
+  {id:1,s:22,e:29,p:0.22,d:750,r:['v1','v2','v3','v4'],
+   nm:'Refuelling Bracket 1',ds:'4 Victors transfer fuel and return to base'},
+  {id:2,s:46,e:53,p:0.38,d:1290,r:['v5','v6'],
+   nm:'Refuelling Bracket 2',ds:'2 Victors transfer fuel — mid-Atlantic'},
+  {id:3,s:69,e:76,p:0.55,d:1870,r:['v7','v8'],
+   nm:'Refuelling Bracket 3',ds:'2 Victors transfer fuel — beyond half-range'},
+  {id:4,s:91,e:98,p:0.72,d:2450,r:['v9'],
+   nm:'Refuelling Bracket 4',ds:'1 Victor gives last fuel — deep south'},
+  {id:5,s:112,e:119,p:0.85,d:2890,r:['v10'],
+   nm:'Refuelling Bracket 5',ds:'Penultimate Victor fills the Vulcan'},
+  {id:6,s:127,e:132,p:0.91,d:3100,r:['v11'],
+   nm:'Final Fuel Transfer',ds:'Last Victor gives emergency reserves and turns back'}
+];
+
+var AC=[
+  {id:'vulcan',cs:'XM607 Vulcan',tp:'Vulcan B.2',rl:'bomber',bk:null},
+  {id:'v1',cs:'Victor 1',tp:'Victor K.2',rl:'tanker',bk:1},
+  {id:'v2',cs:'Victor 2',tp:'Victor K.2',rl:'tanker',bk:1},
+  {id:'v3',cs:'Victor 3',tp:'Victor K.2',rl:'tanker',bk:1},
+  {id:'v4',cs:'Victor 4',tp:'Victor K.2',rl:'tanker',bk:1},
+  {id:'v5',cs:'Victor 5',tp:'Victor K.2',rl:'tanker',bk:2},
+  {id:'v6',cs:'Victor 6',tp:'Victor K.2',rl:'tanker',bk:2},
+  {id:'v7',cs:'Victor 7',tp:'Victor K.2',rl:'tanker',bk:3},
+  {id:'v8',cs:'Victor 8',tp:'Victor K.2',rl:'tanker',bk:3},
+  {id:'v9',cs:'Victor 9',tp:'Victor K.2',rl:'tanker',bk:4},
+  {id:'v10',cs:'Victor 10',tp:'Victor K.2',rl:'tanker',bk:5},
+  {id:'v11',cs:'Victor 11',tp:'Victor K.2',rl:'tanker',bk:6}
+];
+
+var TOASTS=[
+  {t:3,  tx:'23:50 Zulu — 12 aircraft launch from Wideawake Airfield'},
+  {t:22, tx:'BRACKET 1 · 750 nm — First wave of tankers transfer fuel'},
+  {t:30, tx:'4 Victors turn north. 8 aircraft press on into the dark.'},
+  {t:46, tx:'BRACKET 2 · 1,290 nm — Mid-Atlantic refuelling'},
+  {t:54, tx:'2 more Victors return. 6 aircraft continue south.'},
+  {t:69, tx:'BRACKET 3 · 1,870 nm — Beyond the half-way point of range'},
+  {t:77, tx:'2 Victors turn back. Only 4 aircraft remain.'},
+  {t:91, tx:'BRACKET 4 · 2,450 nm — Deep in the South Atlantic'},
+  {t:99, tx:'1 Victor turns back. 3 aircraft in hostile waters.'},
+  {t:112,tx:'BRACKET 5 · 2,890 nm — The last tankers fill the Vulcan'},
+  {t:120,tx:'Penultimate Victor turns for home. 2 aircraft remain.'},
+  {t:127,tx:'FINAL TRANSFER — Last Victor gives emergency reserves'},
+  {t:133,tx:'XM607 is alone. 300 miles to target. Descending to 300 ft.'},
+  {t:143,tx:'Vulcan climbs to bombing altitude — 10,000 ft'},
+  {t:148,tx:'04:46 Zulu — 21 × 1,000 lb bombs released across Stanley runway'}
+];
+
+// ===================== STATE =====================
+var simT=0, playing=false, speed=1, introOn=true, lastTS=0, scrubbing=false;
+var shown=new Set();
+
+// Stars
+var stars=[];
+var _s=42;
+function sr(){_s=(_s*16807+7)%2147483647;return(_s-1)/2147483646;}
+for(var i=0;i<350;i++) stars.push({x:sr(),y:sr(),sz:sr()*1.5+0.3,br:sr()*0.5+0.4,ph:sr()*6.28,rt:sr()*1.5+0.5});
+
+// ===================== CANVAS =====================
+var cv=document.getElementById('canvas'), cx=cv.getContext('2d');
+var W,H,dpr,rhdg=null;
+
+function resize(){
+  dpr=devicePixelRatio||1; W=innerWidth; H=innerHeight;
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+  cx.setTransform(dpr,0,0,dpr,0,0); rhdg=null;
+}
+addEventListener('resize',resize); resize();
+
+// ===================== TRANSFORMS =====================
+function g2c(lat,lon){
+  return[(lon-MAP.lonMin)/(MAP.lonMax-MAP.lonMin)*W,(MAP.latMax-lat)/(MAP.latMax-MAP.latMin)*H];
+}
+function rpos(t){return[ASC.lat+(STN.lat-ASC.lat)*t, ASC.lon+(STN.lon-ASC.lon)*t];}
+function rcpos(t){var p=rpos(t);return g2c(p[0],p[1]);}
+function routeHdg(){
+  if(rhdg!==null)return rhdg;
+  var a=rcpos(0),b=rcpos(1);
+  rhdg=Math.atan2(b[1]-a[1],b[0]-a[0]);
+  return rhdg;
+}
+
+// ===================== SIMULATION LOGIC =====================
+function formProg(t){
+  if(t<=0)return 0;
+  if(t>=FP[FP.length-1][0])return FP[FP.length-1][1];
+  for(var i=1;i<FP.length;i++){
+    if(t<=FP[i][0]){
+      var f=(t-FP[i-1][0])/(FP[i][0]-FP[i-1][0]);
+      f=f*f*(3-2*f); // smoothstep
+      return FP[i-1][1]+(FP[i][1]-FP[i-1][1])*f;
+    }
+  }
+  return 1;
+}
+
+function bkFor(ac){
+  if(!ac.bk)return null;
+  return BK.find(function(b){return b.id===ac.bk;});
+}
+
+function acState(ac,t){
+  if(ac.rl==='bomber') return t>=148?'bombing':'outbound';
+  var b=bkFor(ac);
+  if(!b)return'outbound';
+  if(t<b.s)return'outbound';
+  if(t<=b.e)return'refuelling';
+  return'returning';
+}
+
+function acProg(ac,t){
+  var st=acState(ac,t), b=bkFor(ac);
+  if(st==='outbound'||st==='refuelling'||st==='bombing')return formProg(t);
+  if(st==='returning'&&b){
+    var el=t-b.e, spd=0.012;
+    return Math.max(0,b.p-el*spd);
+  }
+  return 0;
+}
+
+function activeOut(t){
+  return AC.filter(function(a){var s=acState(a,t);return s==='outbound'||s==='refuelling'||s==='bombing';});
+}
+
+function formOff(ac,t){
+  var arr=activeOut(t);
+  // put vulcan in center
+  var vi=arr.findIndex(function(a){return a.rl==='bomber';});
+  if(vi>=0){var v=arr.splice(vi,1)[0];arr.splice(Math.floor(arr.length/2),0,v);}
+  var idx=arr.findIndex(function(a){return a.id===ac.id;});
+  if(idx<0)return 0;
+  var n=arr.length;
+  if(n<=1)return 0;
+  var mx=Math.min(45,5.5*n);
+  return(idx-(n-1)/2)*(mx/(n-1));
+}
+
+function acCanvas(ac,t){
+  var p=acProg(ac,t);
+  if(p===null||p===undefined)return null;
+  var cp=rcpos(Math.max(0,Math.min(1,p)));
+  var st=acState(ac,t);
+  var hdg=routeHdg();
+  var px=-Math.sin(hdg),py=Math.cos(hdg);
+  if(st==='outbound'||st==='refuelling'||st==='bombing'){
+    var off=formOff(ac,t);
+    return[cp[0]+px*off,cp[1]+py*off];
+  }
+  // returning — small fixed offset
+  var h=ac.id.charCodeAt(ac.id.length-1)*7;
+  var off2=((h%20)-10)*0.6;
+  return[cp[0]+px*off2,cp[1]+py*off2];
+}
+
+function acFuel(ac,t){
+  var consumption=0.0042, fuel=1.0-consumption*t;
+  if(ac.rl==='bomber'){
+    for(var i=0;i<BK.length;i++){
+      var b=BK[i];
+      if(t>=b.s){var rt=Math.min(t-b.s,b.e-b.s);fuel+=0.045*rt;}
+    }
+  } else {
+    var bk=bkFor(ac);
+    if(bk&&t>=bk.s){var gt=Math.min(t-bk.s,bk.e-bk.s);fuel-=0.065*gt;}
+    if(bk){
+      for(var j=0;j<BK.length;j++){
+        if(BK[j].id<bk.id&&t>=BK[j].s){
+          var rr=Math.min(t-BK[j].s,BK[j].e-BK[j].s);
+          fuel+=0.02*rr;
+        }
+      }
+    }
+  }
+  return Math.max(0,Math.min(1,fuel));
+}
+
+function curBracket(t){return BK.find(function(b){return t>=b.s&&t<=b.e;});}
+
+function phaseText(t){
+  if(t<2)return'Engine Start & Takeoff';
+  var b=curBracket(t);
+  if(b)return b.nm;
+  if(t>=148)return'Bombs Away — Stanley Airfield';
+  if(t>=133)return'Vulcan Solo — Final Approach';
+  if(t>=132)return'Vulcan Solo — Approaching Target';
+  for(var i=0;i<BK.length;i++){
+    if(t<BK[i].s) return i===0?'Formation Transit South':'Transit to Bracket '+(i+1);
+    if(t>BK[i].e&&(i===BK.length-1||t<BK[i+1].s)){
+      if(i===BK.length-1)return'Vulcan Solo — Approaching Target';
+      return'Transit to Bracket '+(i+2);
+    }
+  }
+  return'Transit';
+}
+
+// ===================== DRAWING =====================
+function drawOcean(){
+  var g=cx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#0b1830');g.addColorStop(0.3,'#0d1a32');g.addColorStop(0.7,'#091525');g.addColorStop(1,'#06101c');
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+}
+
+function drawStars(t){
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i], tw=0.5+0.5*Math.sin(t*s.rt+s.ph), a=s.br*tw;
+    cx.fillStyle='rgba(190,210,255,'+a+')';
+    cx.beginPath();cx.arc(s.x*W,s.y*H,s.sz,0,6.28);cx.fill();
+  }
+}
+
+function drawPoly(coords,fill,stroke){
+  cx.beginPath();
+  for(var i=0;i<coords.length;i++){var p=g2c(coords[i][0],coords[i][1]);i===0?cx.moveTo(p[0],p[1]):cx.lineTo(p[0],p[1]);}
+  cx.closePath(); cx.fillStyle=fill; cx.fill();
+  if(stroke){cx.strokeStyle=stroke;cx.lineWidth=0.8;cx.stroke();}
+}
+
+function drawLand(){
+  drawPoly(SA,'#152015','rgba(50,110,50,0.3)');
+  drawPoly(AF,'#152015','rgba(50,110,50,0.3)');
+  drawPoly(FK,'#1a2a1a','rgba(80,160,80,0.4)');
+  // Labels
+  cx.font='13px Courier New';cx.fillStyle='rgba(80,130,80,0.2)';
+  var sl=g2c(-17,-56); cx.fillText('SOUTH',sl[0],sl[1]); cx.fillText('AMERICA',sl[0],sl[1]+16);
+  var al=g2c(-8,3); cx.fillText('AFRICA',al[0],al[1]);
+  cx.font='9px Courier New';cx.fillStyle='rgba(80,130,80,0.15)';
+  var atl=g2c(-25,-25); cx.fillText('SOUTH ATLANTIC',atl[0],atl[1]);
+}
+
+function drawGrid(){
+  cx.strokeStyle='rgba(50,90,150,0.07)';cx.lineWidth=0.5;cx.setLineDash([4,8]);
+  for(var lat=-50;lat<=10;lat+=10){
+    var a=g2c(lat,MAP.lonMin),b=g2c(lat,MAP.lonMax);
+    cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.stroke();
+    cx.fillStyle='rgba(80,130,190,0.18)';cx.font='8px Courier New';
+    cx.fillText(Math.abs(lat)+'°'+(lat>=0?'N':'S'),b[0]-30,a[1]-2);
+  }
+  for(var lon=-70;lon<=20;lon+=10){
+    var a=g2c(MAP.latMax,lon),b=g2c(MAP.latMin,lon);
+    cx.beginPath();cx.moveTo(a[0],a[1]);cx.lineTo(b[0],b[1]);cx.stroke();
+  }
+  // Equator highlight
+  var eq=g2c(0,MAP.lonMin),eq2=g2c(0,MAP.lonMax);
+  cx.strokeStyle='rgba(50,90,150,0.12)';cx.beginPath();cx.moveTo(eq[0],eq[1]);cx.lineTo(eq2[0],eq2[1]);cx.stroke();
+  cx.fillStyle='rgba(80,130,190,0.15)';cx.font='8px Courier New';cx.fillText('Equator',eq2[0]-50,eq[1]-2);
+  cx.setLineDash([]);
+}
+
+function drawRange(){
+  var c=g2c(ASC.lat,ASC.lon), degR=1725/60, ppd=H/(MAP.latMax-MAP.latMin), r=degR*ppd;
+  cx.setLineDash([4,5]);cx.strokeStyle='rgba(255,70,70,0.12)';cx.lineWidth=0.8;
+  cx.beginPath();cx.arc(c[0],c[1],r,0,6.28);cx.stroke();cx.setLineDash([]);
+  var la=Math.PI*0.8;
+  cx.font='8px Courier New';cx.fillStyle='rgba(255,100,100,0.22)';
+  cx.fillText('Vulcan range (no refuelling)',c[0]+Math.cos(la)*(r+8),c[1]+Math.sin(la)*(r+8));
+}
+
+function drawRoute(){
+  cx.setLineDash([7,5]);cx.strokeStyle='rgba(255,213,79,0.25)';cx.lineWidth=1.2;
+  cx.beginPath();
+  for(var t=0;t<=1;t+=0.005){var p=rcpos(t);t===0?cx.moveTo(p[0],p[1]):cx.lineTo(p[0],p[1]);}
+  cx.stroke();cx.setLineDash([]);
+
+  // Distance markers
+  for(var nm=500;nm<=3000;nm+=500){
+    var fr=nm/3400, pt=rcpos(fr);
+    cx.fillStyle='rgba(255,213,79,0.35)';cx.beginPath();cx.arc(pt[0],pt[1],2,0,6.28);cx.fill();
+    cx.font='8px Courier New';cx.fillStyle='rgba(255,213,79,0.4)';cx.fillText(nm+'nm',pt[0]+6,pt[1]+3);
+  }
+
+  // Ascension
+  var ap=g2c(ASC.lat,ASC.lon);
+  cx.fillStyle='#ffd54f';cx.beginPath();cx.arc(ap[0],ap[1],4,0,6.28);cx.fill();
+  cx.shadowColor='#ffd54f';cx.shadowBlur=12;cx.beginPath();cx.arc(ap[0],ap[1],4,0,6.28);cx.fill();cx.shadowBlur=0;
+  cx.font='bold 10px Courier New';cx.fillStyle='#ffd54f';cx.fillText('ASCENSION ISLAND',ap[0]+10,ap[1]+4);
+  cx.font='8px Courier New';cx.fillStyle='rgba(255,213,79,0.5)';cx.fillText('Wideawake Airfield',ap[0]+10,ap[1]+15);
+
+  // Stanley
+  var sp=g2c(STN.lat,STN.lon);
+  cx.fillStyle='#ff5252';cx.beginPath();cx.arc(sp[0],sp[1],4,0,6.28);cx.fill();
+  cx.shadowColor='#ff5252';cx.shadowBlur=12;cx.beginPath();cx.arc(sp[0],sp[1],4,0,6.28);cx.fill();cx.shadowBlur=0;
+  cx.font='bold 10px Courier New';cx.fillStyle='#ff5252';cx.fillText('PORT STANLEY',sp[0]+10,sp[1]+4);
+  cx.font='8px Courier New';cx.fillStyle='rgba(255,82,82,0.5)';cx.fillText('Target Airfield',sp[0]+10,sp[1]+15);
+}
+
+function drawBrackets(t){
+  for(var i=0;i<BK.length;i++){
+    var b=BK[i], bp=rcpos(b.p), active=t>=b.s&&t<=b.e, done=t>b.e;
+    if(active){
+      var pulse=0.5+0.5*Math.sin(t*4), r=14+pulse*8;
+      cx.fillStyle='rgba(255,213,79,'+(0.06+pulse*0.06)+')';
+      cx.beginPath();cx.arc(bp[0],bp[1],r,0,6.28);cx.fill();
+      cx.strokeStyle='rgba(255,213,79,'+(0.35+pulse*0.3)+')';cx.lineWidth=1.2;
+      cx.beginPath();cx.arc(bp[0],bp[1],r,0,6.28);cx.stroke();
+      // Label
+      cx.font='bold 9px Courier New';cx.fillStyle='rgba(255,213,79,0.8)';
+      cx.fillText(b.nm,bp[0]+r+6,bp[1]+3);
+    } else if(done){
+      cx.fillStyle='rgba(255,213,79,0.12)';cx.beginPath();cx.arc(bp[0],bp[1],3,0,6.28);cx.fill();
+    } else {
+      cx.strokeStyle='rgba(255,213,79,0.08)';cx.lineWidth=0.8;
+      cx.beginPath();cx.arc(bp[0],bp[1],5,0,6.28);cx.stroke();
+    }
+  }
+}
+
+function drawFocus(t){
+  if(t<2||t>152)return;
+  var p=formProg(t), fp=rcpos(p), n=activeOut(t).length;
+  var pulse=0.4+0.2*Math.sin(t*2), r=28+n*2;
+  cx.strokeStyle='rgba(80,160,255,'+(0.05*pulse)+')';cx.lineWidth=0.8;cx.setLineDash([3,3]);
+  cx.beginPath();cx.arc(fp[0],fp[1],r,0,6.28);cx.stroke();cx.setLineDash([]);
+}
+
+function drawRadar(t){
+  if(t<132)return;
+  var sp=g2c(STN.lat,STN.lon), a=Math.min(0.12,(t-132)*0.008);
+  cx.fillStyle='rgba(255,30,30,'+a+')';cx.beginPath();cx.arc(sp[0],sp[1],55,0,6.28);cx.fill();
+  cx.strokeStyle='rgba(255,60,60,'+(a*2)+')';cx.lineWidth=0.8;cx.setLineDash([3,3]);
+  cx.beginPath();cx.arc(sp[0],sp[1],55,0,6.28);cx.stroke();cx.setLineDash([]);
+  if(a>0.05){cx.font='8px Courier New';cx.fillStyle='rgba(255,100,100,'+(a*2)+')';cx.fillText('RADAR COVERAGE',sp[0]+60,sp[1]);}
+}
+
+function drawIcon(x,y,rot,role,color,sc){
+  cx.save();cx.translate(x,y);cx.rotate(rot);
+  var s=sc||(role==='bomber'?1.3:0.95);
+  cx.shadowColor=color;cx.shadowBlur=10;
+  cx.fillStyle=color;cx.beginPath();
+  if(role==='bomber'){
+    cx.moveTo(0,-7*s);cx.lineTo(-6*s,5*s);cx.lineTo(-2*s,4*s);
+    cx.lineTo(0,6*s);cx.lineTo(2*s,4*s);cx.lineTo(6*s,5*s);
+  } else {
+    cx.moveTo(0,-5*s);cx.lineTo(-5*s,2*s);cx.lineTo(-2*s,3*s);
+    cx.lineTo(0,5*s);cx.lineTo(2*s,3*s);cx.lineTo(5*s,2*s);
+  }
+  cx.closePath();cx.fill();cx.shadowBlur=0;cx.restore();
+}
+
+function drawTrail(x,y,hdg,len,color){
+  var tx=x-Math.cos(hdg)*len, ty=y-Math.sin(hdg)*len;
+  var g=cx.createLinearGradient(x,y,tx,ty);
+  g.addColorStop(0,color);g.addColorStop(1,'rgba(0,0,0,0)');
+  cx.strokeStyle=g;cx.lineWidth=1.5;cx.beginPath();cx.moveTo(x,y);cx.lineTo(tx,ty);cx.stroke();
+}
+
+function drawAircraft(t){
+  var hdg=routeHdg();
+  // Sort: returning behind, vulcan on top
+  var sorted=AC.slice().sort(function(a,b){
+    var sa=acState(a,t),sb=acState(b,t);
+    var ord={returning:0,outbound:1,refuelling:1,bombing:2};
+    var d=(ord[sa]||0)-(ord[sb]||0);
+    if(d!==0)return d;
+    return a.rl==='bomber'?1:b.rl==='bomber'?-1:0;
+  });
+
+  for(var i=0;i<sorted.length;i++){
+    var ac=sorted[i], pos=acCanvas(ac,t);
+    if(!pos)continue;
+    var x=pos[0],y=pos[1];
+    if(x<-50||x>W+50||y<-50||y>H+50)continue;
+    var st=acState(ac,t), prog=acProg(ac,t);
+    if(st==='returning'&&prog<=0)continue;
+
+    var h=hdg, col, tcol;
+    if(ac.rl==='bomber'){
+      col='#ff5252';tcol='rgba(255,82,82,0.35)';
+    } else if(st==='returning'){
+      col='#546e7a';tcol='rgba(84,110,122,0.25)';h=hdg+Math.PI;
+    } else if(st==='refuelling'){
+      col='#64b5f6';tcol='rgba(100,181,246,0.3)';
+    } else {
+      col='#42a5f5';tcol='rgba(66,165,245,0.3)';
+    }
+
+    drawTrail(x,y,h,st==='returning'?14:22,tcol);
+    drawIcon(x,y,h+Math.PI/2,ac.rl,col,st==='returning'?0.65:1.0);
+  }
+}
+
+function drawRefuel(t){
+  var bk=curBracket(t);
+  if(!bk)return;
+  var vulP=acCanvas(AC[0],t);
+  if(!vulP)return;
+  var elapsed=t-bk.s;
+
+  // Draw donor→vulcan lines
+  for(var i=0;i<bk.r.length;i++){
+    var don=AC.find(function(a){return a.id===bk.r[i];});
+    if(!don)continue;
+    var dp=acCanvas(don,t);
+    if(!dp)continue;
+
+    // Animated dashed line
+    cx.setLineDash([4,4]);cx.lineDashOffset=-elapsed*22;
+    cx.strokeStyle='rgba(255,213,79,0.4)';cx.lineWidth=1;
+    cx.beginPath();cx.moveTo(dp[0],dp[1]);cx.lineTo(vulP[0],vulP[1]);cx.stroke();
+    cx.setLineDash([]);
+
+    // Fuel particles
+    var dx=vulP[0]-dp[0],dy=vulP[1]-dp[1],len=Math.sqrt(dx*dx+dy*dy);
+    if(len<1)continue;
+    for(var j=0;j<5;j++){
+      var fr=((elapsed*35+j*(len/5))%len)/len;
+      var px=dp[0]+dx*fr, py=dp[1]+dy*fr;
+      cx.fillStyle='rgba(255,220,80,'+(0.85-fr*0.5)+')';
+      cx.beginPath();cx.arc(px,py,1.8,0,6.28);cx.fill();
+    }
+  }
+
+  // Also show tanker-to-tanker refuelling lines (subtle)
+  var active=activeOut(t);
+  var receivers=active.filter(function(a){return bk.r.indexOf(a.id)<0&&a.rl!=='bomber';});
+  for(var k=0;k<Math.min(bk.r.length,receivers.length);k++){
+    var d2=AC.find(function(a){return a.id===bk.r[k];});
+    var r2=receivers[k];
+    if(!d2||!r2)continue;
+    var dp2=acCanvas(d2,t), rp2=acCanvas(r2,t);
+    if(!dp2||!rp2)continue;
+    cx.setLineDash([3,3]);cx.lineDashOffset=-elapsed*16;
+    cx.strokeStyle='rgba(66,165,245,0.2)';cx.lineWidth=0.6;
+    cx.beginPath();cx.moveTo(dp2[0],dp2[1]);cx.lineTo(rp2[0],rp2[1]);cx.stroke();
+    cx.setLineDash([]);
+  }
+}
+
+function drawBomb(t){
+  if(t<148||t>156)return;
+  var sp=g2c(STN.lat,STN.lon), el=t-148;
+  // Flash
+  if(el<1.2){
+    var fa=1-el/1.2;
+    cx.fillStyle='rgba(255,255,200,'+(fa*0.4)+')';
+    cx.beginPath();cx.arc(sp[0],sp[1],8+el*25,0,6.28);cx.fill();
+  }
+  // Rings
+  for(var r=0;r<4;r++){
+    var dl=r*0.4;if(el<dl)continue;
+    var re=el-dl, rad=re*22, al=Math.max(0,1-re/4.5);
+    cx.strokeStyle='rgba(255,'+(140-r*25)+',0,'+(al*0.6)+')';cx.lineWidth=2-r*0.4;
+    cx.beginPath();cx.arc(sp[0],sp[1],rad,0,6.28);cx.stroke();
+  }
+  // Particles
+  for(var p=0;p<18;p++){
+    var ang=(p/18)*6.28+el*0.4, dist=el*16*(0.5+(p%4)*0.15);
+    var pa=Math.max(0,1-el/5.5);
+    cx.fillStyle='rgba(255,'+(90+(p*19)%80)+',0,'+(pa*0.5)+')';
+    cx.beginPath();cx.arc(sp[0]+Math.cos(ang)*dist,sp[1]+Math.sin(ang)*dist,1.5,0,6.28);cx.fill();
+  }
+}
+
+function drawResult(t){
+  if(t<151)return;
+  var a=Math.min(1,(t-151)/2.5);
+  cx.fillStyle='rgba(0,0,0,'+(a*0.45)+')';cx.fillRect(0,0,W,H);
+  cx.textAlign='center';
+  cx.font='bold '+Math.round(Math.min(22,W*0.025))+'px Courier New';
+  cx.fillStyle='rgba(255,255,255,'+a+')';cx.fillText('MISSION COMPLETE',W/2,H/2-50);
+  cx.font=Math.round(Math.min(14,W*0.016))+'px Courier New';
+  cx.fillStyle='rgba(0,228,160,'+a+')';
+  cx.fillText('First bomb struck the centre of Port Stanley runway',W/2,H/2-15);
+  cx.font=Math.round(Math.min(12,W*0.014))+'px Courier New';
+  cx.fillStyle='rgba(180,200,220,'+(a*0.7)+')';
+  cx.fillText('The longest bombing raid in the history of aerial warfare',W/2,H/2+15);
+  cx.fillText('Round trip: 7,860 miles  ·  Duration: 15 hours 45 minutes',W/2,H/2+35);
+  cx.fillText('1 runway crater  ·  21 bombs delivered  ·  0 aircraft lost',W/2,H/2+55);
+  cx.textAlign='left';
+}
+
+function drawVignette(){
+  var g=cx.createRadialGradient(W/2,H/2,H*0.3,W/2,H/2,H*0.85);
+  g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,0.35)');
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+}
+
+function drawScan(){
+  cx.fillStyle='rgba(0,0,0,0.025)';
+  for(var y=0;y<H;y+=3)cx.fillRect(0,y,W,1);
+}
+
+// ===================== MAIN RENDER =====================
+function render(t){
+  cx.clearRect(0,0,W,H);
+  // Shake
+  var shx=0,shy=0;
+  if(t>=148&&t<151){var se=t-148,si=Math.max(0,1-se/3)*3;shx=Math.sin(se*30)*si;shy=Math.cos(se*25)*si;}
+  cx.save();cx.translate(shx,shy);
+
+  drawOcean();drawStars(t);drawGrid();drawLand();drawRange();
+  drawRoute();drawBrackets(t);drawFocus(t);drawRadar(t);
+  drawRefuel(t);drawAircraft(t);drawBomb(t);drawResult(t);
+  drawVignette();drawScan();
+
+  cx.restore();
+}
+
+// ===================== HUD UPDATE =====================
+function updateHUD(t){
+  var mh=(t/SIM_DUR)*8, h=Math.floor(mh), m=Math.floor((mh-h)*60);
+  document.getElementById('clock').textContent='T+'+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  document.getElementById('spd-lbl').textContent='×'+speed;
+  document.getElementById('i-phase').textContent=phaseText(t);
+  var prog=formProg(t);
+  document.getElementById('i-dist').textContent=Math.round(prog*3400).toLocaleString()+' nm';
+  document.getElementById('i-tgt').textContent=Math.round((1-prog)*3400).toLocaleString()+' nm';
+  var act=activeOut(t);
+  document.getElementById('i-count').textContent=act.length+' of 12';
+  document.getElementById('phase-lbl').textContent=phaseText(t);
+  document.getElementById('timeline').value=Math.round((t/SIM_DUR)*1000);
+  updateACList(t);
+  checkToasts(t);
+}
+
+function updateACList(t){
+  var el=document.getElementById('ac-list'), html='';
+  for(var i=0;i<AC.length;i++){
+    var ac=AC[i], st=acState(ac,t), fuel=acFuel(ac,t), prog=acProg(ac,t);
+    var cls='', stTxt='ACTIVE', stCol=ac.rl==='bomber'?'#ff5252':'#42a5f5';
+    if(st==='returning'){
+      cls=prog<=0?'landed':'ret';stTxt=prog<=0?'LANDED':'RTB';stCol='#546e7a';
+    } else if(st==='refuelling'){stTxt='REFUEL';stCol='#ffa726';}
+    else if(st==='bombing'){stTxt='ATTACK';stCol='#ff5252';}
+    var fc=fuel>0.5?'#00d4a0':fuel>0.25?'#ffa726':'#ff5252';
+    var fp=Math.round(fuel*100);
+    html+='<div class="ac-row '+cls+'"><div class="ac-dot" style="background:'+stCol+'"></div>'+
+      '<div class="ac-name">'+ac.cs+'</div>'+
+      '<div class="fuel-bg"><div class="fuel-fill" style="width:'+fp+'%;background:'+fc+'"></div></div>'+
+      '<div class="ac-st" style="color:'+stCol+'">'+stTxt+'</div></div>';
+  }
+  el.innerHTML=html;
+}
+
+function checkToasts(t){
+  for(var i=0;i<TOASTS.length;i++){
+    var e=TOASTS[i], k='t-'+e.t;
+    if(t>=e.t&&!shown.has(k)){shown.add(k);showToast(e.tx);}
+  }
+}
+
+function showToast(text){
+  var c=document.getElementById('toasts'), el=document.createElement('div');
+  el.className='toast';el.textContent=text;c.appendChild(el);
+  setTimeout(function(){if(el.parentNode)el.remove();},5500);
+}
+
+function markPast(t){
+  shown.clear();
+  for(var i=0;i<TOASTS.length;i++){if(t>=TOASTS[i].t)shown.add('t-'+TOASTS[i].t);}
+}
+
+// ===================== ANIMATION LOOP =====================
+function loop(ts){
+  if(!introOn){
+    if(playing&&!scrubbing){
+      var dt=lastTS?(ts-lastTS)/1000:0;
+      simT=Math.min(SIM_DUR,simT+dt*speed);
+      if(simT>=SIM_DUR){playing=false;document.getElementById('btn-play').textContent='↻';}
+    }
+    render(simT);updateHUD(simT);
+  } else {
+    render(0);
+  }
+  lastTS=ts;requestAnimationFrame(loop);
+}
+
+// ===================== CONTROLS =====================
+function setupControls(){
+  var pb=document.getElementById('btn-play');
+  pb.addEventListener('click',function(){
+    if(simT>=SIM_DUR){simT=0;shown.clear();document.getElementById('toasts').innerHTML='';}
+    playing=!playing;
+    pb.textContent=playing?'❚❚':(simT>=SIM_DUR?'↻':'▶');
+  });
+
+  var tl=document.getElementById('timeline');
+  tl.addEventListener('input',function(e){
+    simT=(parseInt(e.target.value)/1000)*SIM_DUR;
+    document.getElementById('toasts').innerHTML='';
+    markPast(simT);
+  });
+  tl.addEventListener('mousedown',function(){scrubbing=true;});
+  tl.addEventListener('touchstart',function(){scrubbing=true;},{passive:true});
+  addEventListener('mouseup',function(){scrubbing=false;});
+  addEventListener('touchend',function(){scrubbing=false;});
+
+  document.querySelectorAll('.sp-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      speed=parseInt(btn.dataset.s);
+      document.querySelectorAll('.sp-btn').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+    });
+  });
+
+  // Timeline bracket markers
+  var mc=document.getElementById('tl-marks');
+  for(var i=0;i<BK.length;i++){
+    var mk=document.createElement('div');mk.className='tl-mk';
+    mk.style.left=(BK[i].s/SIM_DUR*100)+'%';mk.title=BK[i].nm;
+    mc.appendChild(mk);
+  }
+  // Bomb marker
+  var bm=document.createElement('div');bm.className='tl-mk';bm.style.left=(148/SIM_DUR*100)+'%';
+  bm.style.background='#ff5252';bm.title='Bombing';mc.appendChild(bm);
+
+  document.addEventListener('keydown',function(e){
+    if(introOn)return;
+    if(e.code==='Space'){e.preventDefault();pb.click();}
+    if(e.code==='ArrowRight'){simT=Math.min(SIM_DUR,simT+3*speed);markPast(simT);document.getElementById('toasts').innerHTML='';}
+    if(e.code==='ArrowLeft'){simT=Math.max(0,simT-3*speed);markPast(simT);document.getElementById('toasts').innerHTML='';}
+  });
+}
+
+// ===================== INTRO =====================
+function runIntro(){
+  var lines=document.querySelectorAll('.intro-line');
+  for(var i=0;i<lines.length;i++){
+    (function(idx){setTimeout(function(){lines[idx].classList.add('show');},600+idx*900);})(i);
+  }
+
+  function start(){
+    if(!introOn)return;
+    introOn=false;
+    document.getElementById('intro').classList.add('fade-out');
+    setTimeout(function(){
+      document.getElementById('intro').style.display='none';
+      playing=true;
+      document.getElementById('btn-play').textContent='❚❚';
+    },1600);
+  }
+
+  document.getElementById('btn-start').addEventListener('click',start);
+  setTimeout(function(){if(introOn)start();},11000);
+}
+
+// ===================== INIT =====================
+setupControls();runIntro();requestAnimationFrame(loop);
+
+})();
+</script>
