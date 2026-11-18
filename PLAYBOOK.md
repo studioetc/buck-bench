@@ -14,7 +14,7 @@ A T3 scheduled task (`schedule_task`) ran on Opus 5.5 even though the project de
 
 ### Claude models: clean run with a browser (2026-11-19)
 
-Runs go one at a time in `~/Dev/buck`, using `~/Dev/buck-runs/run-sequence2.sh` (pass model ids as arguments):
+Runs go one at a time in `~/Dev/buck`, using `scripts/run-sequence.sh` in this repo (pass model ids as arguments; it writes to ~/Dev/buck and ~/Dev/buck-runs):
 
 ```bash
 cd ~/Dev/buck && CLAUDE_CODE_DISABLE_FEATURE_FLAGS=1 claude -p --safe-mode --chrome --disable-slash-commands --disallowed-tools Artifact --dangerously-skip-permissions --model <model> --effort xhigh -n Vulcan --output-format json "<prompt>"
