@@ -6,6 +6,8 @@ Addition (23 September 2026): `opus55` (claude-opus-5-5) added from `Dev/vulcan-
 
 Addition (30 September 2026): `sol61` added from `Dev/vulcan-6-1`, with the user-supplied model name **GPT-Sol 6.1**. The HTML and README are preserved in `../../raw/gpt-sol-6-1/sol61/`; the supplied `preview.png` is used as the gallery screenshot. Copies are hash-verified. The entry is placed immediately after Claude Fable 5.1 by request. Release date verified as 29 September 2026 using [OpenAI’s system card addendum](https://deploymentsafety.openai.com/gpt-6-1-sol/respecting-auto-review). Session-level model metadata has not been verified.
 
+Addition (19 November 2026, evening): `sol6` (gpt-6-sol, xhigh, Codex TUI); `sonnet45-era200` (Claude Code 2.0.0, release era, no browser tool) and `sonnet45-era2132` (Claude Code 2.1.32 with Chrome). Sonnet 4.5 researched only on 2.0.0 and never viewed its page in any harness except the discarded first attempt.
+
 Addition (19 November 2026, era harness): `opus46-era` (Claude Code 2.1.32) and `sonnet46-era` (2.1.45), each run on the Claude Code version current at the model's release, in an isolated install and clean config. Both researched and checked their pages in Chrome, unlike their runs on today's Claude Code. Sonnet's run used a claude.ai Exa connector for search (see inventory). The installs, config and login were removed afterwards.
 
 Addition (19 November 2026, later): reruns `opus46-run2` and `sonnet46-run2` with the Artifact tool blocked; both saved to the run folder and checked their pages in Chrome, neither looked anything up online. The first runs stay as `Run 1` versions. Log review notes: `../../sessions/run-review.md`, `../../sessions/prompt-history.md`.

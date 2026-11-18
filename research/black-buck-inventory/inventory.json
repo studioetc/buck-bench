@@ -4,6 +4,34 @@
   "scope": "Local inventory of simulations created in-session with recorded model evidence. Excludes unfinished attempts, unknown or inferred-only model assignments, and conversions of externally created artifacts. Original files are unchanged.",
   "artifacts": [
     {
+      "id": "sol6",
+      "files": [
+        {
+          "path": "raw/gpt-6-sol/sol6/index.html",
+          "bytes": 72683,
+          "sha256": "5e51f25e5e75690a6e8e77e3f01f37823db9874370a1a76a8c27a3109284e69d"
+        }
+      ],
+      "model": "gpt-6-sol",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.codex/sessions/2026/11/19/rollout-2026-11-19T07-15-59-01a1f04d-490b-7361-bd5e-9634c3830a7a.jsonl",
+          "models": {
+            "gpt-6-sol": "recorded"
+          },
+          "effort": "xhigh"
+        }
+      ],
+      "notes": "Added 2026-11-19. Verbatim prompt in the Codex TUI (tmux), YOLO mode, ~/Documents/Vulcan (emptied first), user's normal Codex config. About 13 min, 39,101 output tokens. Checked its page with Playwright screenshots.",
+      "release": {
+        "date": "2026-09-22",
+        "source": "https://developers.openai.com/api/docs/changelog",
+        "verified_on": "2026-11-19",
+        "note": "OpenAI API changelog, Sep 22."
+      }
+    },
+    {
       "id": "gpt55",
       "files": [
         {
@@ -272,6 +300,58 @@
         "source": "https://models.dev/api.json",
         "verified_on": "2026-11-19",
         "note": "models.dev release_date; Anthropic's deprecations page gives retirement 'not sooner than Feb 17, 2027'."
+      }
+    },
+    {
+      "id": "sonnet45-era200",
+      "files": [
+        {
+          "path": "raw/claude-sonnet-4-5/sonnet45-era200/black-buck-simulation.html",
+          "bytes": 27863,
+          "sha256": "31c30f94f3c0de79cbb804840b7010de81226e9b0686c75bad2d0492e28f4933"
+        }
+      ],
+      "model": "claude-sonnet-4-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/2062de6d-5c44-4373-9896-590a5f83f1f9.jsonl",
+          "session_id": "2062de6d-5c44-4373-9896-590a5f83f1f9",
+          "harness": "Claude Code 2.0.0 (run on Node 22; 2.0.0 crashes on Node 26)"
+        }
+      ],
+      "notes": "Added 2026-11-19. Release-era harness: Claude Code 2.0.0 (no Chrome integration existed). Clean isolated install, clean CLAUDE_CONFIG_DIR (no skills/plugins/hooks/CLAUDE.md, auto-memory off, claude.ai connectors off), subscription /login, -p --dangerously-skip-permissions, run folder served at localhost:8607 with the same appended line. Install, config and login removed afterwards. About 2 min, 14 turns, ~$0.42 list price: 3 WebSearch, 2 WebFetch, one Write. A planned Opus 4.5 run on 2.0.51 was stopped early by request (Opus 4.5 already researched and checked on the current harness); its partial log is in buck-runs/discarded-2026-11-19.",
+      "release": {
+        "date": "2025-09-29",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date."
+      }
+    },
+    {
+      "id": "sonnet45-era2132",
+      "files": [
+        {
+          "path": "raw/claude-sonnet-4-5/sonnet45-era2132/black-buck-refuelling.html",
+          "bytes": 25485,
+          "sha256": "998a98a0f158e6cbc5afddb6fdd13288e0247ca9e79270e57cd714b6562616d5"
+        }
+      ],
+      "model": "claude-sonnet-4-5",
+      "attribution": "recorded_model",
+      "evidence": [
+        {
+          "path": "/Users/onesteppplusgmai.com/.claude/projects/-Users-onesteppplusgmai-com-Dev-buck/d1be6361-d17d-4de0-a057-fc662f75d85c.jsonl",
+          "session_id": "d1be6361-d17d-4de0-a057-fc662f75d85c",
+          "harness": "Claude Code 2.1.32"
+        }
+      ],
+      "notes": "Added 2026-11-19. Claude Code 2.1.32 with --chrome (a later harness than release, chosen so a browser was available). Clean isolated install, clean CLAUDE_CONFIG_DIR (no skills/plugins/hooks/CLAUDE.md, auto-memory off, claude.ai connectors off), subscription /login, -p --dangerously-skip-permissions, run folder served at localhost:8607 with the same appended line. Install, config and login removed afterwards. About 1 min, 2 turns, ~$0.45 list price: a single Write, no web lookups, no browser check.",
+      "release": {
+        "date": "2025-09-29",
+        "source": "https://models.dev/api.json",
+        "verified_on": "2026-11-19",
+        "note": "models.dev release_date."
       }
     },
     {

@@ -1,6 +1,11 @@
 // First-party release/availability records researched by GPT-5.6 Terra on 2026-09-07.
 // Dates reflect the official launch; private partner previews are excluded.
 const modelReleases = {
+  "GPT-6 Sol": {
+    "date": "2026-09-22",
+    "source": "https://developers.openai.com/api/docs/changelog",
+    "note": "OpenAI API changelog entry dated Sep 22 (2026). Added 2026-11-19."
+  },
   "GPT-5.5": {
     "date": "2026-04-23",
     "source": "https://models.dev/api.json",
@@ -124,6 +129,7 @@ const modelReleases = {
 };
 
 const artifacts = [
+  {id:'sol6',model:'GPT-6 Sol',title:'Refuelling relay',file:'raw/gpt-6-sol/sol6/index.html',relation:'Independent run',note:'Single-prompt build at xhigh effort in the Codex terminal app, 19 November 2026; checked its page with Playwright screenshots.'},
   {id:'gpt55',model:'GPT-5.5',title:'Arena build',file:'raw/gpt-5.5/gpt55/index.html',relation:'Arena run',note:'Arena battle on 17 July 2026 (gpt-5.5-xhigh side, identified by the user from the Arena chat). Built from the downloaded Vite source.'},
   {id:'gemini31pro',model:'Gemini 3.1 Pro',title:'Arena build',file:'raw/gemini-3.1-pro/gemini31pro/index.html',relation:'Arena run',note:'Arena chat from 17 July 2026; model gemini-3.1-pro identified by the user from the Arena chat. Built from the downloaded Vite source.'},
   {id:'sonnet55',model:'Claude Sonnet 5.5',title:'Black Buck simulation',file:'raw/claude-sonnet-5-5/sonnet55/black-buck.html',relation:'Independent run',note:'Clean Claude Code run at xhigh with Chrome; researched, built from source files and checked its page thoroughly in Chrome.'},
@@ -134,7 +140,9 @@ const artifacts = [
   {id:'sonnet46-era',model:'Claude Sonnet 4.6',title:'Claude Code 2.1.45',file:'raw/claude-sonnet-4-6/sonnet46-era/black_buck.html',relation:'Release-era harness',note:'Run on Claude Code 2.1.45, the version current at release, with a clean config and Chrome: researched via a claude.ai Exa connector (not era-standard) and checked its page in Chrome.'},
   {id:'sonnet46-run2',model:'Claude Sonnet 4.6',title:'Claude Code 2.1.327',file:'raw/claude-sonnet-4-6/sonnet46-run2/black_buck.html',relation:'Current harness',note:'Rerun with the Artifact tool blocked: saved to the run folder and checked its page in Chrome; no web research.'},
   {id:'sonnet46',model:'Claude Sonnet 4.6',title:'Claude Code 2.1.327 · Artifact tool on',file:'raw/claude-sonnet-4-6/sonnet46/black_buck.html',relation:'Current harness, earlier run',note:'First run, with the Artifact tool available: no research or browser check; published a private claude.ai artifact.'},
-  {id:'sonnet45',model:'Claude Sonnet 4.5',title:'Black Buck simulation',file:'raw/claude-sonnet-4-5/sonnet45/black_buck_simulation.html',relation:'Independent run',note:'Clean Claude Code run (Sonnet 4.5 takes no effort setting). One file write; no research or browser check.'},
+  {id:'sonnet45-era200',model:'Claude Sonnet 4.5',title:'Claude Code 2.0.0',file:'raw/claude-sonnet-4-5/sonnet45-era200/black-buck-simulation.html',relation:'Release-era harness',note:'Run on Claude Code 2.0.0, current at release (no browser tool existed yet): 3 web searches, 2 page reads, one file write.'},
+  {id:'sonnet45-era2132',model:'Claude Sonnet 4.5',title:'Claude Code 2.1.32',file:'raw/claude-sonnet-4-5/sonnet45-era2132/black-buck-refuelling.html',relation:'Later harness with Chrome',note:'Run on Claude Code 2.1.32 with Chrome available: one file write, no research or browser check.'},
+  {id:'sonnet45',model:'Claude Sonnet 4.5',title:'Claude Code 2.1.327',file:'raw/claude-sonnet-4-5/sonnet45/black_buck_simulation.html',relation:'Current harness',note:'Clean Claude Code run (Sonnet 4.5 takes no effort setting). One file write; no research or browser check.'},
   {id:'sol62',model:'GPT-6.2 Sol',title:'Plotting chart',file:'raw/gpt-6-2-sol/sol62/operation-black-buck.html',relation:'Independent run',note:'Single-prompt build at xhigh effort in the Codex terminal app, 19 November 2026.'},
   {id:'astra62',model:'GPT-6.2 Astra',title:'Flight atlas',file:'raw/gpt-6-2-astra/astra62/index.html',relation:'Independent run',note:'Single-prompt build at high effort in a T3 Code thread (Codex harness), 18 November 2026.'},
   {id:'fable52-v1',model:'Claude Fable 5.2',title:'The tanker cascade · v1',file:'raw/claude-fable-5-2/fable52-v1/black-buck-refuelling.html',relation:'Original',note:'Single-prompt build at xhigh effort in a T3 Code thread. Rebuilt from the session\'s own build files; applying the v2 edits reproduces v2 byte for byte.'},
